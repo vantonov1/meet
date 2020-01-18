@@ -1,0 +1,151 @@
+databaseChangeLog:
+  - changeSet:
+      id: initial
+      author: vaan
+      changes:
+      - createTable:
+            tableName: subway
+            columns:
+            - column:
+                  name: id
+                  type: smallint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+            - column:
+                   name: name
+                   type: varchar(255)
+                   constraints:
+                       nullable: false
+            - column:
+                   name: city
+                   type: smallint
+                   constraints:
+                       nullable: false
+            - column:
+                   name: color
+                   type: varchar(6)
+      - createTable:
+            tableName: equity
+            columns:
+            - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+            - column:
+                  name: type
+                  type: tinyint
+                  constraints:
+                    nullable: false
+            - column:
+                  name: owned_by
+                  type: bigint
+                  constraints:
+                    nullable: false
+            - column:
+                  name: district
+                  type: tinyint
+            - column:
+                  name: subway
+                  type: smallint
+            - column:
+                  name: street
+                  type: varchar(255)
+            - column:
+                  name: building
+                  type: varchar(32)
+            - column:
+                  name: lat
+                  type: double
+            - column:
+                  name: lon
+                  type: double
+            - column:
+                  name: price
+                  type: int
+                  constraints:
+                    nullable: false
+            - column:
+                  name: square
+                  type: int
+            - column:
+                  name: rooms
+                  type: tinyint
+            - column:
+                  name: info
+                  type: varchar(1024)
+            - column:
+                  name: hidden
+                  type: boolean
+      - createTable:
+            tableName: photo
+            columns:
+            - column:
+                  name: id
+                  type: varchar(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+            - column:
+                   name: of
+                   type: bigint
+                   constraints:
+                       nullable: false
+                       references: equity(id)
+                       foreignKeyName: fk_of
+      - createTable:
+            tableName: district
+            columns:
+            - column:
+                  name: id
+                  type: tinyint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+            - column:
+                   name: name
+                   type: varchar(255)
+                   constraints:
+                       nullable: false
+            - column:
+                   name: city
+                   type: smallint
+                   constraints:
+                       nullable: false
+      - createIndex:
+            indexName: find_equities_idx
+            tableName: equity
+            columns:
+            - column:
+                    name: type
+            - column:
+                    name: hidden
+            - column:
+                    name: price
+            - column:
+                    name: lat
+            - column:
+                    name: lon
+      - createIndex:
+            indexName: find_equities_by_district_idx
+            tableName: equity
+            columns:
+            - column:
+                    name: district
+      - createIndex:
+            indexName: find_equities_by_subway_idx
+            tableName: equity
+            columns:
+            - column:
+                    name: subway
+      - createIndex:
+            indexName: find_photos_idx
+            tableName: photo
+            columns:
+            - column:
+                    name: of
+            - column:
+                    name: id
