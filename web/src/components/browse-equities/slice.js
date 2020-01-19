@@ -37,11 +37,15 @@ const slice = createSlice({
         storeContainerHeight: (state, {payload}) => {
             state.containerHeight = payload;
         },
+        setType: (state, {payload}) => {
+            state.filter.type = payload;
+            state.loadFinished = false;
+        },
     }
 });
 
 export default slice.reducer
-export const {toggleDrawer, storeMap, storeContainerHeight} = slice.actions;
+export const {toggleDrawer, storeMap, storeContainerHeight, setType} = slice.actions;
 
 export const loadEquities = (ids) => async (dispatch) => {
     const {setEquities, startLoading, finishLoading} = slice.actions;

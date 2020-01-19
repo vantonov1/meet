@@ -4,10 +4,19 @@ import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Drawer from "@material-ui/core/Drawer";
 import "./osm-map.css"
-import {loadEquities, loadLocations, loadMoreEquities, storeContainerHeight, storeMap, toggleDrawer} from "./slice";
 import EquitiesList from "./equities-list";
 import Box from "@material-ui/core/Box";
 import OsmMap from "./osm-map";
+import FilterMenu from "./filter-menu";
+import {
+    loadEquities,
+    loadLocations,
+    loadMoreEquities,
+    setType,
+    storeContainerHeight,
+    storeMap,
+    toggleDrawer
+} from "./slice";
 
 export default function BrowseEquities() {
     const {equities, filter, loading, drawerOpen, mapRendered, locations, containerHeight} = useSelector(state => state.browseEquities, shallowEqual);
@@ -36,6 +45,9 @@ export default function BrowseEquities() {
                                   onFetch={() => dispatch(loadMoreEquities())}
                     />}
                 </Box>
+                <FilterMenu
+                    onTypeSelected={(type) => dispatch(setType(type))}
+                />
             </Drawer>
             <Box width="100%" height="100%">
                 <OsmMap
