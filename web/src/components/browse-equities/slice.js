@@ -43,6 +43,18 @@ const slice = createSlice({
 export default slice.reducer
 export const {toggleDrawer, storeMap, storeContainerHeight} = slice.actions;
 
+export const loadEquities = (ids) => async (dispatch) => {
+    const {setEquities, startLoading, finishLoading} = slice.actions;
+    dispatch(startLoading());
+    try {
+        dispatch(setEquities(await EquityAPI.findByIds(ids)))
+    } catch (reason) {
+        dispatch(show(reason.message))
+    } finally {
+        dispatch(finishLoading())
+    }
+};
+
 export const loadMoreEquities = () => async (dispatch, getState) => {
     const {setEquities} = slice.actions;
     const {locations, equities} = getState().browseEquities;

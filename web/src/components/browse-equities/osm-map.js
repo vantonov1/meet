@@ -10,10 +10,18 @@ import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 
 export default function OsmMap(props) {
-    const {mapRendered, locations, onMapRendered} = props;
+    const {mapRendered, locations, onMapRendered, onLocationsSelect} = props;
     useEffect(() => {
         if (!mapRendered && locations.length !== 0) {
-            renderMap(locations);
+            let map = renderMap(locations, onLocationsSelect);
+            map.on('click', e => {
+                map.forEachFeatureAtPixel(e.pixel, (feature, layer) => {
+                    let locations = feature.get('features').map(feature => feature.getId());
+                    map.getView().setCenter(feature.get("geometry").flatCoordinates);
+                    onLocationsSelect(locations)
+                });
+                map.getView().setZoom(map.getView().getZoom() + 2)
+            });
             onMapRendered()
         }
     });
@@ -56,7 +64,7 @@ function renderMap(locations) {
         })
     });
 
-    let map = new Map({
+    return new Map({
         layers: [tiles, clusters, position],
         target: 'map',
         view: view

@@ -4,7 +4,7 @@ import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Drawer from "@material-ui/core/Drawer";
 import "./osm-map.css"
-import {loadLocations, loadMoreEquities, storeContainerHeight, storeMap, toggleDrawer} from "./slice";
+import {loadEquities, loadLocations, loadMoreEquities, storeContainerHeight, storeMap, toggleDrawer} from "./slice";
 import EquitiesList from "./equities-list";
 import Box from "@material-ui/core/Box";
 import OsmMap from "./osm-map";
@@ -38,7 +38,12 @@ export default function BrowseEquities() {
                 </Box>
             </Drawer>
             <Box width="100%" height="100%">
-                <OsmMap locations={locations} mapRendered={mapRendered} onMapRendered={() => dispatch(storeMap())}/>
+                <OsmMap
+                    locations={locations}
+                    mapRendered={mapRendered}
+                    onMapRendered={() => dispatch(storeMap())}
+                    onLocationsSelect={(locations) => dispatch(loadEquities(locations))}
+                />
             </Box>
         </div>
     );
