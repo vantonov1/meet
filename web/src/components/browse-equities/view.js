@@ -15,7 +15,9 @@ export default function BrowseEquities() {
     const listContainerRef = React.createRef();
 
     useLayoutEffect(() => {
-        dispatch(storeContainerHeight(listContainerRef.current.getBoundingClientRect()))
+        let rect = listContainerRef.current.getBoundingClientRect();
+        if (rect?.height > 0)
+            dispatch(storeContainerHeight(rect.height))
     });
 
     useEffect(() => {
@@ -23,17 +25,17 @@ export default function BrowseEquities() {
     });
 
     return (
-        <div>
+        <div ref={listContainerRef}>
             <Drawer open={drawerOpen} variant="permanent" onClose={() => dispatch(toggleDrawer(false))}>
-                {loading && <CircularProgress/>}
-                <div ref={listContainerRef}>
-                    {equities.length !== 0 && <Box width={400}>
-                        <EquitiesList length={locations.length}
-                                      equities={equities}
-                                      height={containerHeight}
-                                      onFetch={() => dispatch(loadMoreEquities())}/>
-                    </Box>}
-                </div>
+                <Box width={400}>
+                    {loading && <CircularProgress/>}
+                    {equities.length !== 0 && <EquitiesList
+                                  equities={equities}
+                                  height={containerHeight}
+                                  hasMore={equities.length < locations.length}
+                                  onFetch={() => dispatch(loadMoreEquities())}
+                    />}
+                </Box>
             </Drawer>
             <Box width="100%" height="100%">
                 <OsmMap locations={locations} mapRendered={mapRendered} onMapRendered={() => dispatch(storeMap())}/>

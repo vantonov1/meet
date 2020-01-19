@@ -2,34 +2,24 @@ import React from "react";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import LinearProgress from "@material-ui/core/LinearProgress";
 import InfiniteScroll from 'react-infinite-scroll-component';
 
-function onFetch(props) {
-    props.onFetch()
-}
-
 export default function EquitiesList(props) {
-    return (<div id="scrollableDiv" className="equities-list" style={{ height: "100%", overflow: "auto" }}>
-        <InfiniteScroll
-            dataLength={props.length}
-            next={() => onFetch(props)}
-            hasMore={true}
-            loader={<h4>Loading...</h4>}
-            // scrollableTarget="scrollableDiv"
-            height={props.height}
-            endMessage={
-                <p style={{textAlign: 'center'}}>
-                    <b>Yay! You have seen it all</b>
-                </p>
-            }
-        >
-            {props.equities?.map(equity => (
-                <Equity key={equity.id}
-                        {...equity}
-                />
-            ))}
-        </InfiniteScroll>
-    </div>)
+    return (<InfiniteScroll className="equities-list"
+                            dataLength={props.equities.length}
+                            next={props.onFetch}
+                            hasMore={props.hasMore}
+                            loader={<LinearProgress/>}
+                            height={props.height}
+                            endMessage={<p/>}
+    >
+        {props.equities?.map(equity => (
+            <Equity key={equity.id}
+                    {...equity}
+            />
+        ))}
+    </InfiniteScroll>)
 }
 
 function Equity(props) {

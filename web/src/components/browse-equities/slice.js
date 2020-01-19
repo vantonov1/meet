@@ -31,11 +31,11 @@ const slice = createSlice({
         toggleDrawer: (state, {payload}) => {
             state.drawerOpened = payload
         },
-        storeMap: (state, {payload}) => {
+        storeMap: state => {
             state.mapRendered = true
         },
-        storeContainerHeight: (state, {rect}) => {
-            state.containerHeight=rect.bottom - rect.top;
+        storeContainerHeight: (state, {payload}) => {
+            state.containerHeight = payload;
         },
     }
 });
@@ -47,8 +47,7 @@ export const loadMoreEquities = () => async (dispatch, getState) => {
     const {setEquities} = slice.actions;
     const {locations, equities} = getState().browseEquities;
     try {
-        let page = await EquityAPI.findByIds(locations.slice(equities.length, equities.length + 100).map(l => l.id));
-        dispatch(setEquities(equities.concat(page)))
+        dispatch(setEquities(await loadPage(locations, equities)))
     } catch (reason) {
         dispatch(show(reason.message))
     }
@@ -62,8 +61,7 @@ export const loadLocations = () => async (dispatch, getState) => {
         try {
             let locations = await EquityAPI.findLocations(filter);
             dispatch(setLocations(locations));
-            let firstPage = await EquityAPI.findByIds(locations.slice(0, 20).map(l => l.id));
-            dispatch(setEquities(firstPage))
+            dispatch(setEquities(await loadPage(locations, [])))
         } catch (reason) {
             dispatch(show(reason.message))
         } finally {
@@ -71,3 +69,9 @@ export const loadLocations = () => async (dispatch, getState) => {
         }
     }
 };
+
+async function loadPage(locations, alreadyLoaded) {
+    let page = await EquityAPI.findByIds(locations.slice(alreadyLoaded.length, alreadyLoaded.length + 50).map(l => l.id));
+    return alreadyLoaded.concat(page);
+}
+
