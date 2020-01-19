@@ -16,9 +16,8 @@ export default function OsmMap(props) {
             let map = renderMap(locations, onLocationsSelect);
             map.on('click', e => {
                 map.forEachFeatureAtPixel(e.pixel, (feature, layer) => {
-                    let locations = feature.get('features').map(feature => feature.getId());
                     map.getView().setCenter(feature.get("geometry").flatCoordinates);
-                    onLocationsSelect(locations)
+                    onLocationsSelect(feature.get('features').map(feature => feature.getId()))
                 });
                 map.getView().setZoom(map.getView().getZoom() + 2)
             });
