@@ -9,17 +9,17 @@ import Box from "@material-ui/core/Box";
 import OsmMap from "./osm-map";
 import FilterMenu from "./filter-menu";
 import {
+    districtsSelected,
     loadEquities,
     loadLocations,
     loadMoreEquities,
     setType,
     storeContainerHeight,
-    storeMap,
     toggleDrawer
 } from "./slice";
 
 export default function BrowseEquities() {
-    const {equities, filter, loading, drawerOpen, mapRendered, locations, containerHeight} = useSelector(state => state.browseEquities, shallowEqual);
+    const {locations, equities, filter, loading, drawerOpen, containerHeight} = useSelector(state => state.browseEquities, shallowEqual);
     const dispatch = useDispatch();
     const listContainerRef = React.createRef();
 
@@ -30,7 +30,8 @@ export default function BrowseEquities() {
     });
 
     useEffect(() => {
-        dispatch(loadLocations())
+        dispatch(loadLocations());
+        OsmMap.setupClusters(locations)
     });
 
     return (
@@ -39,24 +40,22 @@ export default function BrowseEquities() {
                 <Box width={400}>
                     {loading && <CircularProgress/>}
                     {equities.length !== 0 && <EquitiesList
-                                  equities={equities}
-                                  height={containerHeight}
-                                  hasMore={equities.length < locations.length}
-                                  onFetch={() => dispatch(loadMoreEquities())}
+                        equities={equities}
+                        height={containerHeight}
+                        hasMore={equities.length < locations.length}
+                        onFetch={() => dispatch(loadMoreEquities())}
                     />}
                 </Box>
                 <FilterMenu
+                    filter={filter}
                     onTypeSelected={(type) => dispatch(setType(type))}
+                    onDistrictsSelected={(districts) => dispatch(districtsSelected(districts))}
                 />
             </Drawer>
-            <Box width="100%" height="100%">
-                <OsmMap
-                    locations={locations}
-                    mapRendered={mapRendered}
-                    onMapRendered={() => dispatch(storeMap())}
-                    onLocationsSelect={(locations) => dispatch(loadEquities(locations))}
-                />
-            </Box>
+            <OsmMap
+                ref={OsmMap.ref}
+                onLocationsSelect={(locations) => dispatch(loadEquities(locations))}
+            />
         </div>
     );
 }

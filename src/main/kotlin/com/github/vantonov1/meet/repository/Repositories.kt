@@ -48,6 +48,9 @@ interface PhotoRepository : ReactiveCrudRepository<Photo, String> {
 interface DistrictsRepository : ReactiveCrudRepository<District, Byte> {
     @Query("select * from district where name = :name")
     fun findByName(name: String): Mono<District>
+
+    @Query("select * from district where city = :city")
+    fun findByCity(city: Short): Flux<District>
 }
 
 @Repository

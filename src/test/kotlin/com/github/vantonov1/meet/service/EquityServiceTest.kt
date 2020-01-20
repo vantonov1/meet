@@ -6,7 +6,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.vantonov1.meet.dto.EquityDTO
 import com.github.vantonov1.meet.entities.Equity
 import com.github.vantonov1.meet.entities.EquityType
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -44,7 +43,7 @@ class EquityServiceTest {
     }
 
     @Test
-    @Ignore
+//    @Ignore
     fun testLoad() {
         val RENT_FLAT = EquityType.RENT_FLAT.ordinal.toByte()
         val mapper = jacksonObjectMapper()
@@ -55,8 +54,8 @@ class EquityServiceTest {
             if (!f.locations.isNullOrEmpty()) {
                 f.addresses.forEach { a ->
                     val rooms = Random.nextInt(4) + 1
-                    val d = districtService.findByName(a.district).block()
-                    equities += Equity(null, RENT_FLAT, null, d?.id, null, a.street + ' ' + a.streetType, a.house,
+                    val d = districtService.findByName(a.district)
+                    equities += Equity(null, RENT_FLAT, 0, d?.id, null, a.street + ' ' + a.streetType, a.house,
                                 f.locations[0].location.coordinates[1], f.locations[0].location.coordinates[0],
                                 rooms * 2_000_000, rooms * 25, rooms.toByte(), "Тестовая загрузка", null)
                 }

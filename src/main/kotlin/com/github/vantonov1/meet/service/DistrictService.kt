@@ -6,28 +6,16 @@ import com.github.vantonov1.meet.entities.District
 import com.github.vantonov1.meet.repository.DistrictsRepository
 import org.springframework.context.annotation.DependsOn
 import org.springframework.stereotype.Service
-import reactor.core.publisher.Mono
-import javax.annotation.PostConstruct
 
 @Service
 @DependsOn("liquibase")
 class DistrictService(private val repository: DistrictsRepository) {
-    fun findById(id: Byte?): String? {
-        return if (id != null) repository.findById(id).map { it.name }.block() else null
-    }
+    private val districts: List<District> = jacksonObjectMapper()
+            .readValue(javaClass.getResource("/districts.json"), object : TypeReference<List<District>>() {})
 
-    fun findByName(district: String): Mono<District> = repository.findByName(district)
+    fun findById(id: Byte?): District? = districts.find { it.id == id }
 
-    fun findAll(): Mono<List<Byte>> {
-        return repository.findAll().map { it.id!! }.collectList()
-    }
+    fun findByName(district: String): District? = districts.find { it.name == district }
 
-    @PostConstruct
-    @Suppress("unused")
-    private fun init() {
-        val ref: TypeReference<List<District>> = object : TypeReference<List<District>>() {}
-        val districts: List<District> = jacksonObjectMapper().readValue(javaClass.getResource("/districts.json"), ref)
-        repository.deleteAll().doOnSuccess { repository.saveAll(districts) }.subscribe()
-    }
-
+    fun findByCity(city: Short): List<District> = districts.filter { it.city == city }
 }

@@ -9,10 +9,10 @@ const slice = createSlice({
         locations: [],
         loading: false,
         loadFinished: false,
-        filter: {type: ["RENT_FLAT"]},
+        filter: {city: 2, type: ["RENT_FLAT"], district: []},
         drawerOpen: true,
-        mapRendered: false,
-        containerHeight: 0
+        containerHeight: 0,
+        selectDistricts: false
     },
     reducers: {
         setLocations: (state, {payload}) => {
@@ -31,9 +31,6 @@ const slice = createSlice({
         toggleDrawer: (state, {payload}) => {
             state.drawerOpened = payload
         },
-        storeMap: state => {
-            state.mapRendered = true
-        },
         storeContainerHeight: (state, {payload}) => {
             state.containerHeight = payload;
         },
@@ -41,11 +38,15 @@ const slice = createSlice({
             state.filter.type = payload;
             state.loadFinished = false;
         },
+        districtsSelected: (state, {payload}) => {
+            state.filter.district = payload;
+            state.loadFinished = false;
+        },
     }
 });
 
 export default slice.reducer
-export const {toggleDrawer, storeMap, storeContainerHeight, setType} = slice.actions;
+export const {toggleDrawer, storeContainerHeight, setType, districtsSelected} = slice.actions;
 
 export const loadEquities = (ids) => async (dispatch) => {
     const {setEquities, startLoading, finishLoading} = slice.actions;

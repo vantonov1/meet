@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {Component} from "react";
 import {Circle as CircleStyle, Fill, Stroke, Style, Text} from "ol/style";
 import {Cluster, OSM, Vector as VectorSource} from "ol/source";
 import {Tile, Vector} from "ol/layer";
@@ -9,25 +9,47 @@ import Geolocation from "ol/Geolocation";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 
-export default function OsmMap(props) {
-    const {mapRendered, locations, onMapRendered, onLocationsSelect} = props;
-    useEffect(() => {
-        if (!mapRendered && locations.length !== 0) {
-            let map = renderMap(locations, onLocationsSelect);
-            map.on('click', e => {
-                map.forEachFeatureAtPixel(e.pixel, (feature, layer) => {
-                    map.getView().setCenter(feature.get("geometry").flatCoordinates);
-                    onLocationsSelect(feature.get('features').map(feature => feature.getId()))
-                });
-                map.getView().setZoom(map.getView().getZoom() + 2)
+export default class OsmMap extends Component {
+    static ref = React.createRef();
+
+    constructor(props) {
+        super(props);
+        this.source = new VectorSource({
+            features: []
+        });
+        this.mounted = false;
+    }
+
+    componentDidMount() {
+        let map = renderMap(this.source);
+        map.on('click', e => {
+            map.forEachFeatureAtPixel(e.pixel, (feature, layer) => {
+                map.getView().setCenter(feature.get("geometry").flatCoordinates);
+                this.props.onLocationsSelect(feature.get('features').map(feature => feature.getId()))
             });
-            onMapRendered()
+            map.getView().setZoom(map.getView().getZoom() + 2)
+        });
+        this.mounted = true;
+    }
+
+    componentWillUnmount() {
+        this.mounted = false;
+    }
+
+    render() {
+        return (<div id="map" className="map"/>)
+    }
+
+    static setupClusters(locations) {
+        let map = this.ref.current;
+        if(map.mounted) {
+            map.source.clear();
+            map.source.addFeatures(locations.map(l => toFeature(l)));
         }
-    });
-    return (<div id="map" className="map"/>)
+    }
 }
 
-function renderMap(locations) {
+function renderMap(clustersSource) {
 
     let view = new View({
         center: fromLonLat([30.3064796, 59.9374987]),
@@ -39,13 +61,10 @@ function renderMap(locations) {
         tileOptions: {crossOriginKeyword: 'anonymous'}
     });
 
-    let source = new VectorSource({
-        features: locations.map(l => toFeature(l))
-    });
     let clusters = new Vector({
         source: new Cluster({
             distance: 30,
-            source: source,
+            source: clustersSource,
         }),
         style: (feature) => clusterStyle(feature)
     });
@@ -79,6 +98,7 @@ function toFeature(location) {
 }
 
 const styleCache = {};
+
 function style(text) {
     let style = styleCache[text];
     if (!style) {

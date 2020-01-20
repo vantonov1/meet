@@ -2,14 +2,16 @@ export default class EquityAPI {
     static BASE = 'http://localhost:8080/api/v1/equities';
 
     static create(dto) {
-        return fetch(this.BASE, {method: 'POST', body: JSON.stringify(dto), headers: {
+        return fetch(this.BASE, {
+            method: 'POST', body: JSON.stringify(dto), headers: {
                 'Content-Type': 'application/json'
             }
         }).then(r => r.json())
     }
 
     static update(dto) {
-        return fetch(this.BASE, {method: 'PUT', body: JSON.stringify(dto), headers: {
+        return fetch(this.BASE, {
+            method: 'PUT', body: JSON.stringify(dto), headers: {
                 'Content-Type': 'application/json'
             }
         })
@@ -32,6 +34,9 @@ export default class EquityAPI {
     static findLocations(filter) {
         let url = new URL(this.BASE);
         url.searchParams.append("type", filter.type);
+        if (filter.district.length !== 0) {
+            url.searchParams.append("district", filter.district);
+        }
         return fetch(url).then(response => response.json())
     }
 

@@ -24,7 +24,7 @@ class EquityService(
     fun save(dto: EquityDTO): Mono<Long> = repository.save(dto.equity).doOnSuccess { photos.save(it.id!!, dto.photos) }.map { it.id!! }
 
     fun findById(id: Long): Mono<EquityDTO> = Mono.zip(repository.findById(id), photos.findByEquityId(id))
-            .map {  EquityDTO(it.t1, districts.findById(it.t1.district), stations.findById(it.t1.subway), it.t2) }
+            .map {  EquityDTO(it.t1, districts.findById(it.t1.district)?.name, stations.findById(it.t1.subway), it.t2) }
 
     fun findByIds(ids: List<Long>): Flux<Equity> = repository.findAllById(ids)
 
