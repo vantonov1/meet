@@ -42,9 +42,10 @@ export default class OsmMap extends Component {
 
     static setupClusters(locations) {
         let map = this.ref.current;
-        if(map.mounted) {
+        if (map.mounted) {
             map.source.clear();
-            map.source.addFeatures(locations.map(l => toFeature(l)));
+            if (locations)
+                map.source.addFeatures(locations.map(l => toFeature(l)));
         }
     }
 }

@@ -8,10 +8,13 @@ import Divider from "@material-ui/core/Divider";
 import SelectDistricts from "../select-districts/view";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import {hideDistrictsSelector, showDistrictsSelector} from "../select-districts/slice";
+import {hideSubwaysSelector, showSubwaysSelector} from "../select-subways/slice";
+import SelectSubways from "../select-subways/view";
 
 export default function FilterMenu(props) {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const {selectDistricts} = useSelector(state => state.selectDistricts, shallowEqual);
+    const {selectSubways} = useSelector(state => state.selectSubways, shallowEqual);
     const dispatch = useDispatch();
 
     const handleClick = event => {
@@ -34,7 +37,8 @@ export default function FilterMenu(props) {
 
    const handleSelectSubway = () => {
         handleClose();
-    };
+       dispatch(showSubwaysSelector())
+   };
 
     return (
         <div className="filter-menu">
@@ -60,6 +64,9 @@ export default function FilterMenu(props) {
             {selectDistricts && <SelectDistricts city={props.filter.city}
                                                  onOk={(s) => {dispatch(hideDistrictsSelector()); props.onDistrictsSelected(s)}}
                                                  onCancel={() => dispatch(hideDistrictsSelector())}/>}
+           {selectSubways && <SelectSubways city={props.filter.city}
+                                                 onOk={(s) => {dispatch(hideSubwaysSelector()); props.onSubwaysSelected(s)}}
+                                                 onCancel={() => dispatch(hideSubwaysSelector())}/>}
         </div>
     )
 }

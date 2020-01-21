@@ -4,28 +4,6 @@ databaseChangeLog:
       author: vaan
       changes:
       - createTable:
-            tableName: subway
-            columns:
-            - column:
-                  name: id
-                  type: smallint
-                  constraints:
-                    primaryKey: true
-                    nullable: false
-            - column:
-                   name: name
-                   type: varchar(255)
-                   constraints:
-                       nullable: false
-            - column:
-                   name: city
-                   type: smallint
-                   constraints:
-                       nullable: false
-            - column:
-                   name: color
-                   type: varchar(6)
-      - createTable:
             tableName: equity
             columns:
             - column:
@@ -96,25 +74,6 @@ databaseChangeLog:
                        nullable: false
                        references: equity(id)
                        foreignKeyName: fk_of
-      - createTable:
-            tableName: district
-            columns:
-            - column:
-                  name: id
-                  type: tinyint
-                  constraints:
-                    primaryKey: true
-                    nullable: false
-            - column:
-                   name: name
-                   type: varchar(255)
-                   constraints:
-                       nullable: false
-            - column:
-                   name: city
-                   type: smallint
-                   constraints:
-                       nullable: false
       - createIndex:
             indexName: find_equities_idx
             tableName: equity

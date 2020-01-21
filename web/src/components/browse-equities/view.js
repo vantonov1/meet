@@ -15,6 +15,7 @@ import {
     loadMoreEquities,
     setType,
     storeContainerHeight,
+    subwaysSelected,
     toggleDrawer
 } from "./slice";
 
@@ -39,6 +40,7 @@ export default function BrowseEquities() {
             <Drawer open={drawerOpen} variant="permanent" onClose={() => dispatch(toggleDrawer(false))}>
                 <Box width={400}>
                     {loading && <CircularProgress/>}
+                    {equities.length === 0 && <span>Нет записей</span>}
                     {equities.length !== 0 && <EquitiesList
                         equities={equities}
                         height={containerHeight}
@@ -50,6 +52,7 @@ export default function BrowseEquities() {
                     filter={filter}
                     onTypeSelected={(type) => dispatch(setType(type))}
                     onDistrictsSelected={(districts) => dispatch(districtsSelected(districts))}
+                    onSubwaysSelected={(subways) => dispatch(subwaysSelected(subways))}
                 />
             </Drawer>
             <OsmMap

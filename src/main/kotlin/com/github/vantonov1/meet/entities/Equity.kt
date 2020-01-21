@@ -12,7 +12,7 @@ data class Equity(
         val type: Byte, //EquityType,
         val ownedBy: Long?,
         val district: Byte?,
-        val subway: Short?,
+        val subway: String?,
         val street: String?,
         val building: String?,
         val lat: Double?,
@@ -35,7 +35,7 @@ data class Photo(
 
 data class Filter(val type: List<Int>,
                   val district: List<Byte>?,
-                  val subway: List<Short>?,
+                  val subway: List<String>?,
                   val priceMin: Int?,
                   val priceMax: Int?,
                   val minLat: Double? = null,

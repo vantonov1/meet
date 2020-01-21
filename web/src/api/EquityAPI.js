@@ -1,16 +1,18 @@
+import {fetchEmpty, fetchJSON} from "./fetch";
+
 export default class EquityAPI {
     static BASE = 'http://localhost:8080/api/v1/equities';
 
     static create(dto) {
-        return fetch(this.BASE, {
+        return fetchJSON(this.BASE, {
             method: 'POST', body: JSON.stringify(dto), headers: {
                 'Content-Type': 'application/json'
             }
-        }).then(r => r.json())
+        })
     }
 
     static update(dto) {
-        return fetch(this.BASE, {
+        return fetchEmpty(this.BASE, {
             method: 'PUT', body: JSON.stringify(dto), headers: {
                 'Content-Type': 'application/json'
             }
@@ -18,17 +20,17 @@ export default class EquityAPI {
     }
 
     static delete(id) {
-        return fetch(this.BASE + "/" + id, {method: 'DELETE'})
+        return fetchEmpty(this.BASE + "/" + id, {method: 'DELETE'})
     }
 
     static findById(id) {
-        return fetch(this.BASE + "/" + id).then(r => r.json())
+        return fetchJSON(this.BASE + "/" + id)
     }
 
     static findByIds(ids) {
         let url = new URL(this.BASE + "/ids");
         url.searchParams.append("ids", ids);
-        return fetch(url).then(response => response.json())
+        return fetchJSON(url)
     }
 
     static findLocations(filter) {
@@ -37,7 +39,10 @@ export default class EquityAPI {
         if (filter.district.length !== 0) {
             url.searchParams.append("district", filter.district);
         }
-        return fetch(url).then(response => response.json())
+        if (filter.subway.length !== 0) {
+            url.searchParams.append("subway", filter.subway);
+        }
+        return fetchJSON(url)
     }
 
 }

@@ -41,7 +41,7 @@ class EquityController(private val equities: EquityService, private val photos: 
     fun find(
             @RequestParam type: List<String>,
             @RequestParam(required = false) district: List<Byte>?,
-            @RequestParam(required = false) subway: List<Short>?,
+            @RequestParam(required = false) subway: List<String>?,
             @RequestParam(required = false) priceMin: Int?,
             @RequestParam(required = false) priceMax: Int?): Flux<LocationDTO> =
             equities.find(Filter(getTypes(type), district, subway, priceMin, priceMax))
