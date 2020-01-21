@@ -3,7 +3,7 @@ import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
-import {districtChecked, districtUnchecked, loadDistricts, setFilter} from "./slice";
+import {loadDistricts, setFilter, setSelection} from "./slice";
 import {Checkbox, Input} from "@material-ui/core";
 import Dialog from "@material-ui/core/Dialog";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -21,9 +21,12 @@ export default function SelectDistricts(props) {
 
     function handleChange(id, checked) {
         if (checked) {
-            dispatch(districtChecked(id))
-        } else {
-            dispatch(districtUnchecked(id))
+            if (!selected.includes(id)) {
+                dispatch(setSelection([...selected, id]));
+            }
+        } else if (selected.includes(id)) {
+            let index = selected.indexOf(id);
+            dispatch(setSelection([...selected.slice(0, index), ...selected.slice(index + 1)]));
         }
     }
 
@@ -35,7 +38,7 @@ export default function SelectDistricts(props) {
             open={true}
         >
             <DialogContent>
-                <Input autoFocus={true} onChange={(e) => dispatch(setFilter(e.target.value))}/>
+                <Input autoFocus={true} style={{width: "100%"}} onChange={e => dispatch(setFilter(e.target.value))}/>
                 {districts.filter(d => filter === '' || d.name.startsWith(filter)).map(d =>
                     <Box key={d.id}>
                         <FormControlLabel
@@ -49,13 +52,18 @@ export default function SelectDistricts(props) {
             <DialogActions>
                 <Button onClick={() => {
                     props.onCancel()
-                }} color="primary">
+                }}>
                     Отменить
+                </Button>
+                <Button onClick={() => {
+                    dispatch(setSelection([]))
+                }}>
+                    Сбросить
                 </Button>
                 <Button onClick={() => {
                     props.onOk(selected);
                 }} color="primary">
-                    Ok
+                    Применить
                 </Button>
             </DialogActions>
         </Dialog>

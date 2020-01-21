@@ -23,19 +23,14 @@ const slice = createSlice({
         setFilter: (state, {payload}) => {
             state.filter = payload
         },
-        districtChecked: (state, {payload}) => {
-            if (!state.selected.includes(payload))
-                state.selected.push(payload)
-        },
-        districtUnchecked: (state, {payload}) => {
-            if (state.selected.includes(payload))
-                state.selected.splice(state.selected.indexOf(payload), 1);
+        setSelection: (state, {payload}) => {
+                state.selected = payload
         },
     }
 });
 
 export default slice.reducer
-export const {showDistrictsSelector, hideDistrictsSelector, districtChecked, districtUnchecked, setFilter} = slice.actions;
+export const {showDistrictsSelector, hideDistrictsSelector, setSelection, setFilter} = slice.actions;
 
 export const loadDistricts = (city) => async dispatch => {
     const {setDistricts} = slice.actions;
