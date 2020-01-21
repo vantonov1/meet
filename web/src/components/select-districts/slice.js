@@ -1,5 +1,5 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {show} from "../error/slice"
+import {show} from "../show-error/slice"
 import DirectoryAPI from "../../api/DirectoryAPI";
 
 const slice = createSlice({

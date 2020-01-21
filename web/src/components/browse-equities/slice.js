@@ -1,6 +1,6 @@
 import {createSlice} from "@reduxjs/toolkit";
 import EquityAPI from "../../api/EquityAPI";
-import {show} from "../error/slice"
+import {show} from "../show-error/slice"
 
 const slice = createSlice({
     name: 'browse-equities',
