@@ -10,7 +10,7 @@ import Box from "@material-ui/core/Box";
 export default class SelectMany extends Component {
     constructor(props) {
         super(props);
-        this.state ={filter: '', selected: props.selected};
+        this.state ={filter: '', selected: []};
     }
 
     handleChange = (id, checked) => {

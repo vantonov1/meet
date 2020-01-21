@@ -14,6 +14,6 @@ export default function SelectDistricts(props) {
     });
 
     return (
-        <SelectMany values={districts} selected={selected} onCancel={props.onCancel} onOk={props.onOk}/>
+        <SelectMany values={districts} onCancel={props.onCancel} onOk={props.onOk}/>
     );
 }
