@@ -3,14 +3,14 @@ import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
-import {districtChecked, districtUnchecked, loadDistricts} from "./slice";
-import {Checkbox} from "@material-ui/core";
+import {districtChecked, districtUnchecked, loadDistricts, setFilter} from "./slice";
+import {Checkbox, Input} from "@material-ui/core";
 import Dialog from "@material-ui/core/Dialog";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Box from "@material-ui/core/Box";
 
 export default function SelectDistricts(props) {
-    const {districts, selected} = useSelector(state => state.selectDistricts, shallowEqual);
+    const {districts, selected, filter} = useSelector(state => state.selectDistricts, shallowEqual);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -35,7 +35,8 @@ export default function SelectDistricts(props) {
             open={true}
         >
             <DialogContent>
-                {districts.map(d =>
+                <Input autoFocus={true} onChange={(e) => dispatch(setFilter(e.target.value))}/>
+                {districts.filter(d => filter === '' || d.name.startsWith(filter)).map(d =>
                     <Box key={d.id}>
                         <FormControlLabel
                             control={<Checkbox checked={selected.includes(d.id)}
