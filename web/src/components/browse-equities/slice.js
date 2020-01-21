@@ -9,7 +9,7 @@ const slice = createSlice({
         locations: [],
         loading: false,
         loadFinished: false,
-        filter: {city: 2, type: ["RENT_FLAT"], district: [], subway: []},
+        filter: {city: 2, type: "RENT_FLAT", district: [], subway: []},
         drawerOpen: true,
         containerHeight: 0,
     },
