@@ -9,7 +9,7 @@ const slice = createSlice({
         locations: [],
         loading: false,
         loadFinished: false,
-        filter: {city: 2, type: "RENT_FLAT", district: [], subway: []},
+        filter: {city: 2, type: "RENT_FLAT", district: [], subway: [], minPrice:null, maxPrice: null},
         drawerOpen: true,
         containerHeight: 0,
     },
@@ -45,11 +45,16 @@ const slice = createSlice({
             state.filter.subway = payload;
             state.loadFinished = false;
         },
+        priceRangeSelected: (state, {payload}) => {
+            state.filter.minPrice = payload[0];
+            state.filter.maxPrice = payload[1];
+            state.loadFinished = false;
+        },
     }
 });
 
 export default slice.reducer
-export const {toggleDrawer, storeContainerHeight, setType, districtsSelected, subwaysSelected} = slice.actions;
+export const {toggleDrawer, storeContainerHeight, setType, districtsSelected, subwaysSelected, priceRangeSelected} = slice.actions;
 
 export const loadEquities = (ids) => async (dispatch) => {
     const {setEquities, startLoading, finishLoading} = slice.actions;

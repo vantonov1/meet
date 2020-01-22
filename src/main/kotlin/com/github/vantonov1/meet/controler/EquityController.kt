@@ -2,6 +2,7 @@ package com.github.vantonov1.meet.controler
 
 import com.github.vantonov1.meet.dto.EquityDTO
 import com.github.vantonov1.meet.dto.LocationDTO
+import com.github.vantonov1.meet.dto.PriceRangeDTO
 import com.github.vantonov1.meet.entities.EquityType
 import com.github.vantonov1.meet.entities.Filter
 import com.github.vantonov1.meet.service.EquityService
@@ -25,7 +26,7 @@ class EquityController(private val equities: EquityService, private val photos: 
     @PutMapping
     @Transactional
     fun update(@RequestBody dto: EquityDTO): Mono<Void> =
-            if(dto.equity.id != null) equities.save(dto).then()
+            if (dto.equity.id != null) equities.save(dto).then()
             else throw IllegalArgumentException("no equity id on update")
 
     @DeleteMapping("/{id}")
@@ -42,13 +43,20 @@ class EquityController(private val equities: EquityService, private val photos: 
             @RequestParam type: List<String>,
             @RequestParam(required = false) district: List<Byte>?,
             @RequestParam(required = false) subway: List<String>?,
-            @RequestParam(required = false) priceMin: Int?,
-            @RequestParam(required = false) priceMax: Int?): Flux<LocationDTO> =
-            equities.find(Filter(getTypes(type), district, subway, priceMin, priceMax))
+            @RequestParam(required = false) minPrice: Int?,
+            @RequestParam(required = false) maxPrice: Int?
+    ): Flux<LocationDTO> = equities.find(Filter(getTypes(type), district, subway, minPrice, maxPrice))
 
     @GetMapping("/ids")
     @Transactional(readOnly = true)
     fun findByIds(@RequestParam ids: List<Long>) = equities.findByIds(ids)
+
+    @GetMapping("/prices")
+    @Transactional(readOnly = true)
+    fun getPriceRange(@RequestParam type: List<String>,
+                      @RequestParam(required = false) district: List<Byte>?,
+                      @RequestParam(required = false) subway: List<String>?
+    ): Mono<PriceRangeDTO> = equities.getPriceRange(Filter(getTypes(type), district, subway, null, null))
 
     private fun getTypes(type: List<String>) =
             type.map { EquityType.valueOf(it).ordinal }.toList()

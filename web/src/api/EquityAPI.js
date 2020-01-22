@@ -42,6 +42,23 @@ export default class EquityAPI {
         if (filter.subway.length !== 0) {
             url.searchParams.append("subway", filter.subway);
         }
+        if (filter.minPrice !== null) {
+            url.searchParams.append("minPrice", filter.minPrice);
+        }
+        if (filter.maxPrice !== null) {
+            url.searchParams.append("maxPrice", filter.maxPrice);
+        }
+        return fetchJSON(url)
+    }
+    static getPriceRange(filter) {
+        let url = new URL(this.BASE + '/prices');
+        url.searchParams.append("type", filter.type);
+        if (filter.district.length !== 0) {
+            url.searchParams.append("district", filter.district);
+        }
+        if (filter.subway.length !== 0) {
+            url.searchParams.append("subway", filter.subway);
+        }
         return fetchJSON(url)
     }
 

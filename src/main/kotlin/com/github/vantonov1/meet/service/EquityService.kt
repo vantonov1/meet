@@ -4,8 +4,11 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.vantonov1.meet.dto.EquityDTO
 import com.github.vantonov1.meet.dto.LocationDTO
+import com.github.vantonov1.meet.dto.PriceRangeDTO
 import com.github.vantonov1.meet.entities.Equity
 import com.github.vantonov1.meet.entities.Filter
+import com.github.vantonov1.meet.entities.PriceRange
+import com.github.vantonov1.meet.repository.EquityPriceRangeRepository
 import com.github.vantonov1.meet.repository.EquityRepository
 import org.springframework.context.annotation.DependsOn
 import org.springframework.stereotype.Service
@@ -17,6 +20,7 @@ import javax.annotation.PostConstruct
 @DependsOn("liquibase")
 class EquityService(
         private val repository: EquityRepository,
+        private val priceRangeRepository: EquityPriceRangeRepository,
         private val districts: DistrictService,
         private val stations: SubwayService,
         private val photos: PhotoService) {
@@ -24,24 +28,38 @@ class EquityService(
     fun save(dto: EquityDTO): Mono<Long> = repository.save(dto.equity).doOnSuccess { photos.save(it.id!!, dto.photos) }.map { it.id!! }
 
     fun findById(id: Long): Mono<EquityDTO> = Mono.zip(repository.findById(id), photos.findByEquityId(id))
-            .map {  EquityDTO(it.t1, districts.findById(it.t1.district)?.name, stations.findById(it.t1.subway)?.name, it.t2) }
+            .map { EquityDTO(it.t1, districts.findById(it.t1.district)?.name, stations.findById(it.t1.subway)?.name, it.t2) }
 
     fun findByIds(ids: List<Long>): Flux<Equity> = repository.findAllById(ids)
 
     fun find(f: Filter): Flux<LocationDTO> {
-        val equities = if(f.district == null && f.subway == null) {
+        val equities = if (f.district == null && f.subway == null) {
             repository.find(f.type, f.priceMin ?: 0, f.priceMax ?: Int.MAX_VALUE)
-        } else if(f.district == null) {
-            repository.findWithSubway(f.type, f.subway!!,f.priceMin ?: 0, f.priceMax ?: Int.MAX_VALUE)
-        } else if(f.subway == null) {
-            repository.findWithDistrict(f.type, f.district,f.priceMin ?: 0, f.priceMax ?: Int.MAX_VALUE)
+        } else if (f.district == null) {
+            repository.findWithSubway(f.type, f.subway!!, f.priceMin ?: 0, f.priceMax ?: Int.MAX_VALUE)
+        } else if (f.subway == null) {
+            repository.findWithDistrict(f.type, f.district, f.priceMin ?: 0, f.priceMax ?: Int.MAX_VALUE)
         } else {
-            repository.findWithDistrictAndSubway(f.type, f.district, f.subway,f.priceMin ?: 0, f.priceMax ?: Int.MAX_VALUE)
+            repository.findWithDistrictAndSubway(f.type, f.district, f.subway, f.priceMin ?: 0, f.priceMax
+                    ?: Int.MAX_VALUE)
         }
         return equities.map { LocationDTO(it.id!!, it.lat, it.lon) }
     }
 
-    fun delete(id: Long, hide: Boolean?): Mono<Void> = if(hide != null && hide) repository.hide(id) else repository.deleteById(id)
+    fun delete(id: Long, hide: Boolean?): Mono<Void> = if (hide != null && hide) repository.hide(id) else repository.deleteById(id)
+
+    fun getPriceRange(f: Filter): Mono<PriceRangeDTO> {
+        val entity: Mono<PriceRange> = if (f.district == null && f.subway == null) {
+            priceRangeRepository.getPriceRange(f.type)
+        } else if (f.district == null) {
+            priceRangeRepository.getPriceRangeWithSubway(f.type, f.subway!!)
+        } else if (f.subway == null) {
+            priceRangeRepository.getPriceRangeWithDistrict(f.type, f.district)
+        } else {
+            priceRangeRepository.getPriceRangeWithDistrictAndSubway(f.type, f.district, f.subway)
+        }
+        return entity.map { PriceRangeDTO(it.minPrice, it.maxPrice) }
+    }
 
     @PostConstruct
     @Suppress("unused")

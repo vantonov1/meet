@@ -1,17 +1,21 @@
 import React from "react";
 import "./filter-menu.css"
+import {ListItem, Menu, MenuItem, Slider} from "@material-ui/core";
+import Tooltip from "@material-ui/core/Tooltip";
 import SearchIcon from "@material-ui/icons/Search";
 import CheckIcon from "@material-ui/icons/Check";
 import Fab from "@material-ui/core/Fab";
-import Menu from "@material-ui/core/Menu";
-import {shallowEqual, useDispatch, useSelector} from "react-redux";
-import {hideDistrictsSelector, showDistrictsSelector} from "../select-districts/slice";
-import {hideSubwaysSelector, showSubwaysSelector} from "../select-subways/slice";
-import MenuItem from "@material-ui/core/MenuItem";
 import Divider from "@material-ui/core/Divider";
+import {shallowEqual, useDispatch, useSelector} from "react-redux";
+import {
+    getPriceRange,
+    hideDistrictsSelector,
+    hideSubwaysSelector,
+    showDistrictsSelector,
+    showSubwaysSelector
+} from "./slice";
 import SelectDistricts from "../select-districts/view";
 import SelectSubways from "../select-subways/view";
-
 
 const TYPES = {
     RENT_ROOM: "Аренда комнат",
@@ -24,12 +28,15 @@ const TYPES = {
 
 export default function FilterMenu(props) {
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const {selectDistricts} = useSelector(state => state.selectDistricts, shallowEqual);
-    const {selectSubways} = useSelector(state => state.selectSubways, shallowEqual);
+    const {selectDistricts, selectSubways, minPrice, maxPrice} = useSelector(state => state.filter, shallowEqual);
     const dispatch = useDispatch();
+
+    const minPriceValue = props.filter.minPrice < minPrice ? minPrice : props.filter.minPrice > maxPrice ? maxPrice : props.filter.minPrice;
+    const maxPriceValue = props.filter.maxPrice < minPrice ? maxPrice : props.filter.maxPrice > maxPrice ? maxPrice : props.filter.maxPrice;
 
     const handleClick = event => {
         setAnchorEl(event.currentTarget);
+        dispatch(getPriceRange(props.filter))
     };
 
     const handleClose = () => {
@@ -56,17 +63,27 @@ export default function FilterMenu(props) {
             <Fab color="primary">
                 <SearchIcon onClick={handleClick}/>
             </Fab>
-            <Menu
-                anchorEl={anchorEl}
-                keepMounted
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-            >
+            {Boolean(anchorEl) &&
+            <Menu anchorEl={anchorEl} keepMounted open={true} onClose={handleClose} transitionDuration={0}>
                 {Object.entries(TYPES).map(k => entityType(k[0], k[1], props.filter.type))}
                 <Divider/>
                 <MenuItem onClick={() => handleSelectDistricts()}>Выбрать районы</MenuItem>
                 <MenuItem onClick={() => handleSelectSubway()}>Выбрать станции метро</MenuItem>
-            </Menu>
+                <Divider/>
+                <ListItem>
+                    <div>Цена</div>
+                    <Slider
+                        min={minPrice}
+                        max={maxPrice}
+                        value={[minPriceValue, maxPriceValue]}
+                        marks={calcMarks(minPrice, maxPrice)}
+                        valueLabelDisplay="on"
+                        ValueLabelComponent={ValueLabelComponent}
+                        className="price-range"
+                        onChangeCommitted={(event, value) => dispatch(props.onPriceRangeSelected(value))}
+                    />
+                </ListItem>
+            </Menu>}
             {selectDistricts && <SelectDistricts city={props.filter.city}
                                                  onOk={(s) => {
                                                      dispatch(hideDistrictsSelector());
@@ -82,16 +99,27 @@ export default function FilterMenu(props) {
         </div>
     );
 
+    function calcMarks(minPrice, maxPrice) {
+        let marks = [];
+        for (let i = minPrice / 100000; i < maxPrice / 100000; i++)
+            marks.push(i * 100000);
+        return marks
+    }
+
+    function ValueLabelComponent(props) {
+        const {children, open, value} = props;
+
+        return (
+            <Tooltip open={open} enterTouchDelay={0} placement="top" title={value}>
+                {children}
+            </Tooltip>
+        );
+    }
+
     function entityType(type, name, selected) {
-        if (type === selected) {
-            return <MenuItem key={type}  onClick={() => handleSelectType({type})}>
-                <span>
-                    {name}
-                    <CheckIcon fontSize="small"/>
-                </span>
-            </MenuItem>
-        } else {
-            return <MenuItem key={type} onClick={() => handleSelectType(type)}>{name}</MenuItem>
-        }
+        return <MenuItem key={type} onClick={() => handleSelectType(type)}>
+            {name}
+            {type === selected && <CheckIcon fontSize="small"/>}
+        </MenuItem>
     }
 }

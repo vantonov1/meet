@@ -7,12 +7,13 @@ import "./osm-map.css"
 import EquitiesList from "./equities-list";
 import Box from "@material-ui/core/Box";
 import OsmMap from "./osm-map";
-import FilterMenu from "./filter-menu";
+import FilterMenu from "../set-filter/filter-menu";
 import {
     districtsSelected,
     loadEquities,
     loadLocations,
     loadMoreEquities,
+    priceRangeSelected,
     setType,
     storeContainerHeight,
     subwaysSelected,
@@ -53,6 +54,7 @@ export default function BrowseEquities() {
                     onTypeSelected={(type) => dispatch(setType(type))}
                     onDistrictsSelected={(districts) => dispatch(districtsSelected(districts))}
                     onSubwaysSelected={(subways) => dispatch(subwaysSelected(subways))}
+                    onPriceRangeSelected={value => dispatch(priceRangeSelected(value))}
                 />
             </Drawer>
             <OsmMap
