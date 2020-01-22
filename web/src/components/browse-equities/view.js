@@ -4,10 +4,10 @@ import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Drawer from "@material-ui/core/Drawer";
 import "./osm-map.css"
-import EquitiesList from "./equities-list";
+import EquitiesList from "../common/equities-list";
 import Box from "@material-ui/core/Box";
 import OsmMap from "./osm-map";
-import FilterMenu from "../set-filter/filter-menu";
+import FilterMenu from "../set-filter/view";
 import {
     districtsSelected,
     loadEquities,
@@ -17,7 +17,7 @@ import {
     setType,
     storeContainerHeight,
     subwaysSelected,
-    toggleDrawer
+    toggleDrawer,
 } from "./slice";
 
 export default function BrowseEquities() {
