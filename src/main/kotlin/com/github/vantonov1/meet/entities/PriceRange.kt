@@ -6,7 +6,7 @@ import org.springframework.data.relational.core.mapping.Table
 @Table("equity")
 data class PriceRange(
         @Column("MINPRICE")
-        val minPrice: Int,
+        val minPrice: Int?,
         @Column("MAXPRICE")
-        val maxPrice: Int
+        val maxPrice: Int?
 )

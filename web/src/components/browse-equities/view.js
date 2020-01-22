@@ -41,7 +41,7 @@ export default function BrowseEquities() {
             <Drawer open={drawerOpen} variant="permanent" onClose={() => dispatch(toggleDrawer(false))}>
                 <Box width={400}>
                     {loading && <CircularProgress/>}
-                    {equities.length === 0 && <span>Нет записей</span>}
+                    {!loading && equities.length === 0 && <span>Нет записей</span>}
                     {equities.length !== 0 && <EquitiesList
                         equities={equities}
                         height={containerHeight}
@@ -49,17 +49,17 @@ export default function BrowseEquities() {
                         onFetch={() => dispatch(loadMoreEquities())}
                     />}
                 </Box>
-                <FilterMenu
-                    filter={filter}
-                    onTypeSelected={(type) => dispatch(setType(type))}
-                    onDistrictsSelected={(districts) => dispatch(districtsSelected(districts))}
-                    onSubwaysSelected={(subways) => dispatch(subwaysSelected(subways))}
-                    onPriceRangeSelected={value => dispatch(priceRangeSelected(value))}
-                />
-            </Drawer>
+              </Drawer>
             <OsmMap
                 ref={OsmMap.ref}
                 onLocationsSelect={(locations) => dispatch(loadEquities(locations))}
+            />
+            <FilterMenu
+                filter={filter}
+                onTypeSelected={(type) => dispatch(setType(type))}
+                onDistrictsSelected={(districts) => dispatch(districtsSelected(districts))}
+                onSubwaysSelected={(subways) => dispatch(subwaysSelected(subways))}
+                onPriceRangeSelected={value => dispatch(priceRangeSelected(value))}
             />
         </div>
     );

@@ -70,7 +70,7 @@ export default function FilterMenu(props) {
                 <MenuItem onClick={() => handleSelectDistricts()}>Выбрать районы</MenuItem>
                 <MenuItem onClick={() => handleSelectSubway()}>Выбрать станции метро</MenuItem>
                 <Divider/>
-                <ListItem>
+                {maxPrice && <ListItem>
                     <div>Цена</div>
                     <Slider
                         min={minPrice}
@@ -82,7 +82,7 @@ export default function FilterMenu(props) {
                         className="price-range"
                         onChangeCommitted={(event, value) => dispatch(props.onPriceRangeSelected(value))}
                     />
-                </ListItem>
+                </ListItem>}
             </Menu>}
             {selectDistricts && <SelectDistricts city={props.filter.city}
                                                  onOk={(s) => {
