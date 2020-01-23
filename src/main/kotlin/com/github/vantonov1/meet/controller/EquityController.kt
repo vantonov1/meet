@@ -1,4 +1,4 @@
-package com.github.vantonov1.meet.controler
+package com.github.vantonov1.meet.controller
 
 import com.github.vantonov1.meet.dto.EquityDTO
 import com.github.vantonov1.meet.dto.LocationDTO
@@ -26,7 +26,7 @@ class EquityController(private val equities: EquityService, private val photos: 
     @PutMapping
     @Transactional
     fun update(@RequestBody dto: EquityDTO): Mono<Void> =
-            if (dto.equity.id != null) equities.save(dto).then()
+            if (dto.id != null) equities.save(dto).then()
             else throw IllegalArgumentException("no equity id on update")
 
     @DeleteMapping("/{id}")
@@ -49,7 +49,7 @@ class EquityController(private val equities: EquityService, private val photos: 
 
     @GetMapping("/ids")
     @Transactional(readOnly = true)
-    fun findByIds(@RequestParam ids: List<Long>) = equities.findByIds(ids)
+    fun findByIds(@RequestParam ids: List<Long>): Flux<EquityDTO> = equities.findByIds(ids)
 
     @GetMapping("/prices")
     @Transactional(readOnly = true)

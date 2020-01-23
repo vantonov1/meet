@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.vantonov1.meet.dto.EquityDTO
 import com.github.vantonov1.meet.dto.LocationDTO
 import com.github.vantonov1.meet.dto.PriceRangeDTO
+import com.github.vantonov1.meet.dto.fromEntity
 import com.github.vantonov1.meet.entities.Equity
 import com.github.vantonov1.meet.entities.Filter
 import com.github.vantonov1.meet.entities.PriceRange
@@ -25,12 +26,13 @@ class EquityService(
         private val stations: SubwayService,
         private val photos: PhotoService) {
 
-    fun save(dto: EquityDTO): Mono<Long> = repository.save(dto.equity).doOnSuccess { photos.save(it.id!!, dto.photos) }.map { it.id!! }
+    fun save(dto: EquityDTO): Mono<Long> = repository.save(dto.toEntity()).doOnSuccess { photos.save(it.id!!, dto.photos) }.map { it.id!! }
 
     fun findById(id: Long): Mono<EquityDTO> = Mono.zip(repository.findById(id), photos.findByEquityId(id))
-            .map { EquityDTO(it.t1, districts.findById(it.t1.district)?.name, stations.findById(it.t1.subway)?.name, it.t2) }
+            .map { fromEntity(it.t1, districts.findById(it.t1.district), stations.findById(it.t1.subway), it.t2) }
 
-    fun findByIds(ids: List<Long>): Flux<Equity> = repository.findAllById(ids)
+    fun findByIds(ids: List<Long>): Flux<EquityDTO> = repository.findAllById(ids)
+            .map { fromEntity(it, districts.findById(it.district), stations.findById(it.subway), null) }
 
     fun find(f: Filter): Flux<LocationDTO> {
         val equities = if (f.district == null && f.subway == null) {

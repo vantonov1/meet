@@ -1,4 +1,4 @@
-package com.github.vantonov1.meet.controler
+package com.github.vantonov1.meet.controller
 
 import com.github.vantonov1.meet.entities.District
 import com.github.vantonov1.meet.entities.Subway

@@ -16,15 +16,7 @@ import {
 } from "./slice";
 import SelectDistricts from "../select-districts/view";
 import SelectSubways from "../select-subways/view";
-
-const TYPES = {
-    RENT_ROOM: "Аренда комнат",
-    RENT_FLAT: "Аренда квартир",
-    RENT_BUSINESS: "Аренда коммерческих помещений",
-    SALE_ROOM: "Продажа комнат",
-    SALE_FLAT: "Продажа квартир",
-    SALE_BUSINESS: "Продажа коммерческих помещений"
-};
+import {TYPES} from "../common/equity-types";
 
 export default function FilterMenu(props) {
     const [anchorEl, setAnchorEl] = React.useState(null);

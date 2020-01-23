@@ -33,7 +33,7 @@ function Equity(props) {
     </ListItem>
 }
 
-function formatAddress(props) {
-    return (<div>{props.street}&nbsp;{props.building}</div>)
+function formatAddress(address) {
+    return (<div>{address.street}&nbsp;{address.building}</div>)
 
 }

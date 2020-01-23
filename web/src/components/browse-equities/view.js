@@ -19,6 +19,7 @@ import {
     subwaysSelected,
     toggleDrawer,
 } from "./slice";
+import AddEquity from "../add-equity/view";
 
 export default function BrowseEquities() {
     const {locations, equities, filter, loading, drawerOpen, containerHeight} = useSelector(state => state.browseEquities, shallowEqual);
@@ -49,6 +50,7 @@ export default function BrowseEquities() {
                         onFetch={() => dispatch(loadMoreEquities())}
                     />}
                 </Box>
+                <AddEquity type={filter.type} city={filter.city}/>
               </Drawer>
             <OsmMap
                 ref={OsmMap.ref}

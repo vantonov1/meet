@@ -3,7 +3,7 @@ package com.github.vantonov1.meet.service
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.github.vantonov1.meet.dto.EquityDTO
+import com.github.vantonov1.meet.dto.fromEntity
 import com.github.vantonov1.meet.entities.Equity
 import com.github.vantonov1.meet.entities.EquityType
 import org.junit.Test
@@ -28,14 +28,14 @@ class EquityServiceTest {
     fun testCRUD() {
         val equity = Equity(null, 1, 1,
                 1, null, null, null, 0.0, 0.0, 100500, null, 1, "test", null)
-        val id = equityService.save(EquityDTO(equity, null, null, null)).block()
+        val id = equityService.save(fromEntity(equity, null, null, null)).block()
         assert(id != null)
         val retrieved = equityService.findById(id!!).block()
-        assert(retrieved != null && retrieved.equity.id!! == id && retrieved.equity.info == "test")
+        assert(retrieved != null && retrieved.id!! == id && retrieved.info == "test")
 
-        equityService.save(retrieved!!.copy(equity = equity.copy(id = id, info = "updated"))).block()
+        equityService.save(fromEntity(equity.copy(id = id, info = "updated"), null, null, null)).block()
         val updated = equityService.findById(id).block()
-        assert(updated != null && updated.equity.id!! == id && updated.equity.info == "updated")
+        assert(updated != null && updated.id!! == id && updated.info == "updated")
 
         equityService.delete(id, true).block()
         val hidden = equityService.findById(id).block()

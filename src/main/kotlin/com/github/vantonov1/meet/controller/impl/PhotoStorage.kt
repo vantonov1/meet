@@ -1,4 +1,4 @@
-package com.github.vantonov1.meet.controler.impl
+package com.github.vantonov1.meet.controller.impl
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.FileSystemResource
