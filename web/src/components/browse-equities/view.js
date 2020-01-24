@@ -1,4 +1,4 @@
-import React, {useEffect, useLayoutEffect} from 'react';
+import React, {useEffect} from 'react';
 import './styles.css'
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -15,22 +15,15 @@ import {
     loadMoreEquities,
     priceRangeSelected,
     setType,
-    storeContainerHeight,
     subwaysSelected,
     toggleDrawer,
 } from "./slice";
 import AddEquity from "../add-equity/view";
 
 export default function BrowseEquities() {
-    const {locations, equities, filter, loading, drawerOpen, containerHeight} = useSelector(state => state.browseEquities, shallowEqual);
+    const {locations, equities, filter, loading, drawerOpen} = useSelector(state => state.browseEquities, shallowEqual);
     const dispatch = useDispatch();
     const listContainerRef = React.createRef();
-
-    useLayoutEffect(() => {
-        let rect = listContainerRef.current.getBoundingClientRect();
-        if (rect?.height > 0)
-            dispatch(storeContainerHeight(rect.height))
-    });
 
     useEffect(() => {
         dispatch(loadLocations());
@@ -40,12 +33,11 @@ export default function BrowseEquities() {
     return (
         <div ref={listContainerRef}>
             <Drawer open={drawerOpen} variant="permanent" onClose={() => dispatch(toggleDrawer(false))}>
-                <Box width={400}>
+                <Box width={400} height="100%">
                     {loading && <CircularProgress/>}
                     {!loading && equities.length === 0 && <span>Нет записей</span>}
                     {equities.length !== 0 && <EquitiesList
                         equities={equities}
-                        height={containerHeight}
                         hasMore={equities.length < locations.length}
                         onFetch={() => dispatch(loadMoreEquities())}
                     />}
