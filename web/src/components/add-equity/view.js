@@ -22,7 +22,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 
 export default function AddEquity(props) {
-    const {showDialog, equity, photos, districts, subways, streets, streetText} = useSelector(state => state.addEquity, shallowEqual);
+    const {showDialog, equity, photos, districts, subways, streets, streetText, validation} = useSelector(state => state.addEquity, shallowEqual);
     const dispatch = useDispatch();
     const {type, city} = props;
 
@@ -55,7 +55,8 @@ export default function AddEquity(props) {
             </Fab>
             <Dialog open={showDialog} maxWidth="xs">
                 <DialogContent>
-                    <Select id="equity-type"
+                    <Select label="Тип"
+                            required error={validation.type?.error} helperText={validation.type?.text}
                             value={equity.type ? equity.type : type}
                             fullWidth
                             onChange={e => dispatch(setEquity({...equity, type: e.target.value}))}>
@@ -74,6 +75,8 @@ export default function AddEquity(props) {
                     <SelectStreet label="Улица"
                                   options={streets}
                                   value={equity.street}
+                                  error={validation.street?.error}
+                                  helperText={validation.street?.text}
                                   inputValue={streetText}
                                   onChange={(e, v) => {
                                       dispatch(setAddress({...equity.address, street: v}));
@@ -91,20 +94,23 @@ export default function AddEquity(props) {
                     <TextField label="Цена"
                                type="number"
                                fullWidth
-                               required
+                               required  error={validation.price?.error} helperText={validation.price?.text}
+                               inputProps={{ inputmode: 'decimal', step: 100000}}
                                value={equity.price}
                                onChange={e => dispatch(setEquity({...equity, price: e.target.value}))}
                     />
                     <TextField label="Площадь"
                                type="number"
-                               required
                                fullWidth
+                               required error={validation.square?.error} helperText={validation.square?.text}
+                               inputProps={{ inputmode: 'decimal'}}
                                value={equity.square}
                                onChange={e => dispatch(setEquity({...equity, square: e.target.value}))}
                     />
                     <TextField label="Количество комнат"
                                type="number"
                                fullWidth
+                               inputProps={{ inputmode: 'decimal'}}
                                value={equity.rooms}
                                onChange={e => dispatch(setEquity({...equity, rooms: e.target.value}))}
                     />
@@ -157,7 +163,7 @@ function SelectStreet(props) {
             disableOpenOnFocus
             // getOptionLabel={a => (a.type ? a.type : '') + ' ' + a.name}
             renderInput={params => (
-                <TextField {...params} label={props.label} required fullWidth/>
+                <TextField {...params} label={props.label} required  error={props.error} helperText={props.helperText} fullWidth/>
             )}
             onInputChange={props.onInputChange}
             onChange={props.onChange}
