@@ -34,14 +34,7 @@ export default class EquityAPI {
     }
 
     static findLocations(filter) {
-        let url = new URL(this.BASE);
-        url.searchParams.append("type", filter.type);
-        if (filter.district.length !== 0) {
-            url.searchParams.append("district", filter.district);
-        }
-        if (filter.subway.length !== 0) {
-            url.searchParams.append("subway", filter.subway);
-        }
+        let url = this.createFilterURL('', filter);
         if (filter.minPrice !== null) {
             url.searchParams.append("minPrice", filter.minPrice);
         }
@@ -51,15 +44,20 @@ export default class EquityAPI {
         return fetchJSON(url)
     }
     static getPriceRange(filter) {
-        let url = new URL(this.BASE + '/prices');
+        let url = this.createFilterURL('/prices', filter);
+        return fetchJSON(url)
+    }
+
+    static createFilterURL(path, filter) {
+        let url = new URL(this.BASE + path);
         url.searchParams.append("type", filter.type);
+        url.searchParams.append("city", filter.city);
         if (filter.district.length !== 0) {
             url.searchParams.append("district", filter.district);
         }
         if (filter.subway.length !== 0) {
             url.searchParams.append("subway", filter.subway);
         }
-        return fetchJSON(url)
+        return url;
     }
-
 }

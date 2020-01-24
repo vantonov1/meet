@@ -8,8 +8,8 @@ const slice = createSlice({
         subways: [],
     },
     reducers: {
-        showSubwaysSelector: state => {
-            state.selectSubways = true
+        setSubways: (state, {payload}) => {
+            state.subways = payload
         },
     }
 });

@@ -41,11 +41,12 @@ class EquityController(private val equities: EquityService, private val photos: 
     @Transactional(readOnly = true)
     fun find(
             @RequestParam type: List<String>,
-            @RequestParam(required = false) district: List<Byte>?,
+            @RequestParam(required = false) city: Short,
+            @RequestParam(required = false) district: List<Short>?,
             @RequestParam(required = false) subway: List<String>?,
             @RequestParam(required = false) minPrice: Int?,
             @RequestParam(required = false) maxPrice: Int?
-    ): Flux<LocationDTO> = equities.find(Filter(getTypes(type), district, subway, minPrice, maxPrice))
+    ): Flux<LocationDTO> = equities.find(Filter(getTypes(type), city, district, subway, minPrice, maxPrice))
 
     @GetMapping("/ids")
     @Transactional(readOnly = true)
@@ -54,9 +55,10 @@ class EquityController(private val equities: EquityService, private val photos: 
     @GetMapping("/prices")
     @Transactional(readOnly = true)
     fun getPriceRange(@RequestParam type: List<String>,
-                      @RequestParam(required = false) district: List<Byte>?,
+                      @RequestParam(required = false) city: Short,
+                      @RequestParam(required = false) district: List<Short>?,
                       @RequestParam(required = false) subway: List<String>?
-    ): Mono<PriceRangeDTO> = equities.getPriceRange(Filter(getTypes(type), district, subway, null, null))
+    ): Mono<PriceRangeDTO> = equities.getPriceRange(Filter(getTypes(type), city, district, subway, null, null))
 
     private fun getTypes(type: List<String>) =
             type.map { EquityType.valueOf(it).ordinal }.toList()

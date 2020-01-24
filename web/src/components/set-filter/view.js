@@ -59,10 +59,10 @@ export default function FilterMenu(props) {
             <Menu anchorEl={anchorEl} keepMounted open={true} onClose={handleClose} transitionDuration={0}>
                 {Object.entries(TYPES).map(k => entityType(k[0], k[1], props.filter.type))}
                 <Divider/>
-                <MenuItem onClick={() => handleSelectDistricts()}>Выбрать районы</MenuItem>
-                <MenuItem onClick={() => handleSelectSubway()}>Выбрать станции метро</MenuItem>
-                <Divider/>
-                {maxPrice && <ListItem>
+                <MenuItem key="filter-regions" onClick={() => handleSelectDistricts()}>Выбрать районы</MenuItem>
+                <MenuItem key="filter-subways" onClick={() => handleSelectSubway()}>Выбрать станции метро</MenuItem>
+                {maxPrice && <Divider/>}
+                {maxPrice && <ListItem key="filter-price">
                     <div>Цена</div>
                     <Slider
                         min={minPrice}

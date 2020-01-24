@@ -2,6 +2,7 @@ import {createSlice} from "@reduxjs/toolkit";
 import {show} from "../show-error/slice"
 import DirectoryAPI from "../../api/DirectoryAPI";
 import KladrAPI from "../../api/KladrAPI";
+import EquityAPI from "../../api/EquityAPI";
 
 const slice = createSlice({
     name: 'add-equity',
@@ -9,19 +10,22 @@ const slice = createSlice({
         showDialog: false,
         equity: {
             type: 0,
-            district: {
-                id: 0,
-                name: ''
+            address: {
+                city: 0,
+                district: {
+                    id: 0,
+                    name: ''
+                },
+                subway: {
+                    id: 0,
+                    name: ''
+                },
+                street: '',
+                building: ''
             },
-            subway: {
-                id: 0,
-                name: ''
-            },
-            street: '',
-            building: '',
-            price: 0,
-            square: 0,
-            rooms: 0,
+            price: '',
+            square: '',
+            rooms: '',
             info: ''
         },
         photos: [],
@@ -36,6 +40,9 @@ const slice = createSlice({
         },
         setEquity: (state, {payload}) => {
             state.equity = payload
+        },
+        setAddress: (state, {payload}) => {
+            state.equity.address = payload
         },
         setDistricts: (state, {payload}) => {
             state.districts = payload
@@ -56,7 +63,17 @@ const slice = createSlice({
 });
 
 export default slice.reducer
-export const {toggleDialog, setEquity, setStreetText} = slice.actions;
+export const {toggleDialog, setEquity, setAddress, setStreetText} = slice.actions;
+
+export const saveEquity = (equity) => async (dispatch) => {
+    const {toggleDialog} = slice.actions;
+    try {
+        await EquityAPI.create(equity);
+        dispatch(toggleDialog(false))
+    } catch (reason) {
+        dispatch(show(reason.message))
+    }
+};
 
 export const loadDistricts = (city) => async (dispatch) => {
     const {setDistricts} = slice.actions;

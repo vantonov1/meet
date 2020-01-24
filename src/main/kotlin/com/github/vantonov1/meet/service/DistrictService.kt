@@ -12,7 +12,7 @@ class DistrictService {
     private val districts: List<District> = jacksonObjectMapper()
             .readValue(javaClass.getResource("/districts.json"), object : TypeReference<List<District>>() {})
 
-    fun findById(id: Byte?): District? = districts.find { it.id == id }
+    fun findById(id: Short?): District? = districts.find { it.id == id }
 
     fun findByName(district: String): District? = districts.find { it.name == district }
 

@@ -28,7 +28,7 @@ function Equity(props) {
             <ListItemSecondaryAction>
                 <div>{props.price}&#8381;</div>
             </ListItemSecondaryAction>
-            {formatAddress(props)}
+            {formatAddress(props.address)}
         </ListItemText>
     </ListItem>
 }

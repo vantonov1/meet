@@ -11,7 +11,8 @@ data class Equity(
         val id: Long?,
         val type: Byte, //EquityType,
         val ownedBy: Long?,
-        val district: Byte?,
+        val city: Short,
+        val district: Short?,
         val subway: String?,
         val street: String?,
         val building: String?,
@@ -24,8 +25,11 @@ data class Equity(
         val hidden: Boolean?
 )
 
-enum class EquityType {
-        SALE_ROOM, SALE_FLAT, SALE_BUSINESS, RENT_ROOM, RENT_FLAT, RENT_BUSINESS
+enum class EquityType(val value: Byte) {
+        SALE_ROOM(1), SALE_FLAT(2), SALE_BUSINESS(3), RENT_ROOM(4), RENT_FLAT(5), RENT_BUSINESS(6);
+        companion object {
+                fun valueOf(value: Byte): EquityType = values().first { it.value == value }
+        }
 }
 
 data class Photo(
@@ -34,7 +38,8 @@ data class Photo(
 )
 
 data class Filter(val type: List<Int>,
-                  val district: List<Byte>?,
+                  val city: Short,
+                  val district: List<Short>?,
                   val subway: List<String>?,
                   val priceMin: Int?,
                   val priceMax: Int?,

@@ -24,11 +24,16 @@ databaseChangeLog:
                   constraints:
                     nullable: false
             - column:
+                  name: city
+                  type: smallint
+                  constraints:
+                    nullable: false
+            - column:
                   name: district
-                  type: tinyint
+                  type: smallint
             - column:
                   name: subway
-                  type: smallint
+                  type: varchar(16)
             - column:
                   name: street
                   type: varchar(255)
@@ -81,6 +86,8 @@ databaseChangeLog:
             - column:
                     name: type
             - column:
+                    name: city
+            - column:
                     name: hidden
             - column:
                     name: price
@@ -88,6 +95,8 @@ databaseChangeLog:
                     name: lat
             - column:
                     name: lon
+            - column:
+                    name: id #covered column
       - createIndex:
             indexName: find_equities_by_district_idx
             tableName: equity

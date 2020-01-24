@@ -3,7 +3,16 @@ import "./style.css"
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
-import {fetchStreets, loadDistricts, loadSubways, setEquity, setStreetText, toggleDialog} from "./slice";
+import {
+    fetchStreets,
+    loadDistricts,
+    loadSubways,
+    saveEquity,
+    setAddress,
+    setEquity,
+    setStreetText,
+    toggleDialog
+} from "./slice";
 import {Dialog, MenuItem, Select} from "@material-ui/core";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -16,6 +25,13 @@ export default function AddEquity(props) {
     const {showDialog, equity, photos, districts, subways, streets, streetText} = useSelector(state => state.addEquity, shallowEqual);
     const dispatch = useDispatch();
     const {type, city} = props;
+
+    useEffect(() => {
+        if (equity.type !== type)
+            dispatch(setEquity({...equity, type}));
+        if (equity.address.city !== city)
+            dispatch(setAddress({...equity.address, city}));
+    }, [equity.address.city, city, equity.type, type]);
 
     useEffect(() => {
         if (districts?.length === 0)
@@ -48,19 +64,19 @@ export default function AddEquity(props) {
                     <SelectDirectory label="Район"
                                      options={districts}
                                      value={equity.district}
-                                     onChange={(e, v) => dispatch(setEquity({...equity, district: v}))}
+                                     onChange={(e, v) => dispatch(setAddress({...equity.address, district: v}))}
                     />
                     <SelectDirectory label="Станция метро"
                                      options={subways}
                                      value={equity.subway}
-                                     onChange={(e, v) => dispatch(setEquity({...equity, subway: v}))}
+                                     onChange={(e, v) => dispatch(setAddress({...equity.address, subway: v}))}
                     />
                     <SelectStreet label="Улица"
                                   options={streets}
                                   value={equity.street}
                                   inputValue={streetText}
                                   onChange={(e, v) => {
-                                      dispatch(setEquity({...equity, street: v}));
+                                      dispatch(setAddress({...equity.address, street: v}));
                                       dispatch(setStreetText(v))
                                   }}
                                   onInputChange={e => {
@@ -70,7 +86,7 @@ export default function AddEquity(props) {
                     <TextField label="Дом"
                                fullWidth
                                value={equity.building}
-                               onChange={e => dispatch(setEquity({...equity, building: e.target.value}))}
+                               onChange={e => dispatch(setAddress({...equity.address, building: e.target.value}))}
                     />
                     <TextField label="Цена"
                                type="number"
@@ -100,13 +116,10 @@ export default function AddEquity(props) {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={dispatch(toggleDialog(false))}>
+                    <Button onClick={() => dispatch(toggleDialog(false))}>
                         Отменить
                     </Button>
-                    <Button onClick={() => {
-                        // props.onOk(equity);
-                        dispatch(toggleDialog(false))
-                    }} color="primary">
+                    <Button onClick={() => {dispatch(saveEquity(equity))}} color="primary">
                         Сохранить
                     </Button>
                 </DialogActions>

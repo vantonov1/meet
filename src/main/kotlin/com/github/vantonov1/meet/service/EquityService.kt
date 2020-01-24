@@ -36,13 +36,13 @@ class EquityService(
 
     fun find(f: Filter): Flux<LocationDTO> {
         val equities = if (f.district == null && f.subway == null) {
-            repository.find(f.type, f.priceMin ?: 0, f.priceMax ?: Int.MAX_VALUE)
+            repository.find(f.type, f.city, f.priceMin ?: 0, f.priceMax ?: Int.MAX_VALUE)
         } else if (f.district == null) {
-            repository.findWithSubway(f.type, f.subway!!, f.priceMin ?: 0, f.priceMax ?: Int.MAX_VALUE)
+            repository.findWithSubway(f.type, f.city,  f.subway!!, f.priceMin ?: 0, f.priceMax ?: Int.MAX_VALUE)
         } else if (f.subway == null) {
-            repository.findWithDistrict(f.type, f.district, f.priceMin ?: 0, f.priceMax ?: Int.MAX_VALUE)
+            repository.findWithDistrict(f.type, f.city, f.district, f.priceMin ?: 0, f.priceMax ?: Int.MAX_VALUE)
         } else {
-            repository.findWithDistrictAndSubway(f.type, f.district, f.subway, f.priceMin ?: 0, f.priceMax
+            repository.findWithDistrictAndSubway(f.type,f.city, f.district, f.subway, f.priceMin ?: 0, f.priceMax
                     ?: Int.MAX_VALUE)
         }
         return equities.map { LocationDTO(it.id!!, it.lat, it.lon) }
@@ -52,13 +52,13 @@ class EquityService(
 
     fun getPriceRange(f: Filter): Mono<PriceRangeDTO> {
         val entity: Mono<PriceRange> = if (f.district == null && f.subway == null) {
-            priceRangeRepository.getPriceRange(f.type)
+            priceRangeRepository.getPriceRange(f.type, f.city)
         } else if (f.district == null) {
-            priceRangeRepository.getPriceRangeWithSubway(f.type, f.subway!!)
+            priceRangeRepository.getPriceRangeWithSubway(f.type, f.city, f.subway!!)
         } else if (f.subway == null) {
-            priceRangeRepository.getPriceRangeWithDistrict(f.type, f.district)
+            priceRangeRepository.getPriceRangeWithDistrict(f.type, f.city, f.district)
         } else {
-            priceRangeRepository.getPriceRangeWithDistrictAndSubway(f.type, f.district, f.subway)
+            priceRangeRepository.getPriceRangeWithDistrictAndSubway(f.type, f.city, f.district, f.subway)
         }
         return entity.map { PriceRangeDTO(it.minPrice, it.maxPrice) }
     }
