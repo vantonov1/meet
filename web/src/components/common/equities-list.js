@@ -46,7 +46,3 @@ function Equity(props) {
     </ListItem>
 }
 
-function edit(equity) {
-
-}
-
