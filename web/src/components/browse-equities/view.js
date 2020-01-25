@@ -13,6 +13,7 @@ import {
     loadEquities,
     loadLocations,
     loadMoreEquities,
+    priceRangeCommitted,
     priceRangeSelected,
     setType,
     subwaysSelected,
@@ -54,6 +55,7 @@ export default function BrowseEquities() {
                 onDistrictsSelected={(districts) => dispatch(districtsSelected(districts))}
                 onSubwaysSelected={(subways) => dispatch(subwaysSelected(subways))}
                 onPriceRangeSelected={value => dispatch(priceRangeSelected(value))}
+                onPriceRangeCommitted={() => dispatch(priceRangeCommitted())}
             />
         </div>
     );

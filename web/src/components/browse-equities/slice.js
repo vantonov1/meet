@@ -44,13 +44,15 @@ const slice = createSlice({
         priceRangeSelected: (state, {payload}) => {
             state.filter.minPrice = payload[0];
             state.filter.maxPrice = payload[1];
+        },
+        priceRangeCommitted: (state) => {
             state.loadFinished = false;
         },
     }
 });
 
 export default slice.reducer
-export const {toggleDrawer, setType, districtsSelected, subwaysSelected, priceRangeSelected} = slice.actions;
+export const {toggleDrawer, setType, districtsSelected, subwaysSelected, priceRangeSelected, priceRangeCommitted} = slice.actions;
 
 export const loadEquities = (ids) => async (dispatch) => {
     const {setEquities, startLoading, finishLoading} = slice.actions;

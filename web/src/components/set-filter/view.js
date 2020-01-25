@@ -72,7 +72,8 @@ export default function FilterMenu(props) {
                         valueLabelDisplay="on"
                         ValueLabelComponent={ValueLabelComponent}
                         className="price-range"
-                        onChangeCommitted={(event, value) => dispatch(props.onPriceRangeSelected(value))}
+                        onChange={(event, value) => dispatch(props.onPriceRangeSelected(value))}
+                        onChangeCommitted={(event) => dispatch(props.onPriceRangeCommitted())}
                     />
                 </ListItem>}
             </Menu>}
@@ -94,7 +95,7 @@ export default function FilterMenu(props) {
     function calcMarks(minPrice, maxPrice) {
         let marks = [];
         for (let i = minPrice / 100000; i < maxPrice / 100000; i++)
-            marks.push(i * 100000);
+            marks.push({value: i * 100000});
         return marks
     }
 
