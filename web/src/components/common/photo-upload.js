@@ -3,12 +3,12 @@ import {Box} from "@material-ui/core";
 import {makeStyles} from '@material-ui/core/styles';
 import Button from "@material-ui/core/Button";
 
-let selectedFiles = [];
+const selectedFiles = [];
 export function getSelectedFiles() {
     return selectedFiles;
 }
 export function clearSelectedFiles() {
-    selectedFiles = []
+    while(selectedFiles.length > 0) selectedFiles.pop()
 }
 
 const useStyles = makeStyles(theme => ({
@@ -50,12 +50,12 @@ export default function PhotoUpload(props) {
                 }}
             />
             <label htmlFor="contained-button-file">
-                <Button variant="contained" color="primary" component="span">
+                <Button variant="contained" component="span">
                     Добавить фото
                 </Button>
             </label>
-            <div className="imgPreview">
-                {files.map(f => <img key={f.name} style={{maxWidth: 100, maxHeight: 100}} src={f.url} alt="фото"/>)}
+            <div className="image-preview" style={{overflowX: "auto"}}>
+                {files.map(f => <img key={f.name} style={{maxWidth: 150, maxHeight: 150}} src={f.url} alt="Здесь было фото"/>)}
             </div>
         </Box>
     )

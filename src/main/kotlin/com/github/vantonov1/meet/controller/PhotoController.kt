@@ -1,13 +1,11 @@
 package com.github.vantonov1.meet.controller
 
 import com.github.vantonov1.meet.service.PhotoService
-import org.springframework.core.io.Resource
 import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
 import org.springframework.http.codec.multipart.FilePart
+import org.springframework.http.codec.multipart.Part
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
 
 
 @RestController
@@ -15,9 +13,9 @@ import reactor.core.publisher.Mono
 @CrossOrigin("http://localhost:3000")
 @Suppress("unused")
 class PhotoController(val service: PhotoService) {
-    @PostMapping
-    fun upload(@RequestPart("files") files: Flux<FilePart>): Mono<List<String>> = service.upload(files)
+    @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    fun upload(@RequestBody files: Flux<Part>) = service.upload(files.filter{it is FilePart}.map { it as FilePart })
 
     @GetMapping(produces = [MediaType.IMAGE_JPEG_VALUE])
-    fun download(@PathVariable name: String): Mono<ResponseEntity<Resource>> = service.download(name)
+    fun download(@PathVariable name: String) = service.download(name)
  }
