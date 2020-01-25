@@ -4,6 +4,7 @@ import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
 import {
+    addPhoto,
     fetchStreets,
     loadDistricts,
     loadSubways,
@@ -11,7 +12,7 @@ import {
     setAddress,
     setEquity,
     setStreetText,
-    toggleDialog
+    toggleDialog,
 } from "./slice";
 import {Dialog, MenuItem, Select} from "@material-ui/core";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -20,9 +21,10 @@ import Button from "@material-ui/core/Button";
 import {TYPES} from "../common/equity-types";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
+import PhotoUpload from "../common/photo-upload";
 
 export default function AddEquity(props) {
-    const {showDialog, equity, photos, districts, subways, streets, streetText, validation} = useSelector(state => state.addEquity, shallowEqual);
+    const {showDialog, equity, selectedPhotos, districts, subways, streets, streetText, validation} = useSelector(state => state.addEquity, shallowEqual);
     const dispatch = useDispatch();
     const {type, city} = props;
 
@@ -56,7 +58,7 @@ export default function AddEquity(props) {
             <Dialog open={showDialog} maxWidth="xs">
                 <DialogContent>
                     <Select label="Тип"
-                            required error={validation.type?.error} helperText={validation.type?.text}
+                            required
                             value={equity.type ? equity.type : type}
                             fullWidth
                             onChange={e => dispatch(setEquity({...equity, type: e.target.value}))}>
@@ -95,7 +97,7 @@ export default function AddEquity(props) {
                                type="number"
                                fullWidth
                                required  error={validation.price?.error} helperText={validation.price?.text}
-                               inputProps={{ inputmode: 'decimal', step: 100000}}
+                               inputProps={{ inputMode: 'decimal', step: 100000}}
                                value={equity.price}
                                onChange={e => dispatch(setEquity({...equity, price: e.target.value}))}
                     />
@@ -103,14 +105,14 @@ export default function AddEquity(props) {
                                type="number"
                                fullWidth
                                required error={validation.square?.error} helperText={validation.square?.text}
-                               inputProps={{ inputmode: 'decimal'}}
+                               inputProps={{ inputMode: 'decimal'}}
                                value={equity.square}
                                onChange={e => dispatch(setEquity({...equity, square: e.target.value}))}
                     />
                     <TextField label="Количество комнат"
                                type="number"
                                fullWidth
-                               inputProps={{ inputmode: 'decimal'}}
+                               inputProps={{ inputMode: 'decimal'}}
                                value={equity.rooms}
                                onChange={e => dispatch(setEquity({...equity, rooms: e.target.value}))}
                     />
@@ -120,6 +122,7 @@ export default function AddEquity(props) {
                                value={equity.info}
                                onChange={e => dispatch(setEquity({...equity, info: e.target.value}))}
                     />
+                    <PhotoUpload files={selectedPhotos} onFileUploaded={f => dispatch(addPhoto(f))}/>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => dispatch(toggleDialog(false))}>

@@ -12,11 +12,12 @@ import reactor.core.publisher.Mono
 
 @RestController
 @RequestMapping("/api/v1/photo")
+@CrossOrigin("http://localhost:3000")
 @Suppress("unused")
 class PhotoController(val service: PhotoService) {
     @PostMapping
     fun upload(@RequestPart("files") files: Flux<FilePart>): Mono<List<String>> = service.upload(files)
 
-    @GetMapping(produces = [MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE])
+    @GetMapping(produces = [MediaType.IMAGE_JPEG_VALUE])
     fun download(@PathVariable name: String): Mono<ResponseEntity<Resource>> = service.download(name)
  }

@@ -3,6 +3,19 @@ import {show} from "../show-error/slice"
 import DirectoryAPI from "../../api/DirectoryAPI";
 import KladrAPI from "../../api/KladrAPI";
 import EquityAPI from "../../api/EquityAPI";
+import PhotoAPI from "../../api/PhotoAPI";
+import {clearSelectedFiles, getSelectedFiles} from "../common/photo-upload";
+
+const LIMITS = {
+    square: {
+        min: 10,
+        max: 10000
+    },
+    price: {
+        min: 100000,
+        max: 100000000
+    }
+};
 
 const slice = createSlice({
     name: 'add-equity',
@@ -28,16 +41,12 @@ const slice = createSlice({
             rooms: '',
             info: ''
         },
-        photos: [],
+        selectedPhotos: [],
         districts: [],
         subways: [],
         streets: [],
         streetText: '',
         validation: {
-            type: {
-                error: false,
-                text: ''
-            },
             street: {
                 error: false,
                 text: ''
@@ -55,20 +64,11 @@ const slice = createSlice({
                 max: 100000000
             }
         },
-        limits: {
-            square: {
-                min: 10,
-                max: 10000
-            },
-            price: {
-                min: 100000,
-                max: 100000000
-            }
-        }
     },
     reducers: {
         toggleDialog: (state, {payload}) => {
-            state.showDialog = payload
+            state.showDialog = payload;
+            clearSelectedFiles()
         },
         setEquity: (state, {payload}) => {
             state.equity = payload
@@ -94,13 +94,16 @@ const slice = createSlice({
         setValidation: (state, {payload}) => {
             state.validation = payload
         },
+        addPhoto: (state, {payload}) => {
+            state.selectedPhotos = [...state.selectedPhotos, payload]
+        },
     }
 });
 
 export default slice.reducer
-export const {toggleDialog, setEquity, setAddress, setStreetText} = slice.actions;
+export const {toggleDialog, setEquity, setAddress, setStreetText, addPhoto} = slice.actions;
 
-function validate(equity, limits) {
+function validate(equity) {
     let result = {};
     if (!equity.type) {
         result.type = {error: true, text: "Обязательное поле"}
@@ -110,24 +113,28 @@ function validate(equity, limits) {
     }
     if (!equity.price) {
         result.price = {error: true, text: "Обязательное поле"}
-    } else if (equity.price < limits.price.min || equity.price > limits.price.max) {
+    } else if (equity.price < LIMITS.price.min || equity.price > LIMITS.price.max) {
         result.price = {error: true, text: "Недопустимое значение"}
     }
     if (!equity.square) {
         result.square = {error: true, text: "Обязательное поле"}
-    } else if (equity.square < limits.square.min || equity.square > limits.square.max) {
+    } else if (equity.square < LIMITS.square.min || equity.square > LIMITS.square.max) {
         result.square = {error: true, text: "Недопустимое значение"}
     }
     return result;
 }
 
-export const saveEquity = (equity) => async (dispatch, getState) => {
+export const saveEquity = (equity) => async dispatch => {
     const {toggleDialog, setValidation} = slice.actions;
-    let {limits} = getState().addEquity;
     try {
-        let errors = validate(equity, limits);
+        let errors = validate(equity);
         if (Object.entries(errors).length === 0) {
-            await EquityAPI.create(equity);
+            let unfreeze = {...equity};
+            let selectedFiles = getSelectedFiles();
+            if (selectedFiles.length !== 0) {
+                unfreeze.photos = await PhotoAPI.upload(selectedFiles)
+            }
+            await EquityAPI.create(unfreeze);
             dispatch(toggleDialog(false))
         } else
             dispatch(setValidation(errors))
