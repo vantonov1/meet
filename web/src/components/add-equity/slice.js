@@ -17,9 +17,8 @@ const LIMITS = {
     }
 };
 
-const slice = createSlice({
-    name: 'add-equity',
-    initialState: {
+function createInitialState() {
+    return {
         showDialog: false,
         equity: {
             type: 0,
@@ -64,11 +63,22 @@ const slice = createSlice({
                 max: 100000000
             }
         },
-    },
+    }
+}
+
+const slice = createSlice({
+    name: 'add-equity',
+    initialState: createInitialState(),
     reducers: {
         toggleDialog: (state, {payload}) => {
+            let initial = createInitialState();
+            state.equity = initial.equity;
+            state.selectedPhotos = [];
+            state.streets = [];
+            state.streetText = '';
+            state.validation = initial.validation;
             state.showDialog = payload;
-            clearSelectedFiles()
+            clearSelectedFiles();
         },
         setEquity: (state, {payload}) => {
             state.equity = payload
