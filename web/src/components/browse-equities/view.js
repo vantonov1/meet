@@ -41,6 +41,7 @@ export default function BrowseEquities() {
                         equities={equities}
                         hasMore={equities.length < locations.length}
                         onFetch={() => dispatch(loadMoreEquities())}
+                        onClick={() => {}}
                     />}
                 </Box>
                 <AddEquity type={filter.type} city={filter.city}/>

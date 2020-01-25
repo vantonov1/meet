@@ -7,25 +7,30 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Box from "@material-ui/core/Box";
 
 export default function EquitiesList(props) {
+    const [selectedItem, setSelectedItem] = React.useState(-1);
     return (
         <AutoSizer>
             {({height, width}) => (
-            <InfiniteScroll style={{width: width}}
-                            className="equities-list"
-                            dataLength={props.equities.length}
-                            next={props.onFetch}
-                            hasMore={props.hasMore}
-                            loader={<LinearProgress/>}
-                            height={height}
-                            endMessage={<p/>}
-            >
-                {props.equities?.map(equity => (
-                    <Equity key={equity.id}
-                            {...equity}
-                    />
-                ))}
-            </InfiniteScroll>
-        )}
+                <InfiniteScroll style={{width: width}}
+                                className="equities-list"
+                                dataLength={props.equities.length}
+                                next={props.onFetch}
+                                hasMore={props.hasMore}
+                                loader={<LinearProgress/>}
+                                height={height}
+                                endMessage={<p/>}
+                >
+                    {props.equities?.map((equity, index) => (
+                        <Equity key={equity.id} selected={index === selectedItem}
+                                {...equity}
+                                onClick={() => {
+                                    setSelectedItem(index);
+                                    props.onClick(equity)
+                                }}
+                        />
+                    ))}
+                </InfiniteScroll>
+            )}
         </AutoSizer>
     )
 }
@@ -33,7 +38,12 @@ export default function EquitiesList(props) {
 function Equity(props) {
     const subway = props.address.subway;
     const district = props.address.district;
-    return <ListItem className="equities-item">
+    return <ListItem className="equities-item"
+                     button
+                     divider
+                     selected={props.selected}
+                     onClick={props.onClick}
+    >
         <ListItemText>
             <Box width={1}><b>{props.price}&#8381;</b>&nbsp;{props.address.street}&nbsp;{props.address.building}</Box>
             <Box width={1} className="MuiTypography-colorTextSecondary MuiTypography-body2">
