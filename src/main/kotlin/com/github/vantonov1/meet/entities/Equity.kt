@@ -5,6 +5,14 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.domain.Persistable
 import org.springframework.data.relational.core.mapping.Table
 
+@Table("equity")
+data class Location(
+        @Id
+        val id: Long?,
+        val lat: Double?,
+        val lon: Double?
+)
+
 @Table
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class Equity(

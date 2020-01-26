@@ -11,6 +11,7 @@ import com.github.vantonov1.meet.entities.Filter
 import com.github.vantonov1.meet.entities.PriceRange
 import com.github.vantonov1.meet.repository.EquityPriceRangeRepository
 import com.github.vantonov1.meet.repository.EquityRepository
+import com.github.vantonov1.meet.repository.LocationRepository
 import org.springframework.context.annotation.DependsOn
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
@@ -20,36 +21,37 @@ import javax.annotation.PostConstruct
 @Service
 @DependsOn("liquibase")
 class EquityService(
-        private val repository: EquityRepository,
+        private val equityRepository: EquityRepository,
         private val priceRangeRepository: EquityPriceRangeRepository,
+        private val locationRepository: LocationRepository,
         private val districts: DistrictService,
         private val stations: SubwayService,
         private val photos: PhotoService) {
 
-    fun save(dto: EquityDTO): Mono<Long> = repository.save(dto.toEntity()).map { it.id!! }.doOnSuccess { photos.save(it, dto.photos) }
+    fun save(dto: EquityDTO): Mono<Long> = equityRepository.save(dto.toEntity()).map { it.id!! }.doOnSuccess { photos.save(it, dto.photos) }
 
-    fun findById(id: Long): Mono<EquityDTO> = Mono.zip(repository.findById(id), photos.findByEquityId(id))
+    fun findById(id: Long): Mono<EquityDTO> = Mono.zip(equityRepository.findById(id), photos.findByEquityId(id))
             .map { fromEntity(it.t1, districts.findById(it.t1.district), stations.findById(it.t1.subway), it.t2) }
 
-    fun findByIds(ids: List<Long>): Mono<List<EquityDTO>> = Mono.zip(repository.findAllById(ids).collectList(), photos.findAllByEquityId(ids))
+    fun findByIds(ids: List<Long>): Mono<List<EquityDTO>> = Mono.zip(equityRepository.findAllById(ids).collectList(), photos.findAllByEquityId(ids))
             .map { it.t1.map {
                 e -> fromEntity(e, districts.findById(e.district), stations.findById(e.subway), it.t2[e.id]?.map { p -> p.id }) }}
 
     fun find(f: Filter): Flux<LocationDTO> {
-        val equities = if (f.district == null && f.subway == null) {
-            repository.find(f.type, f.city, f.priceMin ?: 0, f.priceMax ?: Int.MAX_VALUE)
+        val locations = if (f.district == null && f.subway == null) {
+            locationRepository.find(f.type, f.city, f.priceMin ?: 0, f.priceMax ?: Int.MAX_VALUE)
         } else if (f.district == null) {
-            repository.findWithSubway(f.type, f.city,  f.subway!!, f.priceMin ?: 0, f.priceMax ?: Int.MAX_VALUE)
+            locationRepository.findWithSubway(f.type, f.city,  f.subway!!, f.priceMin ?: 0, f.priceMax ?: Int.MAX_VALUE)
         } else if (f.subway == null) {
-            repository.findWithDistrict(f.type, f.city, f.district, f.priceMin ?: 0, f.priceMax ?: Int.MAX_VALUE)
+            locationRepository.findWithDistrict(f.type, f.city, f.district, f.priceMin ?: 0, f.priceMax ?: Int.MAX_VALUE)
         } else {
-            repository.findWithDistrictAndSubway(f.type,f.city, f.district, f.subway, f.priceMin ?: 0, f.priceMax
+            locationRepository.findWithDistrictAndSubway(f.type,f.city, f.district, f.subway, f.priceMin ?: 0, f.priceMax
                     ?: Int.MAX_VALUE)
         }
-        return equities.map { LocationDTO(it.id!!, it.lat, it.lon) }
+        return locations.map { LocationDTO(it.id!!, it.lat, it.lon) }
     }
 
-    fun delete(id: Long, hide: Boolean?): Mono<Void> = if (hide != null && hide) repository.hide(id) else repository.deleteById(id)
+    fun delete(id: Long, hide: Boolean?): Mono<Void> = if (hide != null && hide) equityRepository.hide(id) else equityRepository.deleteById(id)
 
     fun getPriceRange(f: Filter): Mono<PriceRangeDTO> {
         val entity: Mono<PriceRange> = if (f.district == null && f.subway == null) {
@@ -68,6 +70,6 @@ class EquityService(
     @Suppress("unused")
     private fun loadFakeEquities() {
         val equities = jacksonObjectMapper().readValue(javaClass.getResource("/fake_equities.json"), object : TypeReference<List<Equity>>() {})
-        repository.saveAll(equities).subscribe()
+        equityRepository.saveAll(equities).subscribe()
     }
 }
