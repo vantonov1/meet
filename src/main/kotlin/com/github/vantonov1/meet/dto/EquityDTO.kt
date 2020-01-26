@@ -17,7 +17,7 @@ data class EquityDTO(
         val photos: List<String>?
 ) {
     fun toEntity(): Equity {
-        return Equity(id, EquityType.valueOf(type).ordinal.toByte(), 0,
+        return Equity(id, EquityType.valueOf(type).value, 0,
                 address.city, address.district?.id, address.subway?.id, address.street, address.building, address.lat, address.lon,
                 price, square, rooms, info, null)
     }

@@ -81,7 +81,7 @@ class MemoryPhotoStorage : PhotoStorage {
         return if (content != null)
             Mono.just(ByteArrayResource(content.reduce { acc, bytes -> acc.plus(bytes) }))
         else
-            Mono.empty()
+            throw java.lang.IllegalArgumentException("content not found, id=$id")
     }
 
     override fun getName(name: String): String {

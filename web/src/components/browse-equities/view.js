@@ -15,14 +15,17 @@ import {
     loadMoreEquities,
     priceRangeCommitted,
     priceRangeSelected,
+    selectEquity,
     setType,
     subwaysSelected,
     toggleDrawer,
+    unselectEquity,
 } from "./slice";
 import AddEquity from "../add-equity/view";
+import PhotoAPI from "../../api/PhotoAPI";
 
 export default function BrowseEquities() {
-    const {locations, equities, filter, loading, drawerOpen} = useSelector(state => state.browseEquities, shallowEqual);
+    const {locations, equities, filter, loading, drawerOpen, selectedEquity} = useSelector(state => state.browseEquities, shallowEqual);
     const dispatch = useDispatch();
     const listContainerRef = React.createRef();
 
@@ -41,7 +44,7 @@ export default function BrowseEquities() {
                         equities={equities}
                         hasMore={equities.length < locations.length}
                         onFetch={() => dispatch(loadMoreEquities())}
-                        onClick={() => {}}
+                        onClick={(equity) => {dispatch(selectEquity(equity))}}
                     />}
                 </Box>
                 <AddEquity type={filter.type} city={filter.city}/>
@@ -50,6 +53,14 @@ export default function BrowseEquities() {
                 ref={OsmMap.ref}
                 onLocationsSelect={(locations) => dispatch(loadEquities(locations))}
             />
+            <Drawer open={selectedEquity != null} variant="temporary" onClose={() => dispatch(unselectEquity())}>
+                {selectedEquity && <div className="image-preview" style={{overflowX: "auto"}}>
+                    {selectedEquity.photos?.map(f => <img key={f} style={{maxWidth: 150, maxHeight: 150}}
+                                                          src={PhotoAPI.url(f)} alt="Здесь было фото"/>)}
+                </div>
+                }
+            </Drawer>
+
             <FilterMenu
                 filter={filter}
                 onTypeSelected={(type) => dispatch(setType(type))}

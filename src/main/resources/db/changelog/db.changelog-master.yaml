@@ -77,8 +77,6 @@ databaseChangeLog:
                    type: bigint
                    constraints:
                        nullable: false
-                       references: equity(id)
-                       foreignKeyName: fk_of
       - createIndex:
             indexName: find_equities_idx
             tableName: equity

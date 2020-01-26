@@ -15,9 +15,9 @@ import java.util.concurrent.TimeUnit
 
 @Service
 class PhotoService(private val repository: PhotoRepository, private val storage: PhotoStorage) {
-    fun findByEquityId(of: Long): Mono<List<String>> {
-        return repository.findByOf(of).map { it.id }.collectList()
-    }
+    fun findByEquityId(of: Long) = repository.findByOf(of).map { it.id }.collectList()
+
+    fun findAllByEquityId(ids: List<Long>) = repository.findAllByOf(ids).collectMultimap(Photo::of)
 
     fun upload(files: Flux<FilePart>): Mono<List<String>> {
         return files.flatMap<String> { storage.save(it) }.collectList()
@@ -32,9 +32,10 @@ class PhotoService(private val repository: PhotoRepository, private val storage:
         }
     }
 
-    fun save(equityId: Long, photos: List<String>?) {
-        if(photos != null) {
-            repository.saveAll(Flux.fromStream(photos.stream().map { Photo(it, equityId) }))
+    fun save(equityId: Long, ids: List<String>?) {
+        if (ids != null) {
+            val photos = ids.map { Photo(it, equityId) }
+            repository.saveAll(Flux.fromIterable(photos)).collectList().subscribe()
         }
     }
 }

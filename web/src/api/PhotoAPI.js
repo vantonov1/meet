@@ -8,4 +8,8 @@ export default class PhotoAPI {
         files.forEach(f => fd.append("files", f));
         return fetchJSON(this.BASE, {method: 'POST', body: fd})
     }
+
+    static url(id) {
+        return this.BASE + '?id=' + id
+    }
 }

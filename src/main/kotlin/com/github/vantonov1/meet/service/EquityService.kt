@@ -26,13 +26,14 @@ class EquityService(
         private val stations: SubwayService,
         private val photos: PhotoService) {
 
-    fun save(dto: EquityDTO): Mono<Long> = repository.save(dto.toEntity()).doOnSuccess { photos.save(it.id!!, dto.photos) }.map { it.id!! }
+    fun save(dto: EquityDTO): Mono<Long> = repository.save(dto.toEntity()).map { it.id!! }.doOnSuccess { photos.save(it, dto.photos) }
 
     fun findById(id: Long): Mono<EquityDTO> = Mono.zip(repository.findById(id), photos.findByEquityId(id))
             .map { fromEntity(it.t1, districts.findById(it.t1.district), stations.findById(it.t1.subway), it.t2) }
 
-    fun findByIds(ids: List<Long>): Flux<EquityDTO> = repository.findAllById(ids)
-            .map { fromEntity(it, districts.findById(it.district), stations.findById(it.subway), null) }
+    fun findByIds(ids: List<Long>): Mono<List<EquityDTO>> = Mono.zip(repository.findAllById(ids).collectList(), photos.findAllByEquityId(ids))
+            .map { it.t1.map {
+                e -> fromEntity(e, districts.findById(e.district), stations.findById(e.subway), it.t2[e.id]?.map { p -> p.id }) }}
 
     fun find(f: Filter): Flux<LocationDTO> {
         val equities = if (f.district == null && f.subway == null) {

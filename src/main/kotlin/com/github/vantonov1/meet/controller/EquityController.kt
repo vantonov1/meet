@@ -50,7 +50,7 @@ class EquityController(private val equities: EquityService, private val photos: 
 
     @GetMapping("/ids")
     @Transactional(readOnly = true)
-    fun findByIds(@RequestParam ids: List<Long>): Flux<EquityDTO> = equities.findByIds(ids)
+    fun findByIds(@RequestParam ids: List<Long>): Mono<List<EquityDTO>> = equities.findByIds(ids)
 
     @GetMapping("/prices")
     @Transactional(readOnly = true)
@@ -61,5 +61,5 @@ class EquityController(private val equities: EquityService, private val photos: 
     ): Mono<PriceRangeDTO> = equities.getPriceRange(Filter(getTypes(type), city, district, subway, null, null))
 
     private fun getTypes(type: List<String>) =
-            type.map { EquityType.valueOf(it).ordinal }.toList()
+            type.map { EquityType.valueOf(it).value }.toList()
 }

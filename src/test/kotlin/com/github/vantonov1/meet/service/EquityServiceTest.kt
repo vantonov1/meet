@@ -29,10 +29,11 @@ class EquityServiceTest {
     fun testCRUD() {
         val equity = Equity(null, 1, 1,
                 2, 1, null, null, null, 0.0, 0.0, 100500, null, 1, "test", null)
-        val id = equityService.save(fromEntity(equity, null, null, null)).block()
+        val id = equityService.save(fromEntity(equity, null, null, listOf("1_1.jpg", "2_2.jpg"))).block()
         assert(id != null)
         val retrieved = equityService.findById(id!!).block()
         assert(retrieved != null && retrieved.id!! == id && retrieved.info == "test")
+        assert(retrieved?.photos != null && retrieved.photos!!.containsAll(listOf("1_1.jpg", "2_2.jpg")))
 
         equityService.save(fromEntity(equity.copy(id = id, info = "updated"), null, null, null)).block()
         val updated = equityService.findById(id).block()
@@ -46,7 +47,7 @@ class EquityServiceTest {
     @Test
     @Ignore
     fun testLoad() {
-        val RENT_FLAT = EquityType.RENT_FLAT.ordinal.toByte()
+        val RENT_FLAT = EquityType.RENT_FLAT.value
         val mapper = jacksonObjectMapper()
         val ref = object : TypeReference<List<Facility>>() {}
         val facilities = mapper.readValue(javaClass.getResource("/f.json"), ref)

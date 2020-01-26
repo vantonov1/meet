@@ -17,5 +17,5 @@ class PhotoController(val service: PhotoService) {
     fun upload(@RequestBody files: Flux<Part>) = service.upload(files.filter{it is FilePart}.map { it as FilePart })
 
     @GetMapping(produces = [MediaType.IMAGE_JPEG_VALUE])
-    fun download(@PathVariable name: String) = service.download(name)
+    fun download(@RequestParam id: String) = service.download(id)
  }
