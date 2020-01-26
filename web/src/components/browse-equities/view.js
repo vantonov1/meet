@@ -23,11 +23,11 @@ import {
 } from "./slice";
 import AddEquity from "../add-equity/view";
 import PhotoAPI from "../../api/PhotoAPI";
+import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
 
 export default function BrowseEquities() {
-    const {locations, equities, filter, loading, drawerOpen, selectedEquity} = useSelector(state => state.browseEquities, shallowEqual);
+    const {locations, filter} = useSelector(state => state.browseEquities, shallowEqual);
     const dispatch = useDispatch();
-    const listContainerRef = React.createRef();
 
     useEffect(() => {
         dispatch(loadLocations());
@@ -35,32 +35,10 @@ export default function BrowseEquities() {
     });
 
     return (
-        <div ref={listContainerRef}>
-            <Drawer open={drawerOpen} variant="permanent" onClose={() => dispatch(toggleDrawer(false))}>
-                <Box width={400} height="100%">
-                    {loading && <CircularProgress/>}
-                    {!loading && equities.length === 0 && <span>Нет записей</span>}
-                    {equities.length !== 0 && <EquitiesList
-                        equities={equities}
-                        hasMore={equities.length < locations.length}
-                        onFetch={() => dispatch(loadMoreEquities())}
-                        onClick={(equity) => {dispatch(selectEquity(equity))}}
-                    />}
-                </Box>
-                <AddEquity type={filter.type} city={filter.city}/>
-              </Drawer>
-            <OsmMap
-                ref={OsmMap.ref}
-                onLocationsSelect={(locations) => dispatch(loadEquities(locations))}
-            />
-            <Drawer open={selectedEquity != null} variant="temporary" onClose={() => dispatch(unselectEquity())}>
-                {selectedEquity && <div className="image-preview" style={{overflowX: "auto"}}>
-                    {selectedEquity.photos?.map(f => <img key={f} style={{maxWidth: 150, maxHeight: 150}}
-                                                          src={PhotoAPI.url(f)} alt="Здесь было фото"/>)}
-                </div>
-                }
-            </Drawer>
-
+        <div>
+            <EquitiesDrawer variant="permanent"/>}
+            <EquityInfoDrawer variant="temporary"/>
+            <OsmMap ref={OsmMap.ref} onLocationsSelect={(locations) => dispatch(loadEquities(locations))}/>
             <FilterMenu
                 filter={filter}
                 onTypeSelected={(type) => dispatch(setType(type))}
@@ -72,3 +50,49 @@ export default function BrowseEquities() {
         </div>
     );
 }
+
+function EquitiesDrawer(props) {
+    const {locations, equities, filter, loading, drawerOpen} = useSelector(state => state.browseEquities, shallowEqual);
+    const dispatch = useDispatch();
+    return <Drawer open={drawerOpen} variant={props.variant} onClose={() => dispatch(toggleDrawer(false))}>
+        {<Box width={400} height="100%">
+            {loading && <CircularProgress/>}
+            {!loading && equities.length === 0 && <span>Нет записей</span>}
+            {equities.length !== 0 && <EquitiesList
+                equities={equities}
+                hasMore={equities.length < locations.length}
+                onFetch={() => dispatch(loadMoreEquities())}
+                onClick={(equity) => {
+                    dispatch(selectEquity(equity))
+                }}
+            />}
+        </Box>}
+        <AddEquity type={filter.type} city={filter.city}/>
+    </Drawer>;
+}
+
+function EquityInfoDrawer(props) {
+    const {selectedEquity} = useSelector(state => state.browseEquities, shallowEqual);
+    const dispatch = useDispatch();
+    return <SwipeableDrawer open={selectedEquity != null}
+                            variant={props.variant}
+                            anchor="bottom"
+                            onOpen={() => {
+                            }}
+                            onClose={() => dispatch(unselectEquity())}
+                            ModalProps={{
+                                keepMounted: true, // Better open performance on mobile.
+                            }}>
+        {selectedEquity && <div className="equity-info">
+            <Box width="100%" style={{maxHeight:"100px", marginBottom: "10px"}}>
+                {selectedEquity.info}
+            </Box>
+            <div className="image-preview" style={{overflowX: "auto"}}>
+                {selectedEquity.photos?.map(f => <img key={f} style={{maxWidth: 150, maxHeight: 150}}
+                                                      src={PhotoAPI.url(f)} alt="Здесь было фото"/>)}
+            </div>
+        </div>}
+    </SwipeableDrawer>
+}
+
+

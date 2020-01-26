@@ -50,7 +50,9 @@ function Equity(props) {
                 {subway && <span><span
                     style={{color: '#' + subway.color}}>&#9632;</span><span>&nbsp;{subway.name}&nbsp;</span></span>}
                 {!subway && district && <span>{district.name}&nbsp;р-н</span>}
-                <Box width={1}>{props.info}</Box>
+                <span>&nbsp;{props.square}м<span style={{ verticalAlign: "super"}}>2</span>
+                    {props.rooms && <span>&nbsp;{props.rooms}кк</span>}</span>
+                <Box width="100%" style={{whiteSpace: "nowrap", overflow: "hidden", textOverflow:"ellipsis"}}>{props.info}</Box>
             </Box>
         </ListItemText>
     </ListItem>
