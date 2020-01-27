@@ -2,14 +2,15 @@ import React from "react";
 import {Box} from "@material-ui/core";
 import {makeStyles} from '@material-ui/core/styles';
 import Button from "@material-ui/core/Button";
-import PhotoGallery from "./photo-gallery";
 
 const selectedFiles = [];
+
 export function getSelectedFiles() {
     return selectedFiles;
 }
+
 export function clearSelectedFiles() {
-    while(selectedFiles.length > 0) selectedFiles.pop()
+    while (selectedFiles.length > 0) selectedFiles.pop()
 }
 
 const useStyles = makeStyles(theme => ({
@@ -54,11 +55,10 @@ export default function PhotoUpload(props) {
                 }}
             />
             <label htmlFor="contained-button-file">
-                <Button variant="contained" component="span" className={classes.button}>
+                <Button component="span" className={classes.button}>
                     Добавить фото
                 </Button>
             </label>
-            {files.length > 0 && <PhotoGallery images={files.map(f => f.url)}/>}
         </Box>
     )
 }

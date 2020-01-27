@@ -22,6 +22,7 @@ import {TYPES} from "../common/equity-types";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import PhotoUpload from "../common/photo-upload";
+import PhotoGallery from "../common/photo-gallery";
 
 export default function AddEquity(props) {
     const {showDialog, equity, selectedPhotos, districts, subways, streets, streetText, validation} = useSelector(state => state.addEquity, shallowEqual);
@@ -89,13 +90,11 @@ export default function AddEquity(props) {
                                   }}
                     />
                     <TextField label="Дом"
-                               fullWidth
                                value={equity.building}
                                onChange={e => dispatch(setAddress({...equity.address, building: e.target.value}))}
                     />
                     <TextField label="Цена"
                                type="number"
-                               fullWidth
                                required  error={validation.price?.error} helperText={validation.price?.text}
                                inputProps={{ inputMode: 'decimal', step: 100000}}
                                value={equity.price}
@@ -103,7 +102,6 @@ export default function AddEquity(props) {
                     />
                     <TextField label="Площадь"
                                type="number"
-                               fullWidth
                                required error={validation.square?.error} helperText={validation.square?.text}
                                inputProps={{ inputMode: 'decimal'}}
                                value={equity.square}
@@ -111,7 +109,6 @@ export default function AddEquity(props) {
                     />
                     <TextField label="Количество комнат"
                                type="number"
-                               fullWidth
                                inputProps={{ inputMode: 'decimal'}}
                                value={equity.rooms}
                                onChange={e => dispatch(setEquity({...equity, rooms: e.target.value}))}
@@ -122,9 +119,10 @@ export default function AddEquity(props) {
                                value={equity.info}
                                onChange={e => dispatch(setEquity({...equity, info: e.target.value}))}
                     />
-                    <PhotoUpload files={selectedPhotos} onFileUploaded={f => dispatch(addPhoto(f))}/>
+                    {selectedPhotos.length > 0 && <PhotoGallery images={selectedPhotos.map(f => f.url)}/>}
                 </DialogContent>
                 <DialogActions>
+                    <PhotoUpload files={selectedPhotos} onFileUploaded={f => dispatch(addPhoto(f))}/>
                     <Button onClick={() => dispatch(toggleDialog(false))}>
                         Отменить
                     </Button>
