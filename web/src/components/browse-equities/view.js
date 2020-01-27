@@ -24,6 +24,7 @@ import {
 import AddEquity from "../add-equity/view";
 import PhotoAPI from "../../api/PhotoAPI";
 import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
+import PhotoGallery from "../common/photo-gallery";
 
 export default function BrowseEquities() {
     const {locations, filter} = useSelector(state => state.browseEquities, shallowEqual);
@@ -84,14 +85,11 @@ function EquityInfoDrawer(props) {
                                 keepMounted: true, // Better open performance on mobile.
                             }}>
         {selectedEquity && <div className="equity-info">
-            <Box width="100%" style={{maxHeight:"100px", marginBottom: "10px"}}>
+            {selectedEquity.info && <Box width="100%" style={{maxHeight:"100px", marginBottom: "10px"}}>
                 {selectedEquity.info}
-            </Box>
-            <div className="image-preview" style={{overflowX: "auto"}}>
-                {selectedEquity.photos?.map(f => <img key={f} style={{maxWidth: 150, maxHeight: 150}}
-                                                      src={PhotoAPI.url(f)} alt="Здесь было фото"/>)}
-            </div>
-        </div>}
+            </Box>}
+            {selectedEquity.photos && <PhotoGallery images={selectedEquity.photos.map(f => PhotoAPI.url(f))}/>}
+         </div>}
     </SwipeableDrawer>
 }
 
