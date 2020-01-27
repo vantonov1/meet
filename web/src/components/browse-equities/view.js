@@ -25,6 +25,8 @@ import AddEquity from "../add-equity/view";
 import PhotoAPI from "../../api/PhotoAPI";
 import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
 import PhotoGallery from "../common/photo-gallery";
+import CloseIcon from "@material-ui/icons/Close";
+import Fab from "@material-ui/core/Fab";
 
 export default function BrowseEquities() {
     const {locations, filter} = useSelector(state => state.browseEquities, shallowEqual);
@@ -38,7 +40,7 @@ export default function BrowseEquities() {
     return (
         <div>
             <EquitiesDrawer variant="permanent"/>}
-            <EquityInfoDrawer variant="temporary"/>
+            <EquityInfoDrawer variant="permanent"/>
             <OsmMap ref={OsmMap.ref} onLocationsSelect={(locations) => dispatch(loadEquities(locations))}/>
             <FilterMenu
                 filter={filter}
@@ -90,6 +92,11 @@ function EquityInfoDrawer(props) {
             </Box>}
             {selectedEquity.photos && <PhotoGallery images={selectedEquity.photos.map(f => PhotoAPI.url(f))}/>}
          </div>}
+        <Fab style={{position: "absolute", right: 5, top: 5}} size="small" onClick={() => {
+            dispatch(unselectEquity())
+        }}>
+            <CloseIcon/>
+        </Fab>
     </SwipeableDrawer>
 }
 
