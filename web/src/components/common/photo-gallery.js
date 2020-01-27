@@ -48,7 +48,7 @@ export default function PhotoGallery(props) {
 
     function gallery(props) {
         return <div className={classes.gridList}>
-            {props.images.map((f, i) => <img key={f} src={f} className={classes.image}
+            {props.images.map((f, i) => <img key={i} src={f} className={classes.image}
                                              onClick={(e) => handleClick(e, i)}
                                              alt={"Здесь было фото"}/>)}
         </div>;

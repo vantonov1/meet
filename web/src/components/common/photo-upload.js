@@ -29,7 +29,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function PhotoUpload(props) {
     const classes = useStyles();
-    const {files, onFileUploaded} = props;
+    const {onFileUploaded} = props;
 
     return (
         <Box>
@@ -44,11 +44,8 @@ export default function PhotoUpload(props) {
                         const file = e.target.files[i];
                         const reader = new FileReader();
                         reader.onloadend = () => {
-                            selectedFiles.push(file);
-                            onFileUploaded({
-                                file: file.name,
-                                url: reader.result
-                            });
+                            selectedFiles.push({file: file, url:reader.result});
+                            onFileUploaded(file.name);
                         };
                         reader.readAsDataURL(file);
                     }

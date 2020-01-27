@@ -14,20 +14,22 @@ import {
     setStreetText,
     toggleDialog,
 } from "./slice";
-import {Dialog, MenuItem, Select} from "@material-ui/core";
+import {Dialog, LinearProgress, MenuItem, Select} from "@material-ui/core";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
 import {TYPES} from "../common/equity-types";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
-import PhotoUpload from "../common/photo-upload";
+import PhotoUpload, {getSelectedFiles} from "../common/photo-upload";
 import PhotoGallery from "../common/photo-gallery";
+import Typography from "@material-ui/core/Typography";
 
 export default function AddEquity(props) {
-    const {showDialog, equity, selectedPhotos, districts, subways, streets, streetText, validation} = useSelector(state => state.addEquity, shallowEqual);
+    const {showDialog, equity, selectedPhotos, districts, subways, streets, streetText, validation, save} = useSelector(state => state.addEquity, shallowEqual);
     const dispatch = useDispatch();
     const {type, city} = props;
+    const selectedFiles = getSelectedFiles();
 
     useEffect(() => {
         if (equity.type !== type)
@@ -56,6 +58,13 @@ export default function AddEquity(props) {
             <Fab color="primary">
                 <AddIcon onClick={() => dispatch(toggleDialog(true))}/>
             </Fab>
+            <Dialog maxWidth="xs" fullWidth open={save.uploadingFiles || save.creatingEquity}>
+                <div>
+                    {save.uploadingFiles && <Typography gutterBottom align={"center"} variant="h5">Загрузка фотографий</Typography>}
+                    {save.creatingEquity && <Typography>Создание объекта</Typography>}
+                    {save.uploadingFiles && <LinearProgress value={save.uploadingFilesProgress} variant={"determinate"}/>}
+                </div>
+            </Dialog>
             <Dialog open={showDialog} maxWidth="xs">
                 <DialogContent>
                     <Select label="Тип"
@@ -95,21 +104,21 @@ export default function AddEquity(props) {
                     />
                     <TextField label="Цена"
                                type="number"
-                               required  error={validation.price?.error} helperText={validation.price?.text}
-                               inputProps={{ inputMode: 'decimal', step: 100000}}
+                               required error={validation.price?.error} helperText={validation.price?.text}
+                               inputProps={{inputMode: 'decimal', step: 100000}}
                                value={equity.price}
                                onChange={e => dispatch(setEquity({...equity, price: e.target.value}))}
                     />
                     <TextField label="Площадь"
                                type="number"
                                required error={validation.square?.error} helperText={validation.square?.text}
-                               inputProps={{ inputMode: 'decimal'}}
+                               inputProps={{inputMode: 'decimal'}}
                                value={equity.square}
                                onChange={e => dispatch(setEquity({...equity, square: e.target.value}))}
                     />
                     <TextField label="Количество комнат"
                                type="number"
-                               inputProps={{ inputMode: 'decimal'}}
+                               inputProps={{inputMode: 'decimal'}}
                                value={equity.rooms}
                                onChange={e => dispatch(setEquity({...equity, rooms: e.target.value}))}
                     />
@@ -119,14 +128,16 @@ export default function AddEquity(props) {
                                value={equity.info}
                                onChange={e => dispatch(setEquity({...equity, info: e.target.value}))}
                     />
-                    {selectedPhotos.length > 0 && <PhotoGallery images={selectedPhotos.map(f => f.url)}/>}
+                    {selectedFiles.length > 0 && <PhotoGallery images={selectedFiles.map(f => f.url)}/>}
                 </DialogContent>
                 <DialogActions>
                     <PhotoUpload files={selectedPhotos} onFileUploaded={f => dispatch(addPhoto(f))}/>
                     <Button onClick={() => dispatch(toggleDialog(false))}>
                         Отменить
                     </Button>
-                    <Button onClick={() => {dispatch(saveEquity(equity))}} color="primary">
+                    <Button onClick={() => {
+                        dispatch(saveEquity(equity))
+                    }} color="primary">
                         Сохранить
                     </Button>
                 </DialogActions>
@@ -164,7 +175,8 @@ function SelectStreet(props) {
             disableOpenOnFocus
             // getOptionLabel={a => (a.type ? a.type : '') + ' ' + a.name}
             renderInput={params => (
-                <TextField {...params} label={props.label} required  error={props.error} helperText={props.helperText} fullWidth/>
+                <TextField {...params} label={props.label} required error={props.error} helperText={props.helperText}
+                           fullWidth/>
             )}
             onInputChange={props.onInputChange}
             onChange={props.onChange}

@@ -63,6 +63,11 @@ function createInitialState() {
                 max: 100000000
             }
         },
+        save: {
+            uploadingFiles: false,
+            uploadingFilesProgress: 0,
+            creatingEquity: false
+        }
     }
 }
 
@@ -77,6 +82,7 @@ const slice = createSlice({
             state.streets = [];
             state.streetText = '';
             state.validation = initial.validation;
+            state.save = initial.save;
             state.showDialog = payload;
             clearSelectedFiles();
         },
@@ -107,6 +113,10 @@ const slice = createSlice({
         addPhoto: (state, {payload}) => {
             state.selectedPhotos = [...state.selectedPhotos, payload]
         },
+        setSave: (state, {payload}) => {
+            state.save = payload
+        },
+
     }
 });
 
@@ -135,16 +145,26 @@ function validate(equity) {
 }
 
 export const saveEquity = (equity) => async dispatch => {
-    const {toggleDialog, setValidation} = slice.actions;
+    const {toggleDialog, setValidation, setSave} = slice.actions;
     try {
         let errors = validate(equity);
         if (Object.entries(errors).length === 0) {
             let unfreeze = {...equity};
             let selectedFiles = getSelectedFiles();
             if (selectedFiles.length !== 0) {
-                unfreeze.photos = await PhotoAPI.upload(selectedFiles)
+                dispatch(setSave({uploadingFiles: true}));
+                try {
+                    unfreeze.photos = await PhotoAPI.upload(selectedFiles.map(f => f.file), (p) => dispatch(setSave({uploadingFilesProgress: p})))
+                } finally {
+                    dispatch(setSave({uploadingFiles: false, uploadingFilesProgress: 0}));
+                }
             }
-            await EquityAPI.create(unfreeze);
+            dispatch(setSave({creatingEquity: true}));
+            try {
+                await EquityAPI.create(unfreeze);
+            } finally {
+                dispatch(setSave({creatingEquity: false}));
+            }
             dispatch(toggleDialog(false))
         } else
             dispatch(setValidation(errors))
