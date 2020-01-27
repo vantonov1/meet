@@ -2,6 +2,7 @@ import React from "react";
 import {Box} from "@material-ui/core";
 import {makeStyles} from '@material-ui/core/styles';
 import Button from "@material-ui/core/Button";
+import PhotoGallery from "./photo-gallery";
 
 const selectedFiles = [];
 export function getSelectedFiles() {
@@ -20,6 +21,9 @@ const useStyles = makeStyles(theme => ({
     input: {
         display: 'none',
     },
+    button: {
+        margin: theme.spacing(2),
+    }
 }));
 
 export default function PhotoUpload(props) {
@@ -50,13 +54,11 @@ export default function PhotoUpload(props) {
                 }}
             />
             <label htmlFor="contained-button-file">
-                <Button variant="contained" component="span">
+                <Button variant="contained" component="span" className={classes.button}>
                     Добавить фото
                 </Button>
             </label>
-            <div className="image-preview" style={{overflowX: "auto"}}>
-                {files.map(f => <img key={f.name} style={{maxWidth: 150, maxHeight: 150}} src={f.url} alt="Здесь было фото"/>)}
-            </div>
+            {files.length > 0 && <PhotoGallery images={files.map(f => f.url)}/>}
         </Box>
     )
 }
