@@ -34,18 +34,22 @@ class EquityService(
             .map { fromEntity(it.t1, districts.findById(it.t1.district), stations.findById(it.t1.subway), it.t2) }
 
     fun findByIds(ids: List<Long>): Mono<List<EquityDTO>> = Mono.zip(equityRepository.findAllById(ids).collectList(), photos.findAllByEquityId(ids))
-            .map { it.t1.map {
-                e -> fromEntity(e, districts.findById(e.district), stations.findById(e.subway), it.t2[e.id]?.map { p -> p.id }) }}
+            .map {
+                it.t1.sortBy { it.price }
+                it.t1.map { e -> fromEntity(e, districts.findById(e.district), stations.findById(e.subway), it.t2[e.id]?.map { p -> p.id }) }
+            }
 
     fun find(f: Filter): Flux<LocationDTO> {
         val locations = if (f.district == null && f.subway == null) {
             locationRepository.find(f.type, f.city, f.priceMin ?: 0, f.priceMax ?: Int.MAX_VALUE)
         } else if (f.district == null) {
-            locationRepository.findWithSubway(f.type, f.city,  f.subway!!, f.priceMin ?: 0, f.priceMax ?: Int.MAX_VALUE)
+            locationRepository.findWithSubway(f.type, f.city, f.subway!!, f.priceMin ?: 0, f.priceMax ?: Int.MAX_VALUE)
         } else if (f.subway == null) {
-            locationRepository.findWithDistrict(f.type, f.city, f.district, f.priceMin ?: 0, f.priceMax ?: Int.MAX_VALUE)
+            locationRepository.findWithDistrict(f.type, f.city, f.district, f.priceMin ?: 0, f.priceMax
+                    ?: Int.MAX_VALUE)
         } else {
-            locationRepository.findWithDistrictAndSubway(f.type,f.city, f.district, f.subway, f.priceMin ?: 0, f.priceMax
+            locationRepository.findWithDistrictAndSubway(f.type, f.city, f.district, f.subway, f.priceMin
+                    ?: 0, f.priceMax
                     ?: Int.MAX_VALUE)
         }
         return locations.map { LocationDTO(it.id!!, it.lat, it.lon) }

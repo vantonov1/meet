@@ -7,7 +7,8 @@ import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
 
 @Repository
-interface LocationRepository : ReactiveCrudRepository<Location, Long> {
+interface
+LocationRepository : ReactiveCrudRepository<Location, Long> {
 
     @Query("select id, lat, lon from equity where type in (:type) and city = :city and hidden is null " +
             "and price >= (:priceMin) and price <= (:priceMax) " +
