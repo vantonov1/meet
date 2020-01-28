@@ -23,7 +23,7 @@ const useStyles = makeStyles(theme => ({
         // Promote the list into his own layer on Chrome. This cost memory but helps keeping high FPS.
         transform: 'translateZ(0)',
         listStyle: "none",
-        overflowX: "scroll",
+        overflowX: "auto",
         overflowY: "hidden"
     },
     image: {height: GALLERY_HEIGHT - IMAGE_PADDING * 2, padding: IMAGE_PADDING},

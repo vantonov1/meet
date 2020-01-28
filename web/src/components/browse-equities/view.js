@@ -23,7 +23,6 @@ import {
 } from "./slice";
 import AddEquity from "../add-equity/view";
 import PhotoAPI from "../../api/PhotoAPI";
-import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
 import PhotoGallery from "../common/photo-gallery";
 import CloseIcon from "@material-ui/icons/Close";
 import Fab from "@material-ui/core/Fab";
@@ -39,7 +38,7 @@ export default function BrowseEquities() {
 
     return (
         <div>
-            <EquitiesDrawer variant="permanent"/>}
+            <EquitiesDrawer variant="permanent"/>
             <EquityInfoDrawer variant="permanent"/>
             <OsmMap ref={OsmMap.ref} onLocationsSelect={(locations) => dispatch(loadEquities(locations))}/>
             <FilterMenu
@@ -59,7 +58,7 @@ function EquitiesDrawer(props) {
     const dispatch = useDispatch();
     return <Drawer open={drawerOpen} variant={props.variant} onClose={() => dispatch(toggleDrawer(false))}>
         {<Box width={400} height="100%">
-            {loading && <CircularProgress/>}
+            {loading && <CircularProgress style={{position: "absolute"}}/>}
             {!loading && equities.length === 0 && <span>Нет записей</span>}
             {equities.length !== 0 && <EquitiesList
                 equities={equities}
@@ -77,17 +76,15 @@ function EquitiesDrawer(props) {
 function EquityInfoDrawer(props) {
     const {selectedEquity} = useSelector(state => state.browseEquities, shallowEqual);
     const dispatch = useDispatch();
-    return <SwipeableDrawer open={selectedEquity != null}
+    return <Drawer open={selectedEquity != null}
                             variant={props.variant}
                             anchor="bottom"
-                            onOpen={() => {
-                            }}
                             onClose={() => dispatch(unselectEquity())}
                             ModalProps={{
                                 keepMounted: true, // Better open performance on mobile.
                             }}>
-        {selectedEquity && <div className="equity-info">
-            {selectedEquity.info && <Box width="100%" style={{maxHeight:"100px", marginBottom: "10px"}}>
+        {(selectedEquity?.info || selectedEquity?.photos) && <div className="equity-info" style={{minHeight:50}}>
+            {selectedEquity.info && <Box width="100%" style={{maxHeight:"100px", marginBottom: "10px", textAlign: "left"}}>
                 {selectedEquity.info}
             </Box>}
             {selectedEquity.photos && <PhotoGallery images={selectedEquity.photos.map(f => PhotoAPI.url(f))}/>}
@@ -97,7 +94,7 @@ function EquityInfoDrawer(props) {
         }}>
             <CloseIcon/>
         </Fab>
-    </SwipeableDrawer>
+    </Drawer>
 }
 
 

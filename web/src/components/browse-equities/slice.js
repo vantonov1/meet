@@ -22,6 +22,7 @@ const slice = createSlice({
         },
         startLoading: state => {
             state.loading = true;
+            state.selectedEquity = null
         },
         finishLoading: state => {
             state.loading = false;
