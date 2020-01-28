@@ -19,7 +19,7 @@ data class Equity(
         @Id
         val id: Long?,
         val type: Byte, //EquityType,
-        val ownedBy: Long?,
+        val ownedBy: Int?,
         val city: Short,
         val district: Short?,
         val subway: String?,

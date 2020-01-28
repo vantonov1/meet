@@ -77,6 +77,59 @@ databaseChangeLog:
                    type: bigint
                    constraints:
                        nullable: false
+      - createTable:
+            tableName: contact
+            columns:
+            - column:
+                  name: of
+                  type: int
+                  constraints:
+                    nullable: false
+            - column:
+                   name: contact_type
+                   type: tinyint
+                   constraints:
+                       nullable: false
+            - column:
+                   name: contact
+                   type: varchar(64)
+                   constraints:
+                       nullable: false
+      - createTable:
+            tableName: customer
+            columns:
+            - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+            - column:
+                   name: name
+                   type: varchar(255)
+                   constraints:
+                       nullable: false
+      - createTable:
+            tableName: agent
+            columns:
+            - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+            - column:
+                   name: name
+                   type: varchar(255)
+                   constraints:
+                       nullable: false
+            - column:
+                  name: employed_by
+                  type: int
+                  constraints:
+                    nullable: false
       - createIndex:
             indexName: find_equities_idx
             tableName: equity

@@ -8,7 +8,7 @@ import com.github.vantonov1.meet.entities.Subway
 data class EquityDTO(
         val id: Long?,
         val type: String, //EquityType.name,
-//        val ownedBy: Long?,
+        val ownedBy: Int?,
         val address: AddressDTO,
         val price: Int,
         val square: Int?,
@@ -17,14 +17,14 @@ data class EquityDTO(
         val photos: List<String>?
 ) {
     fun toEntity(): Equity {
-        return Equity(id, EquityType.valueOf(type).value, 0,
+        return Equity(id, EquityType.valueOf(type).value, ownedBy,
                 address.city, address.district?.id, address.subway?.id, address.street, address.building, address.lat, address.lon,
                 price, square, rooms, info, null)
     }
 }
 
 fun fromEntity(equity: Equity, district: District?, subway: Subway?, photos: List<String>?) = EquityDTO(
-        equity.id, EquityType.valueOf(equity.type).name,
+        equity.id, EquityType.valueOf(equity.type).name, equity.ownedBy,
         AddressDTO(equity.city, district, subway, equity.street, equity.building, equity.lat, equity.lon),
         equity.price, equity.square, equity.rooms, equity.info, photos
 )

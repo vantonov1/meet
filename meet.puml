@@ -1,15 +1,24 @@
 @startuml
-hide members
-class Equity
 
-Equity --> Owner : ownedBy
-Equity <-- Photo: of
-Agency -> Equity : exposedBy
-Equity <-- Agent : worksWith
+hide members
+class Equity #lightgreen
+class Photo #lightgreen
+class Agent #lightgreen
+class Customer #lightgreen
+
+Equity <- Photo: of
+Equity --> Customer : ownedBy
+Equity --> Agency  : exposedBy
+Equity --> Agent : responsible
+
 Agent -> Agency : employedBy
-Agent --> Meeting : scheduledBy
-Customer --> Meeting : attends
+
+Meeting --> Agent : scheduledBy
+Meeting --> Customer : attends
 Meeting --> Equity : at
-Agent <- Customer : contacted
+
+Request --> Agent : handledBy
+Request --> Customer : issuedBy
+Request --> Equity : about
 
 @enduml
