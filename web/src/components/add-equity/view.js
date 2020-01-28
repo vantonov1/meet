@@ -9,33 +9,27 @@ import {
     loadDistricts,
     loadSubways,
     saveEquity,
-    setAddress,
-    setEquity,
-    setStreetText,
+    setEquityField,
+    setField,
     toggleDialog,
 } from "./slice";
-import {Dialog, LinearProgress, MenuItem, Select} from "@material-ui/core";
-import DialogContent from "@material-ui/core/DialogContent";
+import {Dialog, LinearProgress} from "@material-ui/core";
 import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
-import {TYPES} from "../common/equity-types";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import TextField from "@material-ui/core/TextField";
-import PhotoUpload, {getSelectedFiles} from "../common/photo-upload";
-import PhotoGallery from "../common/photo-gallery";
+import PhotoUpload from "../common/photo-upload";
 import Typography from "@material-ui/core/Typography";
+import EditEquityContent from "./EditEquityContent";
 
 export default function AddEquity(props) {
     const {showDialog, equity, selectedPhotos, districts, subways, streets, streetText, validation, save} = useSelector(state => state.addEquity, shallowEqual);
     const dispatch = useDispatch();
     const {type, city} = props;
-    const selectedFiles = getSelectedFiles();
 
     useEffect(() => {
         if (equity.type !== type)
-            dispatch(setEquity({...equity, type}));
+            dispatch(setEquityField({name: "type", value: type}));
         if (equity.address.city !== city)
-            dispatch(setAddress({...equity.address, city}));
+            dispatch(setEquityField({name: "address", value: {...equity.address, city}}));
     }, [equity.address.city, city, equity.type, type]);
 
     useEffect(() => {
@@ -58,78 +52,14 @@ export default function AddEquity(props) {
             <Fab color="primary">
                 <AddIcon onClick={() => dispatch(toggleDialog(true))}/>
             </Fab>
-            <Dialog maxWidth="xs" fullWidth open={save.uploadingFiles || save.creatingEquity}>
-                <div>
-                    {save.uploadingFiles && <Typography gutterBottom align={"center"} variant="h5">Загрузка фотографий</Typography>}
-                    {save.creatingEquity && <Typography>Создание объекта</Typography>}
-                    {save.uploadingFiles && <LinearProgress value={save.uploadingFilesProgress} variant={"determinate"}/>}
-                </div>
-            </Dialog>
+            <SaveProgress save={save}/>
             <Dialog open={showDialog} maxWidth="xs">
-                <DialogContent>
-                    <Select label="Тип"
-                            required
-                            value={equity.type ? equity.type : type}
-                            fullWidth
-                            onChange={e => dispatch(setEquity({...equity, type: e.target.value}))}>
-                        {Object.entries(TYPES).map(k => <MenuItem key={k[0]} value={k[0]}>{k[1]}</MenuItem>)}
-                    </Select>
-                    <SelectDirectory label="Район"
-                                     options={districts}
-                                     value={equity.district}
-                                     onChange={(e, v) => dispatch(setAddress({...equity.address, district: v}))}
-                    />
-                    <SelectDirectory label="Станция метро"
-                                     options={subways}
-                                     value={equity.subway}
-                                     onChange={(e, v) => dispatch(setAddress({...equity.address, subway: v}))}
-                    />
-                    <SelectStreet label="Улица"
-                                  options={streets}
-                                  value={equity.street}
-                                  error={validation.street?.error}
-                                  helperText={validation.street?.text}
-                                  inputValue={streetText}
-                                  onChange={(e, v) => {
-                                      dispatch(setAddress({...equity.address, street: v}));
-                                      dispatch(setStreetText(v))
-                                  }}
-                                  onInputChange={e => {
-                                      if (e?.type === 'change') dispatch(setStreetText(e.target.value))
-                                  }}
-                    />
-                    <TextField label="Дом"
-                               value={equity.building}
-                               onChange={e => dispatch(setAddress({...equity.address, building: e.target.value}))}
-                    />
-                    <TextField label="Цена"
-                               type="number"
-                               required error={validation.price?.error} helperText={validation.price?.text}
-                               inputProps={{inputMode: 'decimal', step: 100000}}
-                               value={equity.price}
-                               onChange={e => dispatch(setEquity({...equity, price: e.target.value}))}
-                    />
-                    <TextField label="Площадь"
-                               type="number"
-                               required error={validation.square?.error} helperText={validation.square?.text}
-                               inputProps={{inputMode: 'decimal'}}
-                               value={equity.square}
-                               onChange={e => dispatch(setEquity({...equity, square: e.target.value}))}
-                    />
-                    <TextField label="Количество комнат"
-                               type="number"
-                               inputProps={{inputMode: 'decimal'}}
-                               value={equity.rooms}
-                               onChange={e => dispatch(setEquity({...equity, rooms: e.target.value}))}
-                    />
-                    <TextField label="Дополнительная информация"
-                               multiline
-                               fullWidth
-                               value={equity.info}
-                               onChange={e => dispatch(setEquity({...equity, info: e.target.value}))}
-                    />
-                    {selectedFiles.length > 0 && <PhotoGallery images={selectedFiles.map(f => f.url)}/>}
-                </DialogContent>
+                <EditEquityContent equity={equity} type={type} validation={validation}
+                                   districts={districts} subways={subways}
+                                   streets={streets} streetText={streetText}
+                                   onFieldChange={change => dispatch(setField(change))}
+                                   onEquityFieldChange={change => dispatch(setEquityField(change))}
+                />
                 <DialogActions>
                     <PhotoUpload files={selectedPhotos} onFileUploaded={f => dispatch(addPhoto(f))}/>
                     <Button onClick={() => dispatch(toggleDialog(false))}>
@@ -141,45 +71,20 @@ export default function AddEquity(props) {
                         Сохранить
                     </Button>
                 </DialogActions>
-
             </Dialog>
         </div>
     )
 }
 
-function SelectDirectory(props) {
-    return (
-        <Autocomplete
-            options={props.options}
-            value={props.value}
-            autoHighlight
-            autoComplete
-            disableOpenOnFocus
-            getOptionLabel={a => a && a !== '' ? a.name : ''}
-            renderInput={params => (
-                <TextField {...params} label={props.label} fullWidth/>
-            )}
-            filterOptions={(options, state) => options.filter(o => o.name.match(new RegExp("^" + state.inputValue, "i")))}
-            onChange={props.onChange}
-        />
-    )
+function SaveProgress(props) {
+    const {save} = props;
+    return <Dialog maxWidth="xs" fullWidth open={save.uploadingFiles || save.creatingEquity}>
+        <div>
+            {save.uploadingFiles &&
+            <Typography gutterBottom align={"center"} variant="h5">Загрузка фотографий</Typography>}
+            {save.creatingEquity && <Typography>Создание объекта</Typography>}
+            {save.uploadingFiles && <LinearProgress value={save.uploadingFilesProgress} variant={"determinate"}/>}
+        </div>
+    </Dialog>;
 }
 
-function SelectStreet(props) {
-    return (<Autocomplete
-            options={props.options}
-            value={props.value}
-            inputValue={props.inputValue}
-            autoHighlight
-            autoComplete
-            disableOpenOnFocus
-            // getOptionLabel={a => (a.type ? a.type : '') + ' ' + a.name}
-            renderInput={params => (
-                <TextField {...params} label={props.label} required error={props.error} helperText={props.helperText}
-                           fullWidth/>
-            )}
-            onInputChange={props.onInputChange}
-            onChange={props.onChange}
-        />
-    )
-}

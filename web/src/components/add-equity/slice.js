@@ -86,42 +86,20 @@ const slice = createSlice({
             state.showDialog = payload;
             clearSelectedFiles();
         },
-        setEquity: (state, {payload}) => {
-            state.equity = payload
+        setField: (state, {payload}) => {
+            state[payload.name] = payload.value
         },
-        setAddress: (state, {payload}) => {
-            state.equity.address = payload
-        },
-        setDistricts: (state, {payload}) => {
-            state.districts = payload
-        },
-        setSubways: (state, {payload}) => {
-            state.subways = payload
-        },
-        setStreets: (state, {payload}) => {
-            state.streets = payload
-        },
-        setStreetText: (state, {payload}) => {
-            if (state.streetText !== payload) {
-                state.streets = [];
-                state.streetText = payload
-            }
-        },
-        setValidation: (state, {payload}) => {
-            state.validation = payload
+        setEquityField: (state, {payload}) => {
+            state.equity[payload.name] = payload.value
         },
         addPhoto: (state, {payload}) => {
             state.selectedPhotos = [...state.selectedPhotos, payload]
         },
-        setSave: (state, {payload}) => {
-            state.save = payload
-        },
-
     }
 });
 
 export default slice.reducer
-export const {toggleDialog, setEquity, setAddress, setStreetText, addPhoto} = slice.actions;
+export const {toggleDialog, setField, setEquityField, addPhoto} = slice.actions;
 
 function validate(equity) {
     let result = {};
@@ -145,7 +123,8 @@ function validate(equity) {
 }
 
 export const saveEquity = (equity) => async dispatch => {
-    const {toggleDialog, setValidation, setSave} = slice.actions;
+    const {toggleDialog, setField} = slice.actions;
+    const setSave= (v) => setField({name: "save", value: v});
     try {
         let errors = validate(equity);
         if (Object.entries(errors).length === 0) {
@@ -167,37 +146,39 @@ export const saveEquity = (equity) => async dispatch => {
             }
             dispatch(toggleDialog(false))
         } else
-            dispatch(setValidation(errors))
+            dispatch(setField({name: "validation", value: errors}))
     } catch (reason) {
         dispatch(show(reason.message))
     }
 };
 
 export const loadDistricts = (city) => async (dispatch) => {
-    const {setDistricts} = slice.actions;
+    const {setField} = slice.actions;
     try {
-        dispatch(setDistricts(await DirectoryAPI.fetchDistricts(city)))
+        let districts = await DirectoryAPI.fetchDistricts(city);
+        dispatch(setField({name: "districts", value: districts}))
     } catch (reason) {
         dispatch(show(reason.message))
     }
 };
 
 export const loadSubways = (city) => async (dispatch) => {
-    const {setSubways} = slice.actions;
+    const {setField} = slice.actions;
     try {
-        dispatch(setSubways(await DirectoryAPI.fetchSubways(city)))
+        let subways = await DirectoryAPI.fetchSubways(city);
+        dispatch(setField({name: "subways", value: subways}))
     } catch (reason) {
         dispatch(show(reason.message))
     }
 };
 
 export const fetchStreets = (city, query) => async (dispatch, getState) => {
-    const {setStreets} = slice.actions;
+    const {setField} = slice.actions;
     try {
         let streets = await KladrAPI.fetchStreets(city, query);
         const {streetText} = getState().addEquity;
         if (query === streetText)
-            dispatch(setStreets(streets))
+            dispatch(setField({name: "streets", value: streets}))
     } catch (reason) {
         dispatch(show(reason.message))
     }

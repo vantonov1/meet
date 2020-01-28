@@ -8,7 +8,7 @@ import com.github.vantonov1.meet.entities.Subway
 data class EquityDTO(
         val id: Long?,
         val type: String, //EquityType.name,
-        val ownedBy: Int?,
+        val ownedBy: Int? = -1,
         val address: AddressDTO,
         val price: Int,
         val square: Int?,
