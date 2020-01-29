@@ -119,6 +119,8 @@ function validate(equity) {
     }
     if (!equity.address.building) {
         result.building = {error: true, text: "Обязательное поле"}
+    } else if(equity.address.lat == null) {
+        result.building = {error: true, text: "Местоположение не определено"}
     }
     if (!equity.price) {
         result.price = {error: true, text: "Обязательное поле"}
