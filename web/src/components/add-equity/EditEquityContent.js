@@ -8,7 +8,7 @@ import {getSelectedFiles} from "../common/photo-upload";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
 export default function EditEquityContent(props) {
-    const {equity, districts, subways, validation, streets, streetText, onFieldChange, onEquityFieldChange} = props;
+    const {equity, districts, subways, validation, streets, streetText, onFieldChange, onEquityFieldChange, onLocationChange} = props;
     const selectedFiles = getSelectedFiles();
 
     return <DialogContent>
@@ -21,22 +21,23 @@ export default function EditEquityContent(props) {
         </Select>
         <SelectDirectory label="Район"
                          options={districts}
-                         value={equity.district}
+                         value={equity.address.district}
                          onChange={(e, v) => onEquityFieldChange({name: "address", value: {...equity.address, district: v}})}
         />
         <SelectDirectory label="Станция метро"
                          options={subways}
-                         value={equity.subway}
+                         value={equity.address.subway}
                          onChange={(e, v) => onEquityFieldChange({name: "address", value: {...equity.address, subway: v}})}
         />
         <SelectStreet label="Улица"
                       options={streets}
-                      value={equity.street}
+                      value={equity.address.street}
                       error={validation.street?.error}
                       helperText={validation.street?.text}
                       inputValue={streetText}
                       onChange={(e, v) => {
                           onEquityFieldChange({name: "address", value: {...equity.address, street: v}});
+                          onFieldChange({name: "streetText", value: v});
                           onFieldChange({name: "streets", value: []})
                       }}
                       onInputChange={e => {
@@ -47,8 +48,14 @@ export default function EditEquityContent(props) {
                       }}
         />
         <TextField label="Дом"
-                   value={equity.building}
-                   onChange={e => onEquityFieldChange({name: "address", value: {...equity.address, building: e.target.value}})}
+                   value={equity.address.building}
+                   required error={validation.building?.error}
+                   helperText={validation.building?.text}
+                   onChange={e => {
+                       let address = {...equity.address, building: e.target.value};
+                       onEquityFieldChange({name: "address", value: address});
+                       onLocationChange(address)
+                   }}
         />
         <TextField label="Цена"
                    type="number"

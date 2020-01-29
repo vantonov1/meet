@@ -5,6 +5,12 @@ import KladrAPI from "../../api/KladrAPI";
 import EquityAPI from "../../api/EquityAPI";
 import PhotoAPI from "../../api/PhotoAPI";
 import {clearSelectedFiles, getSelectedFiles} from "../common/photo-upload";
+import {geocode} from "../../api/NominatimAPI";
+
+const CITY = {
+    1: 'Москва',
+    2: 'Санкт-Петербург'
+};
 
 const LIMITS = {
     square: {
@@ -33,7 +39,9 @@ function createInitialState() {
                     name: ''
                 },
                 street: '',
-                building: ''
+                building: '',
+                lat: null,
+                lon: null
             },
             price: '',
             square: '',
@@ -53,14 +61,14 @@ function createInitialState() {
             square: {
                 error: false,
                 text: '',
-                min: 10,
-                max: 10000
             },
             price: {
                 error: false,
                 text: '',
-                min: 100000,
-                max: 100000000
+            },
+            building: {
+                error: false,
+                text: '',
             }
         },
         save: {
@@ -109,6 +117,9 @@ function validate(equity) {
     if (!equity.address.street) {
         result.street = {error: true, text: "Обязательное поле"}
     }
+    if (!equity.address.building) {
+        result.building = {error: true, text: "Обязательное поле"}
+    }
     if (!equity.price) {
         result.price = {error: true, text: "Обязательное поле"}
     } else if (equity.price < LIMITS.price.min || equity.price > LIMITS.price.max) {
@@ -122,9 +133,35 @@ function validate(equity) {
     return result;
 }
 
+export const setLocation = (address) => async (dispatch, getState) => {
+    const {setEquityField} = slice.actions;
+    let {equity, validation} = getState().addEquity;
+    if (address?.street.length > 0 && address.building?.length > 0) {
+        let locations = await geocode(CITY[address.city], address.street, address.building);
+        if (address === equity.address) {
+            if (locations?.filter(l => l.class === 'building').length > 0) {
+                dispatch(setEquityField({
+                    name: "address",
+                    value: {...address, lat: locations[0].lat, lon: locations[0].lon}
+                }));
+                dispatch(setField({
+                    name: "validation",
+                    value: {...validation, building: {error: false, text: '✓ Местоположение определено'}}
+                }))
+            } else {
+                dispatch(setEquityField({name: "address", value: {...address, lat: null, lon: null}}));
+                dispatch(setField({name: "validation", value: {...validation, building: {error: false, text: ''}}}))
+            }
+        }
+    } else {
+        dispatch(setEquityField({name: "address", value: {...address, lat: null, lon: null}}));
+        dispatch(setField({name: "validation", value: {...validation, building: {error: false, text: ''}}}))
+    }
+};
+
 export const saveEquity = (equity) => async dispatch => {
     const {toggleDialog, setField} = slice.actions;
-    const setSave= (v) => setField({name: "save", value: v});
+    const setSave = (v) => setField({name: "save", value: v});
     try {
         let errors = validate(equity);
         if (Object.entries(errors).length === 0) {

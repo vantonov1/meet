@@ -11,6 +11,7 @@ import {
     saveEquity,
     setEquityField,
     setField,
+    setLocation,
     toggleDialog,
 } from "./slice";
 import {Dialog, LinearProgress} from "@material-ui/core";
@@ -59,6 +60,7 @@ export default function AddEquity(props) {
                                    streets={streets} streetText={streetText}
                                    onFieldChange={change => dispatch(setField(change))}
                                    onEquityFieldChange={change => dispatch(setEquityField(change))}
+                                   onLocationChange={(address) => dispatch(setLocation(address))}
                 />
                 <DialogActions>
                     <PhotoUpload files={selectedPhotos} onFileUploaded={f => dispatch(addPhoto(f))}/>
