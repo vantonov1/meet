@@ -35,7 +35,8 @@ class RequestService(private val requestRepository: RequestRepository,
     }
 
     private fun assignFromCustomer(dto: RequestDTO, customerId: Int) =
-            agentService.selectAgent(dto)
+            (if (dto.about?.responsible != null) Mono.just(dto.about.responsible)
+            else agentService.selectAgent(dto))
                     .flatMap { agentId -> requestRepository.save(dto.toEntity(customerId, agentId)) }
                     .flatMap { collectRequestInfo(it) }
 

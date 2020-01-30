@@ -33,16 +33,17 @@ class ProcessTest {
 
         val seller = CustomerDTO(null, "Martin Luther", listOf(phone), 2)
         val requestToSale = requestService.save(RequestDTO(null, RequestType.SELL.value, null, seller, null)).block()
-        assert(requestToSale?.assignedTo != null &&  requestToSale.assignedTo?.id !=null)
-        val assignedTo = requestToSale?.assignedTo?.id
-        assert(assignedTo == agentId)
+        assert(requestToSale!!.assignedTo?.id == agentId)
 
         val agentInbox = requestService.findByPersons(null, agentId).collectList().block()
         assert(!agentInbox.isNullOrEmpty() && agentInbox[0].assignedTo?.id == agentId)
 
         val address = AddressDTO(2, null, null, null, null, null, null)
-        val equity = EquityDTO(null, EquityType.SALE_ROOM.name, requestToSale!!.issuedBy.id, address, 100500, 100, 5, "test", agentId, null)
+        val equity = EquityDTO(null, EquityType.SALE_ROOM.name, requestToSale.issuedBy.id, address, 100500, 100, 5, "test", agentId, null)
         val equityId = equityService.save(equity).block()
 
+        val buyer = CustomerDTO(null, "Pinoccio", listOf(telegram), 2)
+        val requestToBuy = requestService.save(RequestDTO(null, RequestType.BUY.value, equityService.findById(equityId!!).block(), buyer, null)).block()
+        assert(requestToBuy!!.assignedTo?.id == agentId)
     }
 }
