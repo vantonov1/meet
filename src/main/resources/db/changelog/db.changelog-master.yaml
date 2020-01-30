@@ -20,7 +20,7 @@ databaseChangeLog:
                     nullable: false
             - column:
                   name: owned_by
-                  type: bigint
+                  type: int
                   constraints:
                     nullable: false
             - column:
@@ -110,6 +110,11 @@ databaseChangeLog:
                    type: varchar(255)
                    constraints:
                        nullable: false
+            - column:
+                  name: city
+                  type: smallint
+                  constraints:
+                    nullable: false
       - createTable:
             tableName: agent
             columns:
@@ -126,10 +131,39 @@ databaseChangeLog:
                    constraints:
                        nullable: false
             - column:
-                  name: employed_by
+                  name: city
+                  type: smallint
+            - column:
+                  name: active
+                  type: boolean
+      - createTable:
+            tableName: request
+            columns:
+            - column:
+                  name: id
                   type: int
+                  autoIncrement: true
                   constraints:
+                    primaryKey: true
                     nullable: false
+            - column:
+                   name: type
+                   type: tinyint
+                   constraints:
+                       nullable: false
+            - column:
+                  name: about
+                  type: bigint
+            - column:
+                   name: issued_by
+                   type: int
+                   constraints:
+                       nullable: false
+            - column:
+                   name: assigned_to
+                   type: int
+                   constraints:
+                       nullable: false
       - createIndex:
             indexName: find_equities_idx
             tableName: equity

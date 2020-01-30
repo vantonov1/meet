@@ -6,9 +6,9 @@ data class AgentDTO(
         val id: Int? = null,
         val name: String,
         val contacts: List<ContactDTO>,
-        val employedBy: Short
+        val city: Short
 ) {
-    fun toEntity(): Agent = Agent(id, name, employedBy)
+    fun toEntity() = Agent(id, name, city, false)
 }
 
-fun fromEntity(agent: Agent, contacts: List<ContactDTO>) = AgentDTO(agent.id!!, agent.name, contacts, agent.employedBy)
+fun fromEntity(agent: Agent, contacts: List<ContactDTO>) = AgentDTO(agent.id!!, agent.name, contacts, agent.city)

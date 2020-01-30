@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono
 class CustomerService(val repository: CustomerRepository, val contactService: ContactService) {
     fun save(dto: CustomerDTO) = repository.save(dto.toEntity())
             .map { it.id!! }
-            .doOnSuccess { contactService.save(it, dto.contacts) }
+            .flatMap { contactService.save(it, dto.contacts) }
 
     fun delete(id: Int) = repository.deleteById(id)
     fun findById(id: Int) = Mono.zip(repository.findById(id), contactService.findByPersonId(id))

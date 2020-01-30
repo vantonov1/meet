@@ -32,10 +32,11 @@ class PhotoService(private val repository: PhotoRepository, private val storage:
         }
     }
 
-    fun save(equityId: Long, ids: List<String>?) {
-        if (ids != null) {
+    fun save(equityId: Long, ids: List<String>?): Mono<Long> {
+        return if (ids != null) {
             val photos = ids.map { Photo(it, equityId) }
-            repository.saveAll(Flux.fromIterable(photos)).collectList().subscribe()
-        }
+            repository.saveAll(Flux.fromIterable(photos)).then(Mono.just(equityId))
+        } else
+            Mono.just(equityId)
     }
 }

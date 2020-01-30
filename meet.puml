@@ -6,19 +6,16 @@ class Photo #lightgreen
 class Agent #lightgreen
 class Customer #lightgreen
 
-Equity <- Photo: of
+Equity <-- Photo: of
 Equity --> Customer : ownedBy
-Equity --> Agency  : exposedBy
 Equity --> Agent : responsible
-
-Agent -> Agency : employedBy
 
 Meeting --> Agent : scheduledBy
 Meeting --> Customer : attends
 Meeting --> Equity : at
 
-Request --> Agent : handledBy
-Request --> Customer : issuedBy
 Request --> Equity : about
+Request --> Customer : issuedBy
+Request --> Agent : assignedTo
 
 @enduml

@@ -1,12 +1,9 @@
 package com.github.vantonov1.meet.service
 
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.vantonov1.meet.dto.EquityDTO
 import com.github.vantonov1.meet.dto.LocationDTO
 import com.github.vantonov1.meet.dto.PriceRangeDTO
 import com.github.vantonov1.meet.dto.fromEntity
-import com.github.vantonov1.meet.entities.Equity
 import com.github.vantonov1.meet.entities.Filter
 import com.github.vantonov1.meet.entities.PriceRange
 import com.github.vantonov1.meet.repository.EquityPriceRangeRepository
@@ -28,7 +25,7 @@ class EquityService(
         private val stations: SubwayService,
         private val photos: PhotoService) {
 
-    fun save(dto: EquityDTO): Mono<Long> = equityRepository.save(dto.toEntity()).map { it.id!! }.doOnSuccess { photos.save(it, dto.photos) }
+    fun save(dto: EquityDTO): Mono<Long> = equityRepository.save(dto.toEntity()).map { it.id!! }.flatMap { photos.save(it, dto.photos) }
 
     fun findById(id: Long): Mono<EquityDTO> = Mono.zip(equityRepository.findById(id), photos.findByEquityId(id))
             .map { fromEntity(it.t1, districts.findById(it.t1.district), stations.findById(it.t1.subway), it.t2) }
@@ -73,7 +70,7 @@ class EquityService(
     @PostConstruct
     @Suppress("unused")
     private fun loadFakeEquities() {
-        val equities = jacksonObjectMapper().readValue(javaClass.getResource("/fake_equities.json"), object : TypeReference<List<Equity>>() {})
-        equityRepository.saveAll(equities).subscribe()
+//        val equities = jacksonObjectMapper().readValue(javaClass.getResource("/fake_equities.json"), object : TypeReference<List<Equity>>() {})
+//        equityRepository.saveAll(equities).subscribe()
     }
 }
