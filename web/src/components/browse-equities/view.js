@@ -57,7 +57,7 @@ function EquitiesDrawer(props) {
     const {locations, equities, filter, loading, drawerOpen} = useSelector(state => state.browseEquities, shallowEqual);
     const dispatch = useDispatch();
     return <Drawer open={drawerOpen} variant={props.variant} onClose={() => dispatch(toggleDrawer(false))}>
-        {<Box width={400} height="100%">
+        {<Box width={400} style={{marginTop: 50}}>
             {loading && <CircularProgress style={{position: "absolute"}}/>}
             {!loading && equities.length === 0 && <span>Нет записей</span>}
             {equities.length !== 0 && <EquitiesList

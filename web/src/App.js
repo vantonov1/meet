@@ -12,6 +12,7 @@ import selectDistricts from "./components/select-districts/slice";
 import selectSubways from "./components/select-subways/slice";
 import browseEquities from "./components/browse-equities/slice";
 import addEquity from "./components/add-equity/slice";
+import MainAppBar from "./components/app-bar/view";
 
 const store = configureStore({
     reducer: {
@@ -25,16 +26,12 @@ const store = configureStore({
 });
 
 function App() {
-    const theme = createMuiTheme({
-        palette: {
-            primary: {main: '#1976d2'},
-        },
-    }, ruRU);
-
+    const theme = createMuiTheme({}, ruRU);
     return (
         <div className="App">
             <ThemeProvider theme={theme}>
                 <Provider store={store}>
+                    <MainAppBar/>
                     <AppRouter/>
                     <Error/>
                 </Provider>
