@@ -28,7 +28,7 @@ class EquityServiceTest {
     @Test
     fun testCRUD() {
         val equity = Equity(null, 1, 1,
-                2, 1, null, null, null, 0.0, 0.0, 100500, null, 1, "test", null)
+                2, 1, null, null, null, 0.0, 0.0, 100500, null, 1, "test", null, null)
         val id = equityService.save(fromEntity(equity, null, null, listOf("1_1.jpg", "2_2.jpg"))).block()
         assert(id != null)
         val retrieved = equityService.findById(id!!).block()
@@ -59,7 +59,7 @@ class EquityServiceTest {
                     val d = districtService.findByName(a.district)
                     equities += Equity(null, RENT_FLAT, 0, 2, d?.id, null, a.street + ' ' + a.streetType, a.house,
                                 f.locations[0].location.coordinates[1], f.locations[0].location.coordinates[0],
-                                rooms * 2_000_000, rooms * 25, rooms.toByte(), "Тестовая загрузка", null)
+                                rooms * 2_000_000, rooms * 25, rooms.toByte(), "Тестовая загрузка", null, null)
                 }
             }
         }

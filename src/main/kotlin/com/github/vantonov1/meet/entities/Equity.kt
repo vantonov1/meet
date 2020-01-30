@@ -22,6 +22,7 @@ data class Equity(
         val square: Int?,
         val rooms: Byte?,
         val info: String?,
+        val responsible: Int?,
         val hidden: Boolean?
 )
 

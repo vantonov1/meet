@@ -61,6 +61,9 @@ databaseChangeLog:
                   name: info
                   type: varchar(1024)
             - column:
+                  name: responsible
+                  type: int
+            - column:
                   name: hidden
                   type: boolean
       - createTable:

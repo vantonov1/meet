@@ -5,6 +5,7 @@ class Equity #lightgreen
 class Photo #lightgreen
 class Agent #lightgreen
 class Customer #lightgreen
+class Request #lightgreen
 
 Equity <-- Photo: of
 Equity --> Customer : ownedBy

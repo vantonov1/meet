@@ -1,10 +1,8 @@
 package com.github.vantonov1.meet.service
 
-import com.github.vantonov1.meet.dto.AgentDTO
-import com.github.vantonov1.meet.dto.ContactDTO
-import com.github.vantonov1.meet.dto.CustomerDTO
-import com.github.vantonov1.meet.dto.RequestDTO
+import com.github.vantonov1.meet.dto.*
 import com.github.vantonov1.meet.entities.ContactTypes
+import com.github.vantonov1.meet.entities.EquityType
 import com.github.vantonov1.meet.entities.RequestType
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -20,6 +18,9 @@ class ProcessTest {
 
     @Autowired
     lateinit var agentService: AgentService
+
+    @Autowired
+    lateinit var equityService: EquityService
 
     val phone = ContactDTO(ContactTypes.PHONE.value, "32232322")
     val mail = ContactDTO(ContactTypes.MAIL.value, "aaa@bbb.com")
@@ -38,5 +39,10 @@ class ProcessTest {
 
         val agentInbox = requestService.findByPersons(null, agentId).collectList().block()
         assert(!agentInbox.isNullOrEmpty() && agentInbox[0].assignedTo?.id == agentId)
+
+        val address = AddressDTO(2, null, null, null, null, null, null)
+        val equity = EquityDTO(null, EquityType.SALE_ROOM.name, requestToSale!!.issuedBy.id, address, 100500, 100, 5, "test", agentId, null)
+        val equityId = equityService.save(equity).block()
+
     }
 }
