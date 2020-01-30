@@ -167,6 +167,34 @@ databaseChangeLog:
                    type: int
                    constraints:
                        nullable: false
+      - createTable:
+            tableName: meeting
+            columns:
+            - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+            - column:
+                  name: at
+                  type: bigint
+            - column:
+                   name: scheduled_by
+                   type: int
+                   constraints:
+                       nullable: false
+            - column:
+                   name: attends
+                   type: int
+                   constraints:
+                       nullable: false
+            - column:
+                   name: schedule
+                   type: timestamp with time zone
+                   constraints:
+                       nullable: false
       - createIndex:
             indexName: find_equities_idx
             tableName: equity

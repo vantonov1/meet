@@ -9,6 +9,8 @@ import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
@@ -22,6 +24,9 @@ class ProcessTest {
     @Autowired
     lateinit var equityService: EquityService
 
+    @Autowired
+    lateinit var meetingService: MeetingService
+
     val phone = ContactDTO(ContactTypes.PHONE.value, "32232322")
     val mail = ContactDTO(ContactTypes.MAIL.value, "aaa@bbb.com")
     val telegram = ContactDTO(ContactTypes.TELEGRAM.value, "32232322")
@@ -30,6 +35,8 @@ class ProcessTest {
     fun testRequest() {
         val agentId = agentService.save(AgentDTO(null, "Avicenna", listOf(mail), 2)).block()
         agentService.setActive(agentId!!, true).block()
+        val agent = agentService.findById(agentId).block()
+        assert(agent!!.id == agentId)
 
         val seller = CustomerDTO(null, "Martin Luther", listOf(phone), 2)
         val requestToSale = requestService.save(RequestDTO(null, RequestType.SELL.value, null, seller, null)).block()
@@ -43,7 +50,17 @@ class ProcessTest {
         val equityId = equityService.save(equity).block()
 
         val buyer = CustomerDTO(null, "Pinoccio", listOf(telegram), 2)
-        val requestToBuy = requestService.save(RequestDTO(null, RequestType.BUY.value, equityService.findById(equityId!!).block(), buyer, null)).block()
+        val createdEquity = equityService.findById(equityId!!).block()
+        val requestToBuy = requestService.save(RequestDTO(null, RequestType.BUY.value, createdEquity, buyer, null)).block()
         assert(requestToBuy!!.assignedTo?.id == agentId)
+
+        val meetingId = meetingService.save(MeetingDTO(null, createdEquity, agent, requestToBuy.issuedBy, ZonedDateTime.now())).block()
+        val today = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS)
+        val buyerInbox = meetingService.findByPersons(agentId, null, today, today.plusDays(1)).collectList().block()
+        assert(!buyerInbox.isNullOrEmpty() && buyerInbox[0].attends.id == requestToBuy.issuedBy.id && buyerInbox[0].at!!.id == equityId)
+
+        meetingService.delete(meetingId!!).block()
+        val cleanInbox = meetingService.findByPersons(agentId, null, today, today.plusDays(1)).collectList().block()
+        assert(cleanInbox.isNullOrEmpty())
     }
 }

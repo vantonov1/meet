@@ -21,7 +21,7 @@ class RequestController(private val requestService: RequestService) {
     @Transactional
     fun delete(id: Int) = requestService.delete(id)
 
-    @GetMapping()
+    @GetMapping
     @Transactional(readOnly = true)
     fun findByPersons(@RequestParam(required = false) issuedBy: Int?,
                       @RequestParam(required = false) assignedTo: Int?) = requestService.findByPersons(issuedBy, assignedTo)
