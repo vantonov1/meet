@@ -11,5 +11,5 @@ interface RequestRepository : ReactiveCrudRepository<Request, Int> {
     @Query("select * from request where issued_by=:issuedBy")
     fun findByIssuer(issuedBy: Int): Flux<Request>
     @Query("select * from request where assigned_to=:assignedTo")
-    fun findByAsignee(assignedTo: Int): Flux<Request>
+    fun findByAssignee(assignedTo: Int): Flux<Request>
 }

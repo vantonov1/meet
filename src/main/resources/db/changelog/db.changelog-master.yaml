@@ -214,22 +214,72 @@ databaseChangeLog:
             - column:
                     name: id #covered column
       - createIndex:
-            indexName: find_equities_by_district_idx
+            indexName: equities_by_district_idx
             tableName: equity
             columns:
             - column:
                     name: district
       - createIndex:
-            indexName: find_equities_by_subway_idx
+            indexName: equities_by_subway_idx
             tableName: equity
             columns:
             - column:
                     name: subway
       - createIndex:
-            indexName: find_photos_idx
+            indexName: photos_idx
             tableName: photo
             columns:
             - column:
                     name: of
             - column:
                     name: id
+      - createIndex:
+            indexName: active_agent_in_city_idx
+            tableName: agent
+            columns:
+            - column:
+                    name: city
+            - column:
+                    name: active
+            - column:
+                    name: id #covered column
+            - column:
+                    name: name #covered column
+      - createIndex:
+            indexName: contact_of_person_idx
+            tableName: contact
+            columns:
+            - column:
+                    name: of
+            - column:
+                    name: contact_type #covered column
+            - column:
+                    name: contact #covered column
+      - createIndex:
+            indexName: request_issued_by_idx
+            tableName: request
+            columns:
+            - column:
+                    name: issued_by
+      - createIndex:
+            indexName: request_assigned_to_idx
+            tableName: request
+            columns:
+            - column:
+                    name: assigned_to
+      - createIndex:
+            indexName: meeting_scheduled_by_idx
+            tableName: meeting
+            columns:
+            - column:
+                    name: scheduled_by
+            - column:
+                    name: schedule
+      - createIndex:
+            indexName: meeting_attended_idx
+            tableName: meeting
+            columns:
+            - column:
+                    name: attends
+            - column:
+                    name: schedule

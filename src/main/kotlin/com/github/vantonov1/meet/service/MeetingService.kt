@@ -18,10 +18,16 @@ class MeetingService(private val meetingRepository: MeetingRepository,
                      private val equityService: EquityService
 ) {
     fun save(dto: MeetingDTO): Mono<Int> {
+        if(dto.schedule.isBefore(ZonedDateTime.now())) {
+            throw IllegalArgumentException("schedule in the past")
+        }
         return meetingRepository.save(dto.toEntity()).map { it.id }
     }
 
     fun reschedule(id: Int, schedule: ZonedDateTime): Mono<Any> {
+        if(schedule.isBefore(ZonedDateTime.now())) {
+            throw IllegalArgumentException("schedule in the past")
+        }
         return meetingRepository.findById(id).flatMap { meetingRepository.save(it.copy(schedule = schedule)).map {it.id} }
     }
 
