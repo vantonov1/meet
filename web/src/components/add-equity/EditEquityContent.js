@@ -1,6 +1,6 @@
 import DialogContent from "@material-ui/core/DialogContent";
 import {MenuItem, Select} from "@material-ui/core";
-import {TYPES} from "../common/equity-types";
+import {EQUITY_TYPES} from "../common/equity-types";
 import TextField from "@material-ui/core/TextField";
 import PhotoGallery from "../common/photo-gallery";
 import React from "react";
@@ -17,7 +17,7 @@ export default function EditEquityContent(props) {
                 value={equity.type ? equity.type : props.type}
                 fullWidth
                 onChange={e => onEquityFieldChange({name: "type", value: e.target.value})}>
-            {Object.entries(TYPES).map(k => <MenuItem key={k[0]} value={k[0]}>{k[1]}</MenuItem>)}
+            {Object.entries(EQUITY_TYPES).map(k => <MenuItem key={k[0]} value={k[0]}>{k[1]}</MenuItem>)}
         </Select>
         <SelectDirectory label="Район"
                          options={districts}

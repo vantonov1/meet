@@ -16,7 +16,7 @@ import {
 } from "./slice";
 import SelectDistricts from "../select-districts/view";
 import SelectSubways from "../select-subways/view";
-import {TYPES} from "../common/equity-types";
+import {EQUITY_TYPES} from "../common/equity-types";
 
 export default function FilterMenu(props) {
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -57,7 +57,7 @@ export default function FilterMenu(props) {
             </Fab>
             {Boolean(anchorEl) &&
             <Menu anchorEl={anchorEl} keepMounted open={true} onClose={handleClose} transitionDuration={0}>
-                {Object.entries(TYPES).map(k => entityType(k[0], k[1], props.filter.type))}
+                {Object.entries(EQUITY_TYPES).map(k => entityType(k[0], k[1], props.filter.type))}
                 <Divider/>
                 <MenuItem key="filter-regions" onClick={() => handleSelectDistricts()}>Выбрать районы</MenuItem>
                 <MenuItem key="filter-subways" onClick={() => handleSelectSubway()}>Выбрать станции метро</MenuItem>

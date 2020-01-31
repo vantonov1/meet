@@ -18,9 +18,9 @@ class AgentServiceTest {
 
     @Test
     fun testCRUD() {
-        val phone = ContactDTO(ContactTypes.PHONE.value, "32232322")
-        val mail = ContactDTO(ContactTypes.MAIL.value, "aaa@bbb.com")
-        val telegram = ContactDTO(ContactTypes.TELEGRAM.value, "32232322")
+        val phone = ContactDTO(ContactTypes.PHONE.name, "32232322")
+        val mail = ContactDTO(ContactTypes.MAIL.name, "aaa@bbb.com")
+        val telegram = ContactDTO(ContactTypes.TELEGRAM.name, "32232322")
         val id = agentService.save(AgentDTO(null, "Bond", listOf(phone), 2)).block()
         val created = agentService.findById(id!!).block()
         assert(created != null && created.name == "Bond" && created.contacts.size == 1)

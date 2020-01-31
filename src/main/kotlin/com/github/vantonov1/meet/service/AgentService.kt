@@ -18,12 +18,12 @@ class AgentService(val repository: AgentRepository, val contactService: ContactS
 
     fun delete(id: Int) = repository.deleteById(id).flatMap { contactService.deleteAll(id) }
     fun findById(id: Int) = Mono.zip(repository.findById(id), contactService.findByPersonId(id))
-            .map { fromEntity(it.t1, it.t2.map { fromEntity(it) }) }
+            .map { fromEntity(it.t1, it.t2.map {c -> fromEntity(c) }) }
 
     fun selectAgent(dto: RequestDTO): Mono<Int> {
         return repository
                 .findActive(if(dto.about != null) dto.about.address.city else dto.issuedBy.city)
-                .map { it.id }
+                .map { it.id!! }
                 .collectList()
                 .map {if(it.isNotEmpty()) it[Random.nextInt(it.size)] else throw IllegalStateException("no active agents")}
     }

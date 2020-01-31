@@ -5,7 +5,11 @@ import org.springframework.data.domain.Persistable
 import org.springframework.data.relational.core.mapping.Table
 
 enum class RequestType(val value: Byte) {
-    BUY(1), SELL(2)
+    BUY(1), SELL(2);
+
+    companion object {
+        fun valueOf(value: Byte) = values().first { it.value == value }
+    }
 }
 
 @Table

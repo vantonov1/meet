@@ -27,9 +27,9 @@ class ProcessTest {
     @Autowired
     lateinit var meetingService: MeetingService
 
-    val phone = ContactDTO(ContactTypes.PHONE.value, "32232322")
-    val mail = ContactDTO(ContactTypes.MAIL.value, "aaa@bbb.com")
-    val telegram = ContactDTO(ContactTypes.TELEGRAM.value, "32232322")
+    val phone = ContactDTO(ContactTypes.PHONE.name, "32232322")
+    val mail = ContactDTO(ContactTypes.MAIL.name, "aaa@bbb.com")
+    val telegram = ContactDTO(ContactTypes.TELEGRAM.name, "32232322")
 
     @Test
     fun testRequest() {
@@ -39,7 +39,7 @@ class ProcessTest {
         assert(agent!!.id == agentId)
 
         val seller = CustomerDTO(null, "Martin Luther", listOf(phone), 2)
-        val requestToSale = requestService.save(RequestDTO(null, RequestType.SELL.value, null, seller, null)).block()
+        val requestToSale = requestService.save(RequestDTO(null, RequestType.SELL.name, null, seller, null)).block()
         assert(requestToSale!!.assignedTo?.id == agentId)
 
         val agentInbox = requestService.findByPersons(null, agentId).collectList().block()
@@ -51,7 +51,7 @@ class ProcessTest {
 
         val buyer = CustomerDTO(null, "Pinoccio", listOf(telegram), 2)
         val createdEquity = equityService.findById(equityId!!).block()
-        val requestToBuy = requestService.save(RequestDTO(null, RequestType.BUY.value, createdEquity, buyer, null)).block()
+        val requestToBuy = requestService.save(RequestDTO(null, RequestType.BUY.name, createdEquity, buyer, null)).block()
         assert(requestToBuy!!.assignedTo?.id == agentId)
 
         val meetingId = meetingService.save(MeetingDTO(null, createdEquity, agent, requestToBuy.issuedBy, ZonedDateTime.now())).block()
