@@ -1,5 +1,5 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {show} from "../show-error/slice"
+import {showError} from "../show-error/slice"
 import DirectoryAPI from "../../api/DirectoryAPI";
 
 const slice = createSlice({
@@ -21,7 +21,7 @@ export const loadDistricts = (city) => async dispatch => {
     try {
         dispatch(setDistricts(await DirectoryAPI.fetchDistricts(city)))
     } catch (reason) {
-        dispatch(show(reason.message))
+        dispatch(showError(reason.message))
     }
 };
 

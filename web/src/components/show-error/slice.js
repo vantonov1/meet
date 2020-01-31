@@ -4,16 +4,16 @@ const slice = createSlice({
     name: 'error',
     initialState: {show: false, reason:''},
     reducers: {
-        show: (state, { payload }) => {
+        showError: (state, { payload }) => {
             state.show = true;
             state.reason = payload
         },
-        hide: state => {
+        hideError: state => {
             state.show = false;
             state.reason = ''
         },
     }
 });
 
-export const { show, hide } = slice.actions;
+export const { showError, hideError } = slice.actions;
 export default slice.reducer

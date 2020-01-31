@@ -1,5 +1,5 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {show} from "../show-error/slice"
+import {showError} from "../show-error/slice"
 import DirectoryAPI from "../../api/DirectoryAPI";
 import KladrAPI from "../../api/KladrAPI";
 import EquityAPI from "../../api/EquityAPI";
@@ -7,6 +7,7 @@ import PhotoAPI from "../../api/PhotoAPI";
 import {clearSelectedFiles, getSelectedFiles} from "../common/photo-upload";
 import {geocode} from "../../api/NominatimAPI";
 import {CITY, LIMITS} from "../common/constants";
+import {showSuccess} from "../show-success/slice";
 
 function createInitialState() {
     return {
@@ -168,11 +169,12 @@ export const saveEquity = (equity) => async dispatch => {
             } finally {
                 dispatch(setSave({creatingEquity: false}));
             }
-            dispatch(toggleDialog(false))
+            dispatch(toggleDialog(false));
+            dispatch(showSuccess('Объект добавлен'))
         } else
             dispatch(setField({name: "validation", value: errors}))
     } catch (reason) {
-        dispatch(show(reason.message))
+        dispatch(showError(reason.message))
     }
 };
 
@@ -182,7 +184,7 @@ export const loadDistricts = (city) => async (dispatch) => {
         let districts = await DirectoryAPI.fetchDistricts(city);
         dispatch(setField({name: "districts", value: districts}))
     } catch (reason) {
-        dispatch(show(reason.message))
+        dispatch(showError(reason.message))
     }
 };
 
@@ -192,7 +194,7 @@ export const loadSubways = (city) => async (dispatch) => {
         let subways = await DirectoryAPI.fetchSubways(city);
         dispatch(setField({name: "subways", value: subways}))
     } catch (reason) {
-        dispatch(show(reason.message))
+        dispatch(showError(reason.message))
     }
 };
 
@@ -204,6 +206,6 @@ export const fetchStreets = (city, query) => async (dispatch, getState) => {
         if (query === streetText)
             dispatch(setField({name: "streets", value: streets}))
     } catch (reason) {
-        dispatch(show(reason.message))
+        dispatch(showError(reason.message))
     }
 };

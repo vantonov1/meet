@@ -1,5 +1,5 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {show} from "../show-error/slice"
+import {showError} from "../show-error/slice"
 import RequestAPI from "../../api/RequestAPI";
 
 const slice = createSlice({
@@ -34,7 +34,7 @@ export const saveRequest = (name, contacts) => async (dispatch, getState) => {
         let saved = await RequestAPI.createRequest(request);
         dispatch(showAgent(saved.assignedTo))
     } catch (reason) {
-        dispatch(show(reason.message))
+        dispatch(showError(reason.message))
     }
 };
 

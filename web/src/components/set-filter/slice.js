@@ -1,6 +1,6 @@
 import {createSlice} from "@reduxjs/toolkit";
 import EquityAPI from "../../api/EquityAPI";
-import {show} from "../show-error/slice";
+import {showError} from "../show-error/slice";
 
 const slice = createSlice({
     name: 'set-filter',
@@ -38,6 +38,6 @@ export const getPriceRange = (filter) => async (dispatch) => {
     try {
         dispatch(setPriceRange(await EquityAPI.getPriceRange(filter)))
     } catch (reason) {
-        dispatch(show(reason.message))
+        dispatch(showError(reason.message))
     }
 };

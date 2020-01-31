@@ -1,6 +1,7 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {show} from "../show-error/slice"
+import {showError} from "../show-error/slice"
 import AgentAPI from "../../api/AgentAPI";
+import {showSuccess} from "../show-success/slice";
 
 const slice = createSlice({
     name: 'create-agent',
@@ -30,9 +31,10 @@ export const saveAgent = (name, contacts) => async (dispatch, getState) => {
     try {
         const agent = {name: name, contacts: contacts, city: filter.city};
         let saved = await AgentAPI.createAgent(agent);
-        dispatch(setSaveFinished(true))
+        dispatch(setSaveFinished(true));
+        dispatch(showSuccess('Агент добавлен'))
     } catch (reason) {
-        dispatch(show(reason.message))
+        dispatch(showError(reason.message))
     }
 };
 

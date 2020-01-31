@@ -1,6 +1,6 @@
 import {createSlice} from "@reduxjs/toolkit";
 import EquityAPI from "../../api/EquityAPI";
-import {show} from "../show-error/slice"
+import {showError} from "../show-error/slice"
 
 const slice = createSlice({
     name: 'browse-equities',
@@ -68,7 +68,7 @@ export const loadEquities = (ids) => async (dispatch) => {
     try {
         dispatch(setEquities(await EquityAPI.findByIds(ids)))
     } catch (reason) {
-        dispatch(show(reason.message))
+        dispatch(showError(reason.message))
     } finally {
         dispatch(finishLoading())
     }
@@ -80,7 +80,7 @@ export const loadMoreEquities = () => async (dispatch, getState) => {
     try {
         dispatch(setEquities(await loadPage(locations, equities)))
     } catch (reason) {
-        dispatch(show(reason.message))
+        dispatch(showError(reason.message))
     }
 };
 
@@ -94,7 +94,7 @@ export const loadLocations = () => async (dispatch, getState) => {
             dispatch(setLocations(locations));
             dispatch(setEquities(await loadPage(locations, [])))
         } catch (reason) {
-            dispatch(show(reason.message))
+            dispatch(showError(reason.message))
         } finally {
             dispatch(finishLoading())
         }
