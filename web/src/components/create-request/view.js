@@ -7,8 +7,8 @@ import {saveRequest, setContacts, setName, showAgent} from "./slice";
 import {CONTACT_TYPES} from "../common/constants";
 import EditPersonContacts from "../common/edit-person-contacts";
 
-export default function CreateCustomer(props) {
-    const {name, contacts, contactType, contact, agent} = useSelector(state => state.createRequest, shallowEqual);
+export default function CreateCustomerRequest(props) {
+    const {name, contacts, agent} = useSelector(state => state.createRequest, shallowEqual);
     const dispatch = useDispatch();
     return <Dialog disableBackdropClick
                    disableEscapeKeyDown
@@ -24,10 +24,7 @@ export default function CreateCustomer(props) {
                 Отменить
             </Button>
             <Button onClick={() => {
-                if (contact.length > 0) {
-                    dispatch(saveRequest(name, [...contacts, {contactType: contactType, contact: contact}]));
-                } else
-                    dispatch(saveRequest(name, contacts))
+                dispatch(saveRequest(name, contacts))
             }} color="primary">
                 Сохранить
             </Button>

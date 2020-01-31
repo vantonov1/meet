@@ -1,10 +1,10 @@
 import DialogContent from "@material-ui/core/DialogContent";
 import {MenuItem, Select} from "@material-ui/core";
-import {EQUITY_TYPES} from "../common/constants";
+import {EQUITY_TYPES} from "./constants";
 import TextField from "@material-ui/core/TextField";
-import PhotoGallery from "../common/photo-gallery";
+import PhotoGallery from "./photo-gallery";
 import React from "react";
-import {getSelectedFiles} from "../common/photo-upload";
+import {getSelectedFiles} from "./photo-upload";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
 export default function EditEquityContent(props) {

@@ -7,8 +7,6 @@ const slice = createSlice({
     initialState: {
         name: '',
         contacts: [],
-        contactType: 'PHONE',
-        contact: '',
         agent: null
     },
     reducers: {
@@ -18,12 +16,6 @@ const slice = createSlice({
         setContacts: (state, {payload}) => {
             state.contacts = payload
         },
-        setContactType: (state, {payload}) => {
-            state.contactType = payload
-        },
-        setContact: (state, {payload}) => {
-            state.contact = payload
-        },
         showAgent: (state, {payload}) => {
             state.agent = payload
         },
@@ -31,7 +23,7 @@ const slice = createSlice({
 });
 
 export default slice.reducer
-export const {setName, setContacts, setContactType, setContact, showAgent} = slice.actions;
+export const {setName, setContacts, showAgent} = slice.actions;
 
 export const saveRequest = (name, contacts) => async (dispatch, getState) => {
     const {showAgent} = slice.actions;

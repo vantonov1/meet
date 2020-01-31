@@ -18,7 +18,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
 import PhotoUpload from "../common/photo-upload";
 import Typography from "@material-ui/core/Typography";
-import EditEquityContent from "./EditEquityContent";
+import EditEquityContent from "../common/edit_equity_content";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
 const useStyles = makeStyles(theme => ({

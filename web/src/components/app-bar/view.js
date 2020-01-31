@@ -8,7 +8,7 @@ import React, {useState} from "react";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {shallowEqual, useSelector} from "react-redux";
 import {EQUITY_TYPES} from "../common/constants";
-import CreateCustomer from "../create-request/view";
+import CreateCustomerRequest from "../create-request/view";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -44,7 +44,7 @@ export default function MainAppBar(props) {
                 Хочу сдать/продать
             </Button>
         </Toolbar>
-        <CreateCustomer open={showCreateRequest} onClose={() => setShowCreateRequest(false)}/>
+        <CreateCustomerRequest open={showCreateRequest} onClose={() => setShowCreateRequest(false)}/>
         {Boolean(anchorEl) && <Menu anchorEl={anchorEl} keepMounted open={true} onClose={e => setAnchorEl(null)}>
             <MenuItem onClick={() =>{}}>Добавить контрагента</MenuItem>
         </Menu>}
