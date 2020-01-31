@@ -13,6 +13,7 @@ import selectSubways from "./components/select-subways/slice";
 import browseEquities from "./components/browse-equities/slice";
 import addEquity from "./components/add-equity/slice";
 import createRequest from "./components/create-request/slice";
+import createAgent from "./components/create-agent/slice";
 
 const store = configureStore({
     reducer: {
@@ -22,7 +23,8 @@ const store = configureStore({
         selectDistricts: selectDistricts,
         selectSubways: selectSubways,
         addEquity: addEquity,
-        createRequest: createRequest
+        createRequest: createRequest,
+        createAgent: createAgent
     },
 });
 

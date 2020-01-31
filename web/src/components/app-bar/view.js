@@ -9,6 +9,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import {shallowEqual, useSelector} from "react-redux";
 import {EQUITY_TYPES} from "../common/constants";
 import CreateCustomerRequest from "../create-request/view";
+import CreateAgent from "../create-agent/view";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -28,6 +29,7 @@ const useStyles = makeStyles(theme => ({
 export default function MainAppBar(props) {
     const {filter} = useSelector(state => state.browseEquities, shallowEqual);
     const [showCreateRequest, setShowCreateRequest] = useState(false);
+    const [showCreateAgent, setShowCreateAgent] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const classes = useStyles();
 
@@ -44,9 +46,10 @@ export default function MainAppBar(props) {
                 Хочу сдать/продать
             </Button>
         </Toolbar>
-        <CreateCustomerRequest open={showCreateRequest} onClose={() => setShowCreateRequest(false)}/>
         {Boolean(anchorEl) && <Menu anchorEl={anchorEl} keepMounted open={true} onClose={e => setAnchorEl(null)}>
-            <MenuItem onClick={() =>{}}>Добавить контрагента</MenuItem>
+            <MenuItem onClick={() =>{setShowCreateAgent(true); setAnchorEl(null)}}>Добавить контрагента</MenuItem>
         </Menu>}
+        <CreateCustomerRequest open={showCreateRequest} onClose={() => setShowCreateRequest(false)}/>
+        <CreateAgent open={showCreateAgent} onClose={() => setShowCreateAgent(false)}/>
     </AppBar>
 }

@@ -12,7 +12,7 @@ import kotlin.random.Random
 @Service
 @DependsOn("liquibase")
 class AgentService(val repository: AgentRepository, val contactService: ContactService) {
-    fun save(dto: AgentDTO) = repository.save(dto.toEntity())
+    fun save(dto: AgentDTO) = repository.save(dto.toEntity().copy(active = true))
             .map { it.id!! }
             .flatMap { contactService.save(it, dto.contacts) }
 

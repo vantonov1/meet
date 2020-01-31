@@ -6,7 +6,7 @@ import org.springframework.data.relational.core.mapping.Table
 enum class ContactTypes(val value: Byte) {
     PHONE(1), MAIL(2), SKYPE(3), TELEGRAM(4), VIBER(5), WHATSAPP(6), VK(7), FACEBOOK(8);
     companion object {
-        fun valueOf(value: Byte) = RequestType.values().first { it.value == value }
+        fun valueOf(value: Byte) = values().first { it.value == value }
     }
 }
 
