@@ -25,12 +25,12 @@ import PhotoGallery from "../common/photo-gallery";
 import CloseIcon from "@material-ui/icons/Close";
 import Fab from "@material-ui/core/Fab";
 import makeStyles from "@material-ui/core/styles/makeStyles";
+import Toolbar from "@material-ui/core/Toolbar";
 
 const useStyles = makeStyles(theme => ({
     root: {
         display: 'flex',
         width: 400,
-        marginTop: theme.spacing(6),
         height: "100%",
     },
     progress: {position: "absolute", width: '100%', textAlign: 'center', marginTop: theme.spacing(1)},
@@ -77,6 +77,7 @@ function EquitiesDrawer(props) {
     const classes = useStyles();
 
     return <Drawer open={drawerOpen} variant={props.variant} onClose={() => dispatch(toggleDrawer(false))}>
+        <Toolbar />
         {<Box className={classes.root}>
             {loading && <span className={classes.progress}><CircularProgress/></span>}
             {!loading && equities.length === 0 && <span className={classes.noItems}>Нет записей</span>}
