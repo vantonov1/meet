@@ -1,5 +1,4 @@
 import React, {useEffect} from "react";
-import "./style.css"
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
@@ -20,11 +19,21 @@ import Button from "@material-ui/core/Button";
 import PhotoUpload from "../common/photo-upload";
 import Typography from "@material-ui/core/Typography";
 import EditEquityContent from "./EditEquityContent";
+import makeStyles from "@material-ui/core/styles/makeStyles";
+
+const useStyles = makeStyles(theme => ({
+    root: {
+        position: 'fixed',
+        left: theme.spacing(1),
+        bottom: theme.spacing(1),
+    },
+}));
 
 export default function AddEquity(props) {
     const {showDialog, equity, selectedPhotos, districts, subways, streets, streetText, validation, save} = useSelector(state => state.addEquity, shallowEqual);
     const dispatch = useDispatch();
     const {type, city} = props;
+    const classes = useStyles();
 
     useEffect(() => {
         if (equity.type !== type)
@@ -49,7 +58,7 @@ export default function AddEquity(props) {
     }, [streetText, city]);
 
     return (
-        <div className="add-dialog">
+        <div className={classes.root}>
             <Fab color="primary">
                 <AddIcon onClick={() => dispatch(toggleDialog(true))}/>
             </Fab>

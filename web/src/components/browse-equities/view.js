@@ -1,9 +1,7 @@
 import React, {useEffect} from 'react';
-import './styles.css'
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Drawer from "@material-ui/core/Drawer";
-import "./osm-map.css"
 import EquitiesList from "../common/equities-list";
 import Box from "@material-ui/core/Box";
 import OsmMap from "./osm-map";
@@ -26,6 +24,26 @@ import PhotoAPI from "../../api/PhotoAPI";
 import PhotoGallery from "../common/photo-gallery";
 import CloseIcon from "@material-ui/icons/Close";
 import Fab from "@material-ui/core/Fab";
+import makeStyles from "@material-ui/core/styles/makeStyles";
+
+const useStyles = makeStyles(theme => ({
+    root: {
+        display: 'flex',
+        width: 400,
+        marginTop: theme.spacing(6),
+        height: "100%",
+    },
+    progress: {position: "absolute", width: '100%', textAlign: 'center', marginTop: theme.spacing(1)},
+    noItems: {width: '100%', textAlign: 'center', marginTop: theme.spacing(1)},
+    equityInfo: {minHeight:theme.spacing(6)},
+    info: {
+        width: "100%",
+        maxHeight:100,
+        marginBottom: theme.spacing(1),
+        textAlign: "left"
+    },
+    unselectEquity: {position: "absolute", right: theme.spacing(1), top: theme.spacing(1)}
+}));
 
 export default function BrowseEquities() {
     const {locations, filter} = useSelector(state => state.browseEquities, shallowEqual);
@@ -56,10 +74,12 @@ export default function BrowseEquities() {
 function EquitiesDrawer(props) {
     const {locations, equities, filter, loading, drawerOpen} = useSelector(state => state.browseEquities, shallowEqual);
     const dispatch = useDispatch();
+    const classes = useStyles();
+
     return <Drawer open={drawerOpen} variant={props.variant} onClose={() => dispatch(toggleDrawer(false))}>
-        {<Box width={400} style={{marginTop: 50}}>
-            {loading && <CircularProgress style={{position: "absolute"}}/>}
-            {!loading && equities.length === 0 && <span>Нет записей</span>}
+        {<Box className={classes.root}>
+            {loading && <span className={classes.progress}><CircularProgress/></span>}
+            {!loading && equities.length === 0 && <span className={classes.noItems}>Нет записей</span>}
             {equities.length !== 0 && <EquitiesList
                 equities={equities}
                 hasMore={equities.length < locations.length}
@@ -76,6 +96,7 @@ function EquitiesDrawer(props) {
 function EquityInfoDrawer(props) {
     const {selectedEquity} = useSelector(state => state.browseEquities, shallowEqual);
     const dispatch = useDispatch();
+    const classes = useStyles();
     return <Drawer open={selectedEquity != null}
                             variant={props.variant}
                             anchor="bottom"
@@ -83,13 +104,13 @@ function EquityInfoDrawer(props) {
                             ModalProps={{
                                 keepMounted: true, // Better open performance on mobile.
                             }}>
-        {(selectedEquity?.info || selectedEquity?.photos) && <div className="equity-info" style={{minHeight:50}}>
-            {selectedEquity.info && <Box width="100%" style={{maxHeight:"100px", marginBottom: "10px", textAlign: "left"}}>
+        {(selectedEquity?.info || selectedEquity?.photos) && <div className={classes.equityInfo}>
+            {selectedEquity.info && <Box className={classes.info}>
                 {selectedEquity.info}
             </Box>}
             {selectedEquity.photos && <PhotoGallery images={selectedEquity.photos.map(f => PhotoAPI.url(f))}/>}
          </div>}
-        <Fab style={{position: "absolute", right: 5, top: 5}} size="small" onClick={() => {
+        <Fab className={classes.unselectEquity} size="small" onClick={() => {
             dispatch(unselectEquity())
         }}>
             <CloseIcon/>

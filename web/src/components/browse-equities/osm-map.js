@@ -8,8 +8,15 @@ import Map from "ol/Map"
 import Geolocation from "ol/Geolocation";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
+import withStyles from "@material-ui/core/styles/withStyles";
 
-export default class OsmMap extends Component {
+const useStyles = {
+    root: {
+        height: '100vh'
+    },
+};
+
+class OsmMap extends Component {
     static ref = React.createRef();
 
     constructor(props) {
@@ -37,7 +44,7 @@ export default class OsmMap extends Component {
     }
 
     render() {
-        return (<div id="map" className="map"/>)
+        return (<div id="map" className={this.props.classes.root}/>)
     }
 
     static setupClusters(locations) {
@@ -49,6 +56,8 @@ export default class OsmMap extends Component {
         }
     }
 }
+
+export default withStyles(useStyles) (OsmMap)
 
 function renderMap(clustersSource) {
 

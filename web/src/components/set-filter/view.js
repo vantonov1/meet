@@ -1,5 +1,4 @@
 import React from "react";
-import "./filter-menu.css"
 import {ListItem, Menu, MenuItem, Slider} from "@material-ui/core";
 import Tooltip from "@material-ui/core/Tooltip";
 import SearchIcon from "@material-ui/icons/Search";
@@ -17,11 +16,27 @@ import {
 import SelectDistricts from "../select-districts/view";
 import SelectSubways from "../select-subways/view";
 import {EQUITY_TYPES} from "../common/equity-types";
+import makeStyles from "@material-ui/core/styles/makeStyles";
+
+const useStyles = makeStyles(theme => ({
+    root: {
+        position: 'fixed',
+        right: theme.spacing(1),
+        top: theme.spacing(7)
+    },
+    priceRange: {
+        marginTop: theme.spacing(5),
+        marginRight: theme.spacing(4),
+        marginLeft: theme.spacing(4),
+    }
+}));
 
 export default function FilterMenu(props) {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const {selectDistricts, selectSubways, minPrice, maxPrice} = useSelector(state => state.filter, shallowEqual);
     const dispatch = useDispatch();
+    const classes = useStyles();
+
 
     const minPriceValue = props.filter.minPrice < minPrice ? minPrice : props.filter.minPrice > maxPrice ? maxPrice : props.filter.minPrice;
     const maxPriceValue = props.filter.maxPrice < minPrice ? maxPrice : props.filter.maxPrice > maxPrice ? maxPrice : props.filter.maxPrice;
@@ -51,7 +66,7 @@ export default function FilterMenu(props) {
     };
 
     return (
-        <div className="filter-menu">
+        <div className={classes.root}>
             <Fab color="primary">
                 <SearchIcon onClick={handleClick}/>
             </Fab>
@@ -71,7 +86,7 @@ export default function FilterMenu(props) {
                         marks={calcMarks(minPrice, maxPrice)}
                         valueLabelDisplay="on"
                         ValueLabelComponent={ValueLabelComponent}
-                        className="price-range"
+                        className={classes.priceRange}
                         onChange={(event, value) => dispatch(props.onPriceRangeSelected(value))}
                         onChangeCommitted={(event) => dispatch(props.onPriceRangeCommitted())}
                     />

@@ -1,5 +1,4 @@
 import React from 'react';
-import './App.css';
 import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles';
 import {ruRU} from '@material-ui/core/locale';
 import {Provider} from "react-redux";
@@ -27,10 +26,10 @@ const store = configureStore({
     },
 });
 
-function App() {
+export default function App() {
     const theme = createMuiTheme({}, ruRU);
     return (
-        <div className="App">
+        <div>
             <ThemeProvider theme={theme}>
                 <Provider store={store}>
                     <MainAppBar/>
@@ -42,4 +41,3 @@ function App() {
     );
 }
 
-export default App;
