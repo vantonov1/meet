@@ -9,17 +9,7 @@ import Button from "@material-ui/core/Button";
 import DialogActions from "@material-ui/core/DialogActions";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import {saveRequest, setContact, setContacts, setContactType, setName, showAgent} from "./slice";
-
-const CONTACT_TYPES = {
-    PHONE: {label: 'Телефон', type: 'tel'},
-    MAIL: {label: 'Почта', type: 'email'},
-    SKYPE: {label: 'Скайп', type: 'text'},
-    TELEGRAM: {label: 'Телеграм', type: 'tel'},
-    VIBER: {label: 'Вайбер', type: 'tel'},
-    WHATSAPP: {label: 'Вацап', type: 'tel'},
-    VK: {label: 'ВКонтакте', type: 'text'},
-    FACEBOOK: {label: 'Фейсбук', type: 'text'},
-};
+import {CONTACT_TYPES} from "../common/constants";
 
 export default function CreateCustomer(props) {
     const {name, contacts, contactType, contact, agent} = useSelector(state => state.createRequest, shallowEqual);

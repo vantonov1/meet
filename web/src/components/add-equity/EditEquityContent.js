@@ -1,6 +1,6 @@
 import DialogContent from "@material-ui/core/DialogContent";
 import {MenuItem, Select} from "@material-ui/core";
-import {EQUITY_TYPES} from "../common/equity-types";
+import {EQUITY_TYPES} from "../common/constants";
 import TextField from "@material-ui/core/TextField";
 import PhotoGallery from "../common/photo-gallery";
 import React from "react";

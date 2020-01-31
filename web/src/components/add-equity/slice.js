@@ -6,22 +6,7 @@ import EquityAPI from "../../api/EquityAPI";
 import PhotoAPI from "../../api/PhotoAPI";
 import {clearSelectedFiles, getSelectedFiles} from "../common/photo-upload";
 import {geocode} from "../../api/NominatimAPI";
-
-const CITY = {
-    1: 'Москва',
-    2: 'Санкт-Петербург'
-};
-
-const LIMITS = {
-    square: {
-        min: 10,
-        max: 10000
-    },
-    price: {
-        min: 100000,
-        max: 100000000
-    }
-};
+import {CITY, LIMITS} from "../common/constants";
 
 function createInitialState() {
     return {

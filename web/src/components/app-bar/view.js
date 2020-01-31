@@ -7,7 +7,7 @@ import Button from "@material-ui/core/Button";
 import React, {useState} from "react";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {shallowEqual, useSelector} from "react-redux";
-import {EQUITY_TYPES} from "../common/equity-types";
+import {EQUITY_TYPES} from "../common/constants";
 import CreateCustomer from "../create-request/view";
 
 const useStyles = makeStyles(theme => ({

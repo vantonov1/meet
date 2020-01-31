@@ -15,7 +15,7 @@ import {
 } from "./slice";
 import SelectDistricts from "../select-districts/view";
 import SelectSubways from "../select-subways/view";
-import {EQUITY_TYPES} from "../common/equity-types";
+import {EQUITY_TYPES} from "../common/constants";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
 const useStyles = makeStyles(theme => ({
