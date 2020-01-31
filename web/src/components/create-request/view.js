@@ -25,7 +25,7 @@ export default function CreateCustomerRequest(props) {
             </Button>
             <Button onClick={() => {
                 dispatch(saveRequest(name, contacts))
-            }} color="primary">
+            }}  disabled={contacts.length === 0 || contacts[0].contact === ''} color="primary">
                 Сохранить
             </Button>
         </DialogActions>

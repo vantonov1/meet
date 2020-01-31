@@ -32,7 +32,7 @@ export default function CreateAgent(props) {
             </Button>
             <Button onClick={() => {
                 dispatch(saveAgent(name, contacts))
-            }} color="primary">
+            }} disabled={contacts.length === 0 || contacts[0].contact === ''} color="primary">
                 Сохранить
             </Button>
         </DialogActions>
