@@ -170,11 +170,11 @@ export const saveEquity = (equity) => async dispatch => {
             let unfreeze = {...equity};
             let selectedFiles = getSelectedFiles();
             if (selectedFiles.length !== 0) {
-                dispatch(setSave({uploadingFiles: true}));
+                dispatch(setSave({uploadingFiles: true, uploadingFilesProgress: 0}));
                 try {
-                    unfreeze.photos = await PhotoAPI.upload(selectedFiles.map(f => f.file), (p) => dispatch(setSave({uploadingFilesProgress: p})))
+                    unfreeze.photos = await PhotoAPI.upload(selectedFiles.map(f => f.file), (p) => dispatch(setSave({uploadingFiles: true, uploadingFilesProgress: p})))
                 } finally {
-                    dispatch(setSave({uploadingFiles: false, uploadingFilesProgress: 0}));
+                    dispatch(setSave({creatingEquity: true, uploadingFiles: false, uploadingFilesProgress: 0}));
                 }
             }
             dispatch(setSave({creatingEquity: true}));
