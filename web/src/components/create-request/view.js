@@ -20,7 +20,7 @@ export default function CreateCustomerRequest(props) {
                             onContactsChanged={c => dispatch(setContacts(c))}
         />
         <DialogActions>
-            <Button onClick={() => props.onClose()}>
+            <Button onClick={() => dispatch(showCreateRequest(false))}>
                 Отменить
             </Button>
             <Button onClick={() => {

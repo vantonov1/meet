@@ -37,7 +37,6 @@ export default function FilterMenu(props) {
     const dispatch = useDispatch();
     const classes = useStyles();
 
-
     const minPriceValue = props.filter.minPrice < minPrice ? minPrice : props.filter.minPrice > maxPrice ? maxPrice : props.filter.minPrice;
     const maxPriceValue = props.filter.maxPrice < minPrice ? maxPrice : props.filter.maxPrice > maxPrice ? maxPrice : props.filter.maxPrice;
 

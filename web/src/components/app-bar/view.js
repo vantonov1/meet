@@ -7,11 +7,11 @@ import Button from "@material-ui/core/Button";
 import React, {useState} from "react";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
-import {EQUITY_TYPES} from "../common/constants";
 import CreateCustomerRequest from "../create-request/view";
 import CreateAgent from "../create-agent/view";
 import {showCreateAgent} from "../create-agent/slice";
 import {showCreateRequest} from "../create-request/slice";
+import {Link as RouterLink} from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -29,7 +29,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function MainAppBar() {
-    const {filter} = useSelector(state => state.browseEquities, shallowEqual);
+    const {title} = useSelector(state => state.appBar, shallowEqual);
     const dispatch = useDispatch();
     const [anchorEl, setAnchorEl] = useState(null);
     const classes = useStyles();
@@ -41,7 +41,7 @@ export default function MainAppBar() {
                 <MenuIcon/>
             </IconButton>
             <Typography variant="h6" className={classes.title}>
-                {EQUITY_TYPES[filter.type]}
+                {title}
             </Typography>
             <Button color={"inherit"} onClick={() => dispatch(showCreateRequest(true))}>
                 Хочу сдать/продать
@@ -49,6 +49,7 @@ export default function MainAppBar() {
         </Toolbar>
         {Boolean(anchorEl) && <Menu anchorEl={anchorEl} keepMounted open={true} onClose={() => setAnchorEl(null)}>
             <MenuItem onClick={() =>{dispatch(showCreateAgent(true)); setAnchorEl(null)}}>Добавить контрагента</MenuItem>
+            <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/my-requests'>Мои заявки</MenuItem>
         </Menu>}
         <CreateCustomerRequest/>
         <CreateAgent/>

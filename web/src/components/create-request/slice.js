@@ -1,6 +1,7 @@
 import {createSlice} from "@reduxjs/toolkit";
 import RequestAPI from "../../api/RequestAPI";
 import {showError} from "../show-error/slice"
+import {updateRequests} from "../browse-my-requests/slice";
 
 const slice = createSlice({
     name: 'create-request',
@@ -36,7 +37,10 @@ export const saveRequest = (name, contacts) => async (dispatch, getState) => {
         const customer = {name: name, contacts: contacts, city: filter.city};
         const request = {type: 'SELL', issuedBy: customer};
         let saved = await RequestAPI.createRequest(request);
+        localStorage.setItem("customerId", saved.issuedBy?.id);
         dispatch(showAgent(saved.assignedTo));
+        dispatch(updateRequests())
+        // dispatch(setCustomerId(saved.issuedBy?.id));
     } catch (reason) {
         dispatch(showError(reason.message))
     }

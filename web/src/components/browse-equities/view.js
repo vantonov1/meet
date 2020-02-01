@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useLayoutEffect} from 'react';
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Drawer from "@material-ui/core/Drawer";
@@ -26,6 +26,8 @@ import CloseIcon from "@material-ui/icons/Close";
 import Fab from "@material-ui/core/Fab";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Toolbar from "@material-ui/core/Toolbar";
+import {EQUITY_TYPES} from "../common/constants";
+import {setAppTitle} from "../app-bar/slice";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -52,6 +54,10 @@ export default function BrowseEquities() {
     useEffect(() => {
         dispatch(loadLocations());
         OsmMap.setupClusters(locations)
+    });
+
+    useLayoutEffect(() => {
+        dispatch(setAppTitle(EQUITY_TYPES[filter.type]))
     });
 
     return (

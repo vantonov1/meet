@@ -10,4 +10,13 @@ export default class RequestAPI {
             }
         })
     }
+
+    static findRequests(customer, agent) {
+        let url = new URL(BASE);
+        if (customer)
+            url.searchParams.append("issuedBy", customer);
+        if (agent)
+            url.searchParams.append("assignedTo", agent);
+        return fetchJSON(url)
+    }
 }
