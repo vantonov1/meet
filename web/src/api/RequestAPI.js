@@ -1,4 +1,4 @@
-import {fetchJSON} from "./fetch";
+import {fetchEmpty, fetchJSON} from "./fetch";
 
 const BASE = 'http://localhost:8080/api/v1/request';
 
@@ -18,5 +18,11 @@ export default class RequestAPI {
         if (agent)
             url.searchParams.append("assignedTo", agent);
         return fetchJSON(url)
+    }
+
+    static deleteRequest(id) {
+        return fetchEmpty(BASE + '/' + id, {
+            method: 'DELETE'
+        })
     }
 }

@@ -19,7 +19,7 @@ class RequestController(private val requestService: RequestService) {
 
     @DeleteMapping("/{id}")
     @Transactional
-    fun delete(id: Int) = requestService.delete(id)
+    fun delete(@PathVariable id: Int) = requestService.delete(id)
 
     @GetMapping
     @Transactional(readOnly = true)
