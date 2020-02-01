@@ -8,17 +8,16 @@ import Typography from "@material-ui/core/Typography";
 import {setAppTitle} from "../app-bar/slice";
 import LoadRecordsProgress from "../common/load-records-progress";
 
-export default function BrowseMyRequests() {
-    const {requests, selectedRequest, loading, loadFinished} = useSelector(state => state.browseRequests, shallowEqual);
+export default function BrowseAssignedRequests(props) {
+    const {requests, selectedRequest, loading} = useSelector(state => state.browseAssignedRequests, shallowEqual);
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (!loading && !loadFinished )
-            dispatch(loadRequests())
-    },[loading, loadFinished]);
+        dispatch(loadRequests())
+    });
 
     useLayoutEffect(() => {
-        dispatch(setAppTitle('Мои заявки'))
+        dispatch(setAppTitle('Заявки в работе'))
     });
 
     return <Box>
@@ -34,11 +33,11 @@ export default function BrowseMyRequests() {
 
 function Request(props) {
     let equity = props.about;
-    let agent = props.assignedTo;
+    let customer = props.issuedBy;
     return <ListItem divider secondary={equity && EQUITY_TYPES[equity.type]} selected={props.selected} onClick={props.onClick}>
         {equity && <Box width={1}><b>{equity.price}&#8381;</b>&nbsp;{equity.address.street}&nbsp;{equity.address.building}</Box>}
-        {agent && <Typography>{agent.name}</Typography>}
-        {agent && agent.contacts?.map(c => <Typography key={c.contactType + c.contact}>
+        {customer && <Typography>{customer.name}</Typography>}
+        {customer && customer.contacts?.map(c => <Typography key={c.contactType + c.contact}>
             &nbsp;{CONTACT_TYPES[c.contactType].label}&nbsp;{c.contact}
         </Typography>)}
     </ListItem>

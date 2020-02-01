@@ -51,6 +51,7 @@ export default function MainAppBar() {
             <MenuItem onClick={() =>{dispatch(showCreateAgent(true)); setAnchorEl(null)}}>Добавить контрагента</MenuItem>
             <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/equities'>Объекты на карте</MenuItem>
             <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/my-requests'>Мои заявки</MenuItem>
+            <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/assigned-requests'>Заявки в работе</MenuItem>
         </Menu>}
         <CreateCustomerRequest/>
         <CreateAgent/>

@@ -40,7 +40,6 @@ export const saveRequest = (name, contacts) => async (dispatch, getState) => {
         localStorage.setItem("customerId", saved.issuedBy?.id);
         dispatch(showAgent(saved.assignedTo));
         dispatch(updateRequests())
-        // dispatch(setCustomerId(saved.issuedBy?.id));
     } catch (reason) {
         dispatch(showError(reason.message))
     }

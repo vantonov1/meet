@@ -15,6 +15,7 @@ import createRequest from "./components/create-request/slice";
 import createAgent from "./components/create-agent/slice";
 import appBar from "./components/app-bar/slice";
 import browseRequests from "./components/browse-my-requests/slice";
+import browseAssignedRequests from "./components/browse-assigned-requests/slice";
 
 const store = configureStore({
     reducer: {
@@ -28,7 +29,8 @@ const store = configureStore({
         addEquity: addEquity,
         createRequest: createRequest,
         createAgent: createAgent,
-        browseRequests: browseRequests
+        browseRequests: browseRequests,
+        browseAssignedRequests: browseAssignedRequests
     },
 });
 

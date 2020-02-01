@@ -3,7 +3,7 @@ import {showError} from "../show-error/slice"
 import RequestAPI from "../../api/RequestAPI";
 
 const slice = createSlice({
-    name: 'browse-equities',
+    name: 'browse-assigned-equities',
     initialState: {
         requests: [],
         loading: false,
@@ -22,9 +22,6 @@ const slice = createSlice({
             state.loading = false;
             state.loadFinished = true;
         },
-        updateRequests: state => {
-            state.loadFinished = false;
-        },
         selectRequest: (state, {payload}) => {
             state.selectedRequest = payload
         },
@@ -35,15 +32,16 @@ const slice = createSlice({
 });
 
 export default slice.reducer
-export const {selectRequest, unselectRequest, updateRequests} = slice.actions;
+export const {selectRequest, unselectRequest} = slice.actions;
 
-export const loadRequests = () => async dispatch => {
+export const loadRequests = () => async (dispatch, getState) => {
     const {setRequests, startLoading, finishLoading} = slice.actions;
-    const customerId = localStorage.getItem("customerId");
-    if (customerId) {
+    const {loading, loadFinished} = getState().browseAssignedRequests;
+    const agentId = localStorage.getItem("agentId");
+    if (!loading && !loadFinished && agentId) {
         dispatch(startLoading());
         try {
-            dispatch(setRequests(await RequestAPI.findRequests(customerId)));
+            dispatch(setRequests(await RequestAPI.findRequests(null, agentId)));
         } catch (reason) {
             dispatch(showError(reason.message))
         } finally {

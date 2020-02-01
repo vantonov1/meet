@@ -30,7 +30,8 @@ export const {setName, setContacts, showCreateAgent} = slice.actions;
 export const saveAgent = (name, contacts) => async (dispatch, getState) => {
     const {filter} = getState().browseEquities;
     try {
-        await AgentAPI.createAgent({name: name, contacts: contacts, city: filter.city});
+        let agentId = await AgentAPI.createAgent({name: name, contacts: contacts, city: filter.city});
+        localStorage.setItem("agentId", agentId);
         dispatch(showCreateAgent(false));
         dispatch(showSuccess('Агент добавлен'))
     } catch (reason) {
