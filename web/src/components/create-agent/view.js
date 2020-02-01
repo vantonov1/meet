@@ -1,26 +1,16 @@
-import React, {useLayoutEffect} from "react";
+import React from "react";
 import {Dialog} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import DialogActions from "@material-ui/core/DialogActions";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
-import {saveAgent, setContacts, setName, setSaveFinished} from "./slice";
+import {saveAgent, setContacts, setName} from "./slice";
 import EditPersonContacts from "../common/edit-person-contacts";
 
 export default function CreateAgent(props) {
-    const {name, contacts, saveFinished} = useSelector(state => state.createAgent, shallowEqual);
+    const {open, name, contacts} = useSelector(state => state.createAgent, shallowEqual);
     const dispatch = useDispatch();
 
-    useLayoutEffect(() => {
-        if(saveFinished) {
-            props.onClose();
-            dispatch(setSaveFinished(false))
-        }
-    }, [saveFinished]);
-
-    return <Dialog disableBackdropClick
-                   disableEscapeKeyDown
-                   maxWidth="xs"
-                   open={props.open}>
+    return <Dialog maxWidth="xs" open={open}>
         <EditPersonContacts name={name}
                             contacts={contacts}
                             onNameChanged={n => dispatch(setName(n))}
@@ -32,7 +22,7 @@ export default function CreateAgent(props) {
             </Button>
             <Button onClick={() => {
                 dispatch(saveAgent(name, contacts))
-            }} disabled={contacts.length === 0 || contacts[0].contact === ''} color="primary">
+            }} disabled={name === '' || contacts.length === 0 || contacts[0].contact === ''} color="primary">
                 Сохранить
             </Button>
         </DialogActions>

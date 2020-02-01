@@ -1,37 +1,37 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {showError} from "../show-error/slice"
 import AgentAPI from "../../api/AgentAPI";
+import {showError} from "../show-error/slice"
 import {showSuccess} from "../show-success/slice";
 
 const slice = createSlice({
     name: 'create-agent',
     initialState: {
+        open: false,
         name: '',
         contacts: [],
         saveFinished: false
     },
     reducers: {
+        showCreateAgent: (state, {payload}) => {
+            state.open = payload
+        },
         setName: (state, {payload}) => {
             state.name = payload
         },
         setContacts: (state, {payload}) => {
             state.contacts = payload
         },
-       setSaveFinished: (state, {payload}) => {
-            state.saveFinished = payload
-        },
     }
 });
 
 export default slice.reducer
-export const {setName, setContacts, setSaveFinished} = slice.actions;
+export const {setName, setContacts, showCreateAgent} = slice.actions;
 
 export const saveAgent = (name, contacts) => async (dispatch, getState) => {
     const {filter} = getState().browseEquities;
     try {
-        const agent = {name: name, contacts: contacts, city: filter.city};
-        let saved = await AgentAPI.createAgent(agent);
-        dispatch(setSaveFinished(true));
+        await AgentAPI.createAgent({name: name, contacts: contacts, city: filter.city});
+        dispatch(showCreateAgent(false));
         dispatch(showSuccess('Агент добавлен'))
     } catch (reason) {
         dispatch(showError(reason.message))

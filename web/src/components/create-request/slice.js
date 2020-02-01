@@ -1,15 +1,19 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {showError} from "../show-error/slice"
 import RequestAPI from "../../api/RequestAPI";
+import {showError} from "../show-error/slice"
 
 const slice = createSlice({
     name: 'create-request',
     initialState: {
+        open: false,
         name: '',
         contacts: [],
         agent: null
     },
     reducers: {
+        showCreateRequest: (state, {payload}) => {
+            state.open = payload
+        },
         setName: (state, {payload}) => {
             state.name = payload
         },
@@ -23,7 +27,7 @@ const slice = createSlice({
 });
 
 export default slice.reducer
-export const {setName, setContacts, showAgent} = slice.actions;
+export const {showCreateRequest, setName, setContacts, showAgent} = slice.actions;
 
 export const saveRequest = (name, contacts) => async (dispatch, getState) => {
     const {showAgent} = slice.actions;
@@ -32,7 +36,7 @@ export const saveRequest = (name, contacts) => async (dispatch, getState) => {
         const customer = {name: name, contacts: contacts, city: filter.city};
         const request = {type: 'SELL', issuedBy: customer};
         let saved = await RequestAPI.createRequest(request);
-        dispatch(showAgent(saved.assignedTo))
+        dispatch(showAgent(saved.assignedTo));
     } catch (reason) {
         dispatch(showError(reason.message))
     }
