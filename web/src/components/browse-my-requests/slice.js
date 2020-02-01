@@ -29,7 +29,7 @@ const slice = createSlice({
             state.selectedRequest = payload
         },
         unselectRequest: (state) => {
-            state.selectedEquity = null
+            state.selectedRequest = null
         },
     }
 });

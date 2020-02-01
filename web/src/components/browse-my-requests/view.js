@@ -1,28 +1,16 @@
 import React, {useEffect, useLayoutEffect} from "react";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import Box from "@material-ui/core/Box";
-import makeStyles from "@material-ui/core/styles/makeStyles";
 import {List, ListItem, Toolbar} from "@material-ui/core";
 import {loadRequests, selectRequest} from "./slice";
 import {CONTACT_TYPES, EQUITY_TYPES} from "../common/constants";
 import Typography from "@material-ui/core/Typography";
 import {setAppTitle} from "../app-bar/slice";
-
-const useStyles = makeStyles(theme => ({
-    root: {
-        display: 'flex',
-        width: 400,
-        height: "100%",
-    },
-    progress: {position: "absolute", width: '100%', textAlign: 'center', marginTop: theme.spacing(1)},
-    noItems: {width: '100%', textAlign: 'center', marginTop: theme.spacing(1)},
-}));
+import LoadRecordsProgress from "../common/load-records-progress";
 
 export default function BrowseMyRequests(props) {
     const {requests, selectedRequest, loading} = useSelector(state => state.browseRequests, shallowEqual);
     const dispatch = useDispatch();
-    const classes = useStyles();
 
     useEffect(() => {
         dispatch(loadRequests())
@@ -34,8 +22,7 @@ export default function BrowseMyRequests(props) {
 
     return <Box>
         <Toolbar/>
-        {loading && <span className={classes.progress}><CircularProgress/></span>}
-        {!loading && requests.length === 0 && <span className={classes.noItems}>Нет записей</span>}
+        <LoadRecordsProgress loading={loading} empty={requests.length === 0}/>
         <List>
             {requests.map(r =>
                 <Request selected={selectedRequest?.id === r.id} onClick={() => {dispatch(selectRequest(r))}} {...r}/>)

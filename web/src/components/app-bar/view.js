@@ -49,6 +49,7 @@ export default function MainAppBar() {
         </Toolbar>
         {Boolean(anchorEl) && <Menu anchorEl={anchorEl} keepMounted open={true} onClose={() => setAnchorEl(null)}>
             <MenuItem onClick={() =>{dispatch(showCreateAgent(true)); setAnchorEl(null)}}>Добавить контрагента</MenuItem>
+            <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/equities'>Объекты на карте</MenuItem>
             <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/my-requests'>Мои заявки</MenuItem>
         </Menu>}
         <CreateCustomerRequest/>

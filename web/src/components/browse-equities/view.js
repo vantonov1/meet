@@ -1,6 +1,5 @@
 import React, {useEffect, useLayoutEffect} from 'react';
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import Drawer from "@material-ui/core/Drawer";
 import EquitiesList from "../common/equities-list";
 import Box from "@material-ui/core/Box";
@@ -28,6 +27,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import Toolbar from "@material-ui/core/Toolbar";
 import {EQUITY_TYPES} from "../common/constants";
 import {setAppTitle} from "../app-bar/slice";
+import LoadRecordsProgress from "../common/load-records-progress";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -85,8 +85,7 @@ function EquitiesDrawer(props) {
     return <Drawer open={drawerOpen} variant={props.variant} onClose={() => dispatch(toggleDrawer(false))}>
         <Toolbar />
         {<Box className={classes.root}>
-            {loading && <span className={classes.progress}><CircularProgress/></span>}
-            {!loading && equities.length === 0 && <span className={classes.noItems}>Нет записей</span>}
+            <LoadRecordsProgress loading={loading} empty={equities.length === 0}/>
             {equities.length !== 0 && <EquitiesList
                 equities={equities}
                 hasMore={equities.length < locations.length}
