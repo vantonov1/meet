@@ -37,8 +37,11 @@ const useStyles = makeStyles(theme => ({
         width: 400,
         height: "100%",
     },
-    progress: {position: "absolute", width: '100%', textAlign: 'center', marginTop: theme.spacing(1)},
-    noItems: {width: '100%', textAlign: 'center', marginTop: theme.spacing(1)},
+    addEquity: {
+        left: theme.spacing(1),
+        bottom: theme.spacing(1),
+        position: "fixed"
+    },
     equityInfo: {minHeight:theme.spacing(6)},
     info: {
         width: "100%",
@@ -97,7 +100,7 @@ function EquitiesDrawer(props) {
                 }}
             />}
         </Box>}
-        <Fab color="primary">
+        <Fab color="primary" className={classes.addEquity}>
             <AddIcon onClick={() => dispatch(showAddEquity(true))}/>
         </Fab>
         <AddEquity type={filter.type} city={filter.city}/>

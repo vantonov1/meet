@@ -6,7 +6,8 @@ import React from "react";
 const useStyles = makeStyles(theme => ({
     root: {
         display: 'flex',
-        width: '100%'
+        width: '100%',
+        position: 'absolute'
      },
     progress: {position: "absolute", width: '100%', textAlign: 'center', marginTop: theme.spacing(1)},
     noItems: {width: '100%', textAlign: 'center', marginTop: theme.spacing(1)},
