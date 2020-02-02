@@ -2,7 +2,6 @@ package com.github.vantonov1.meet.controller
 
 import com.github.vantonov1.meet.dto.MeetingDTO
 import com.github.vantonov1.meet.service.MeetingService
-import org.springframework.http.HttpStatus
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import java.time.ZonedDateTime
@@ -14,7 +13,6 @@ import java.time.ZonedDateTime
 class MeetingController(private val meetingService: MeetingService) {
     @PostMapping
     @Transactional
-    @ResponseStatus(HttpStatus.CREATED)
     fun create(@RequestBody dto: MeetingDTO) = meetingService.save(dto)
 
     @PutMapping("/{id}")

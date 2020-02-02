@@ -11,6 +11,8 @@ import ConfirmAction from "../common/confirm-action";
 import {deleteRequest} from "../browse-my-requests/slice";
 import AddEquity from "../add-equity/view";
 import {showAddEquity} from "../add-equity/slice";
+import {showCreateMeeting} from "../create-meeting/slice";
+import CreateMeeting from "../create-meeting/view";
 
 export default function BrowseAssignedRequests() {
     const {requests, selectedRequest, loading} = useSelector(state => state.browseAssignedRequests, shallowEqual);
@@ -47,6 +49,10 @@ export default function BrowseAssignedRequests() {
                 setConfirmDelete(true);
                 setMenuAnchor(null)
             }}>Удалить заявку</MenuItem>}
+            <MenuItem disabled={selectedRequest?.about === null} onClick={() => {
+                dispatch(showCreateMeeting(true));
+                setMenuAnchor(null)
+            }}>Назначить встречу</MenuItem>
         </Menu>}
         <ConfirmAction open={confirmDelete} text="Удалить заявку?" onCancel={() => setConfirmDelete(false)}
                        onOK={() => {
@@ -54,6 +60,7 @@ export default function BrowseAssignedRequests() {
                            dispatch(deleteRequest(selectedRequest))
                        }}/>
         <AddEquity type={filter.type} city={filter.city} fromRequest={selectedRequest}/>
+        <CreateMeeting fromRequest={selectedRequest}/>
     </Box>
 }
 

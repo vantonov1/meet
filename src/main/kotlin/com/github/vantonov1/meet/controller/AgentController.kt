@@ -2,7 +2,6 @@ package com.github.vantonov1.meet.controller
 
 import com.github.vantonov1.meet.dto.AgentDTO
 import com.github.vantonov1.meet.service.AgentService
-import org.springframework.http.HttpStatus
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.*
 class AgentController(private val agentService: AgentService) {
     @PostMapping
     @Transactional
-    @ResponseStatus(HttpStatus.CREATED)
     fun create(@RequestBody dto: AgentDTO) = agentService.save(dto)
 
     @PutMapping

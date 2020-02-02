@@ -2,7 +2,6 @@ package com.github.vantonov1.meet.controller
 
 import com.github.vantonov1.meet.dto.RequestDTO
 import com.github.vantonov1.meet.service.RequestService
-import org.springframework.http.HttpStatus
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
@@ -14,7 +13,6 @@ import reactor.core.publisher.Mono
 class RequestController(private val requestService: RequestService) {
     @PostMapping
     @Transactional
-    @ResponseStatus(HttpStatus.CREATED)
     fun create(@RequestBody dto: RequestDTO): Mono<RequestDTO> = requestService.save(dto)
 
     @DeleteMapping("/{id}")

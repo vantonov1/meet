@@ -54,7 +54,7 @@ class ProcessTest {
         val requestToBuy = requestService.save(RequestDTO(null, RequestType.BUY.name, createdEquity, buyer, null)).block()
         assert(requestToBuy!!.assignedTo?.id == agentId)
 
-        val meetingId = meetingService.save(MeetingDTO(null, createdEquity, agent, requestToBuy.issuedBy, ZonedDateTime.now())).block()
+        val meetingId = meetingService.save(MeetingDTO(null, createdEquity, agent, requestToBuy.issuedBy, ZonedDateTime.now(), "123")).block()
         val today = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS)
         val buyerInbox = meetingService.findByPersons(agentId, null, today, today.plusDays(1)).collectList().block()
         assert(!buyerInbox.isNullOrEmpty() && buyerInbox[0].attends.id == requestToBuy.issuedBy.id && buyerInbox[0].at!!.id == equityId)

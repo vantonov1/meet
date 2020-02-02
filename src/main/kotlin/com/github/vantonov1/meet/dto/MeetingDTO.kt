@@ -8,11 +8,12 @@ data class MeetingDTO(
         val at: EquityDTO?,
         val scheduledBy: AgentDTO,
         val attends: CustomerDTO,
-        val schedule: ZonedDateTime
+        val schedule: ZonedDateTime,
+        val comment: String?
 ) {
-    fun toEntity() = Meeting(id, at?.id, scheduledBy.id!!, attends.id!!, schedule)
+    fun toEntity() = Meeting(id, at?.id, scheduledBy.id!!, attends.id!!, schedule, comment)
 }
 
 
 fun fromEntity(meeting: Meeting, at: EquityDTO?, attends: CustomerDTO, scheduledBy: AgentDTO) =
-        MeetingDTO(meeting.id, at, scheduledBy, attends, meeting.schedule)
+        MeetingDTO(meeting.id, at, scheduledBy, attends, meeting.schedule, meeting.comment)

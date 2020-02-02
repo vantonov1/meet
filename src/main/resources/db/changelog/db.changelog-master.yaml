@@ -196,6 +196,9 @@ databaseChangeLog:
                    type: timestamp with time zone
                    constraints:
                        nullable: false
+            - column:
+                   name: comment
+                   type: varchar(1024)
       - createIndex:
             indexName: find_equities_idx
             tableName: equity

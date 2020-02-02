@@ -11,5 +11,6 @@ data class Meeting(
         val at: Long?,
         val scheduledBy: Int,
         val attends: Int,
-        val schedule: ZonedDateTime
+        val schedule: ZonedDateTime,
+        val comment: String?
 )

@@ -18,27 +18,25 @@ class MeetingService(private val meetingRepository: MeetingRepository,
                      private val equityService: EquityService
 ) {
     fun save(dto: MeetingDTO): Mono<Int> {
-        if(dto.schedule.isBefore(ZonedDateTime.now())) {
-            throw IllegalArgumentException("schedule in the past")
+        if (dto.schedule.isBefore(ZonedDateTime.now())) {
+            throw IllegalArgumentException("Встреча в прошлом")
         }
-        return meetingRepository.save(dto.toEntity()).map { it.id }
+        return meetingRepository.save(dto.toEntity()).map { it.id!! }
     }
 
     fun reschedule(id: Int, schedule: ZonedDateTime): Mono<Any> {
-        if(schedule.isBefore(ZonedDateTime.now())) {
-            throw IllegalArgumentException("schedule in the past")
+        if (schedule.isBefore(ZonedDateTime.now())) {
+            throw IllegalArgumentException("Встреча в прошлом")
         }
-        return meetingRepository.findById(id).flatMap { meetingRepository.save(it.copy(schedule = schedule)).map {it.id} }
+        return meetingRepository.findById(id).flatMap { meetingRepository.save(it.copy(schedule = schedule)).map { it.id!! } }
     }
 
     fun delete(id: Int) = meetingRepository.deleteById(id)
 
     fun findByPersons(scheduledBy: Int?, attends: Int?, dateMin: ZonedDateTime, dateMax: ZonedDateTime): Flux<MeetingDTO> {
-        return when {
-            scheduledBy != null -> meetingRepository.findByScheduler(scheduledBy, dateMin, dateMax).flatMap { collectMeetingInfo(it) }
-            attends != null -> meetingRepository.findByAttending(attends, dateMin, dateMax).flatMap { collectMeetingInfo(it) }
-            else -> Flux.empty()
-        }
+        return if (scheduledBy != null) meetingRepository.findByScheduler(scheduledBy, dateMin, dateMax).flatMap { collectMeetingInfo(it) }
+        else if (attends != null) meetingRepository.findByAttending(attends, dateMin, dateMax).flatMap { collectMeetingInfo(it) }
+        else Flux.empty()
     }
 
     private fun collectMeetingInfo(meeting: Meeting) =
