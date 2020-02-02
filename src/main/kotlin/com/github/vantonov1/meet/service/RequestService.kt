@@ -33,6 +33,8 @@ class RequestService(private val requestRepository: RequestRepository,
 
     fun delete(id: Int) = requestRepository.deleteById(id)
 
+    fun findById(id: Int) = requestRepository.findById(id).flatMap { collectRequestInfo(it) }
+
     fun findByPersons(issuedBy: Int?, assignedTo: Int?): Flux<RequestDTO> {
         return when {
             issuedBy != null -> requestRepository.findByIssuer(issuedBy).flatMap { collectRequestInfo(it) }

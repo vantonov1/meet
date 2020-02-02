@@ -35,7 +35,6 @@ function createInitialState() {
             square: '',
             rooms: '',
             info: '',
-            responsible: null
         },
         selectedPhotos: [],
         districts: [],

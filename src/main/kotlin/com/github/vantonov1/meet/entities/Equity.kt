@@ -27,7 +27,7 @@ data class Equity(
 )
 
 enum class EquityType(val value: Byte) {
-    SALE_ROOM(1), SALE_FLAT(2), SALE_BUSINESS(4), RENT_ROOM(8), RENT_FLAT(16), RENT_BUSINESS(32), SALE_HOUSE(64);
+    SALE_ROOM(1), SALE_FLAT(2), SALE_BUSINESS(4), SALE_HOUSE(8), RENT_ROOM(16), RENT_FLAT(32), RENT_BUSINESS(64);
 
     companion object {
         fun valueOf(value: Byte): EquityType = values().first { it.value == value }

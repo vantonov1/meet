@@ -38,9 +38,6 @@ export default function AddEquity(props) {
             dispatch(setEquityField({name: "type", value: type}));
         if (equity.address.city !== city)
             dispatch(setEquityField({name: "address", value: {...equity.address, city}}));
-        if (equity.responsible !== fromRequest?.assignedTo.id) {
-            dispatch(setEquityField({name: "responsible", value: fromRequest?.assignedTo.id}));
-        }
         dispatch(setField({name: "fromRequest", value: fromRequest?.id}));
     }, [equity.address.city, city, equity.type, type]);
 

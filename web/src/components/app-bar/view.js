@@ -10,8 +10,9 @@ import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import CreateCustomerRequest from "../create-request/view";
 import CreateAgent from "../create-agent/view";
 import {showCreateAgent} from "../create-agent/slice";
-import {showCreateRequest} from "../create-request/slice";
+import {setAbout, showCreateRequest} from "../create-request/slice";
 import {Link as RouterLink} from 'react-router-dom';
+import {isRent, isSale} from "../common/constants";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -30,6 +31,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function MainAppBar() {
     const {title} = useSelector(state => state.appBar, shallowEqual);
+    const {selectedEquity} = useSelector(state => state.browseEquities, shallowEqual);
     const dispatch = useDispatch();
     const [anchorEl, setAnchorEl] = useState(null);
     const classes = useStyles();
@@ -43,7 +45,14 @@ export default function MainAppBar() {
             <Typography variant="h6" className={classes.title}>
                 {title}
             </Typography>
-            <Button color={"inherit"} onClick={() => dispatch(showCreateRequest(true))}>
+            {selectedEquity && <Button color={"inherit"} onClick={() => {
+                dispatch(setAbout(selectedEquity));
+                dispatch(showCreateRequest(true))
+            }}>
+                {isSale(selectedEquity) && "Хочу купить"}
+                {isRent(selectedEquity) && "Хочу снять"}
+            </Button>}
+           <Button color={"inherit"} onClick={() => dispatch(showCreateRequest(true))}>
                 Хочу сдать/продать
             </Button>
         </Toolbar>

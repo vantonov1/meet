@@ -5,7 +5,7 @@ import {List, MenuItem, Toolbar} from "@material-ui/core";
 import {loadRequests, selectRequest} from "./slice";
 import {setAppTitle} from "../app-bar/slice";
 import LoadRecordsProgress from "../common/load-records-progress";
-import {RequestListItem} from "../common/request-list-item";
+import {MergedRequestListItem} from "../common/request-list-item";
 import Menu from "@material-ui/core/Menu";
 import ConfirmAction from "../common/confirm-action";
 import {deleteRequest} from "../browse-my-requests/slice";
@@ -30,12 +30,13 @@ export default function BrowseAssignedRequests() {
     return <Box>
         <Toolbar/>
         <LoadRecordsProgress loading={loading} empty={requests.length === 0}/>
-        <List> {requests.map(r =>
-            <RequestListItem key={r.id} equity={r.about} person={r.issuedBy} selected={selectedRequest?.id === r.id}
-                             onClick={(e) => {
-                                 setMenuAnchor(e.target);
-                                 dispatch(selectRequest(r))
-                             }}/>)}
+        <List> {mergeRequests(requests).map(r =>
+            <MergedRequestListItem key={r.id} equity={r.about} buyer={r.buyer} seller={r.seller}
+                                   selected={selectedRequest?.id === r.id}
+                                   onClick={(e) => {
+                                       setMenuAnchor(e.target);
+                                       dispatch(selectRequest(r))
+                                   }}/>)}
         </List>
         {<Menu open={menuAnchor != null} anchorEl={menuAnchor} onClose={() => setMenuAnchor(null)}>
             <MenuItem disabled={selectedRequest?.type !== 'SELL' || selectedRequest?.about !== null} onClick={() => {
@@ -54,4 +55,12 @@ export default function BrowseAssignedRequests() {
                        }}/>
         <AddEquity type={filter.type} city={filter.city} fromRequest={selectedRequest}/>
     </Box>
+}
+
+function mergeRequests(requests) {
+    const counterReq = requests.filter(r => r.type === 'BUY');
+    return requests.filter(r => r.type === 'SELL').map((r) => {
+        const buy = counterReq.find(c => c.about?.id === r.about?.id);
+        return {id: r.id, about: r.about, assignedTo: r.assignedTo, seller: r.issuedBy, buyer: buy?.issuedBy}
+    })
 }

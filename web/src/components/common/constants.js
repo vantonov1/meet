@@ -25,6 +25,15 @@ export const CONTACT_TYPES = {
     FACEBOOK: {label: 'Фейсбук', type: 'text'},
 };
 
+export function isSale(equity) {
+    return ['SALE_ROOM', 'SALE_FLAT', 'SALE_HOUSE', 'SALE_BUSINESS'].includes(equity.type);
+}
+
+export function isRent(equity) {
+    return ['RENT_ROOM', 'RENT_FLAT', 'RENT_HOUSE', 'RENT_BUSINESS'].includes(equity.type);
+}
+
+
 export const EQUITY_TYPES = {
     RENT_ROOM: "Аренда комнат",
     RENT_FLAT: "Аренда квартир",

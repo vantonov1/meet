@@ -19,11 +19,18 @@ import reactor.core.publisher.Mono
 @Suppress("unused")
 class EquityController(private val equities: EquityService,
                        private val photos: PhotoService,
-                       private val requests:RequestService) {
+                       private val requests: RequestService) {
     @PostMapping
     @Transactional
-    fun create(@RequestBody dto: EquityDTO, @RequestParam fromRequest: Int?): Mono<Long> =
-            equities.save(dto).flatMap { requests.attachEquity(it!!, fromRequest) }
+    fun create(@RequestBody dto: EquityDTO, @RequestParam fromRequest: Int?): Mono<Long> {
+        val equity = if (fromRequest != null) {
+            requests.findById(fromRequest)
+                    .flatMap { req -> equities.save(dto.copy(ownedBy = req?.issuedBy?.id, responsible = req?.assignedTo?.id)) }
+        } else {
+            equities.save(dto)
+        }
+        return equity.flatMap { requests.attachEquity(it!!, fromRequest) }
+    }
 
     @PutMapping
     @Transactional

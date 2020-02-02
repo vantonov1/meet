@@ -1,0 +1,25 @@
+@startuml
+
+object Equity
+object Agent
+object Customer1 #lightgreen
+object Customer2 #lightblue
+object Request1 #lightgreen{
+    type: SELL
+}
+object Request2 #lightblue {
+    type: BUY
+}
+
+Equity --> Customer1 : ownedBy
+Equity --> Agent : responsible
+
+Request1 --> Equity : about
+Request1 --> Customer1 : issuedBy
+Request1 --> Agent : assignedTo
+
+Request2 --> Equity : about
+Request2 --> Customer2 : issuedBy
+Request2 --> Agent : assignedTo
+
+@enduml
