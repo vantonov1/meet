@@ -25,10 +25,10 @@ class AgentService(val repository: AgentRepository, val contactService: ContactS
                 .findActive(if(dto.about != null) dto.about.address.city else dto.issuedBy.city)
                 .map { it.id!! }
                 .collectList()
-                .map {if(it.isNotEmpty()) it[Random.nextInt(it.size)] else throw IllegalStateException("no active agents")}
+                .map {if(it.isNotEmpty()) it[Random.nextInt(it.size)] else throw IllegalStateException("Нет активных агентов")}
     }
 
     fun setActive(id: Int, active: Boolean): Mono<Any> {
-        return repository.setActive(id, active).map { if(it) Any() else throw IllegalArgumentException("agent not found") }
+        return repository.setActive(id, active).map { if(it) Any() else throw IllegalArgumentException("Агент не найден") }
     }
 }

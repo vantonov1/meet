@@ -3,8 +3,11 @@ import {fetchEmpty, fetchJSON} from "./fetch";
 export default class EquityAPI {
     static BASE = 'http://localhost:8080/api/v1/equities';
 
-    static create(dto) {
-        return fetchJSON(this.BASE, {
+    static create(dto, fromRequest) {
+        let url = new URL(this.BASE);
+        if(fromRequest)
+            url.searchParams.append("fromRequest", fromRequest);
+        return fetchJSON(url, {
             method: 'POST', body: JSON.stringify(dto), headers: {
                 'Content-Type': 'application/json'
             }

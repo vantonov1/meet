@@ -28,6 +28,8 @@ import Toolbar from "@material-ui/core/Toolbar";
 import {EQUITY_TYPES} from "../common/constants";
 import {setAppTitle} from "../app-bar/slice";
 import LoadRecordsProgress from "../common/load-records-progress";
+import AddIcon from "@material-ui/icons/Add";
+import {showAddEquity} from "../add-equity/slice";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -95,6 +97,9 @@ function EquitiesDrawer(props) {
                 }}
             />}
         </Box>}
+        <Fab color="primary">
+            <AddIcon onClick={() => dispatch(showAddEquity(true))}/>
+        </Fab>
         <AddEquity type={filter.type} city={filter.city}/>
     </Drawer>;
 }

@@ -8,10 +8,12 @@ import {clearSelectedFiles, getSelectedFiles} from "../common/photo-upload";
 import {geocode} from "../../api/NominatimAPI";
 import {CITY, LIMITS} from "../common/constants";
 import {showSuccess} from "../show-success/slice";
+import {updateRequests} from "../browse-assigned-requests/slice";
 
 function createInitialState() {
     return {
         showDialog: false,
+        fromRequest: null,
         equity: {
             type: 0,
             address: {
@@ -32,7 +34,8 @@ function createInitialState() {
             price: '',
             square: '',
             rooms: '',
-            info: ''
+            info: '',
+            responsible: null
         },
         selectedPhotos: [],
         districts: [],
@@ -69,7 +72,7 @@ const slice = createSlice({
     name: 'add-equity',
     initialState: createInitialState(),
     reducers: {
-        toggleDialog: (state, {payload}) => {
+        showAddEquity: (state, {payload}) => {
             let initial = createInitialState();
             state.equity = initial.equity;
             state.selectedPhotos = [];
@@ -93,7 +96,7 @@ const slice = createSlice({
 });
 
 export default slice.reducer
-export const {toggleDialog, setField, setEquityField, addPhoto} = slice.actions;
+export const {showAddEquity, setField, setEquityField, addPhoto} = slice.actions;
 
 function validate(equity) {
     let result = {};
@@ -123,9 +126,9 @@ function validate(equity) {
 
 export const setLocation = (address) => async (dispatch, getState) => {
     const {setEquityField} = slice.actions;
-    let {equity, validation} = getState().addEquity;
+    const {equity, validation} = getState().addEquity;
     if (address?.street.length > 0 && address.building?.length > 0) {
-        let locations = await geocode(CITY[address.city], address.street, address.building);
+        const locations = await geocode(CITY[address.city], address.street, address.building);
         if (address === equity.address) {
             if (locations?.filter(l => l.class === 'building').length > 0) {
                 dispatch(setEquityField({
@@ -147,8 +150,8 @@ export const setLocation = (address) => async (dispatch, getState) => {
     }
 };
 
-export const saveEquity = (equity) => async dispatch => {
-    const {toggleDialog, setField} = slice.actions;
+export const saveEquity = (equity) => async (dispatch, getState) => {
+    const {fromRequest} = getState().addEquity;
     const setSave = (v) => setField({name: "save", value: v});
     try {
         let errors = validate(equity);
@@ -165,11 +168,14 @@ export const saveEquity = (equity) => async dispatch => {
             }
             dispatch(setSave({creatingEquity: true}));
             try {
-                await EquityAPI.create(unfreeze);
+                await EquityAPI.create(unfreeze, fromRequest);
+                if(fromRequest) {
+                    dispatch(updateRequests())
+                }
             } finally {
                 dispatch(setSave({creatingEquity: false}));
             }
-            dispatch(toggleDialog(false));
+            dispatch(showAddEquity(false));
             dispatch(showSuccess('Объект добавлен'))
         } else
             dispatch(setField({name: "validation", value: errors}))

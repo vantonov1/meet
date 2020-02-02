@@ -1,7 +1,5 @@
 import React, {useEffect} from "react";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
-import Fab from "@material-ui/core/Fab";
-import AddIcon from "@material-ui/icons/Add";
 import {
     addPhoto,
     fetchStreets,
@@ -11,7 +9,7 @@ import {
     setEquityField,
     setField,
     setLocation,
-    toggleDialog,
+    showAddEquity,
 } from "./slice";
 import {Dialog, LinearProgress} from "@material-ui/core";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -32,7 +30,7 @@ const useStyles = makeStyles(theme => ({
 export default function AddEquity(props) {
     const {showDialog, equity, selectedPhotos, districts, subways, streets, streetText, validation, save} = useSelector(state => state.addEquity, shallowEqual);
     const dispatch = useDispatch();
-    const {type, city} = props;
+    const {type, city, fromRequest} = props;
     const classes = useStyles();
 
     useEffect(() => {
@@ -40,6 +38,10 @@ export default function AddEquity(props) {
             dispatch(setEquityField({name: "type", value: type}));
         if (equity.address.city !== city)
             dispatch(setEquityField({name: "address", value: {...equity.address, city}}));
+        if (equity.responsible !== fromRequest?.assignedTo.id) {
+            dispatch(setEquityField({name: "responsible", value: fromRequest?.assignedTo.id}));
+        }
+        dispatch(setField({name: "fromRequest", value: fromRequest?.id}));
     }, [equity.address.city, city, equity.type, type]);
 
     useEffect(() => {
@@ -59,9 +61,6 @@ export default function AddEquity(props) {
 
     return (
         <div className={classes.root}>
-            <Fab color="primary">
-                <AddIcon onClick={() => dispatch(toggleDialog(true))}/>
-            </Fab>
             <SaveProgress save={save}/>
             <Dialog open={showDialog} maxWidth="xs">
                 <EditEquityContent equity={equity} type={type} validation={validation}
@@ -73,7 +72,7 @@ export default function AddEquity(props) {
                 />
                 <DialogActions>
                     <PhotoUpload files={selectedPhotos} onFileUploaded={f => dispatch(addPhoto(f))}/>
-                    <Button onClick={() => dispatch(toggleDialog(false))}>
+                    <Button onClick={() => dispatch(showAddEquity(false))}>
                         Отменить
                     </Button>
                     <Button onClick={() => {

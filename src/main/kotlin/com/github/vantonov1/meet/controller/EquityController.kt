@@ -7,7 +7,7 @@ import com.github.vantonov1.meet.entities.EquityType
 import com.github.vantonov1.meet.entities.Filter
 import com.github.vantonov1.meet.service.EquityService
 import com.github.vantonov1.meet.service.PhotoService
-import org.springframework.http.HttpStatus
+import com.github.vantonov1.meet.service.RequestService
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
@@ -17,11 +17,13 @@ import reactor.core.publisher.Mono
 @RequestMapping("/api/v1/equities")
 @CrossOrigin("http://localhost:3000")
 @Suppress("unused")
-class EquityController(private val equities: EquityService, private val photos: PhotoService) {
+class EquityController(private val equities: EquityService,
+                       private val photos: PhotoService,
+                       private val requests:RequestService) {
     @PostMapping
     @Transactional
-    @ResponseStatus(HttpStatus.CREATED)
-    fun create(@RequestBody dto: EquityDTO): Mono<Long> = equities.save(dto)
+    fun create(@RequestBody dto: EquityDTO, @RequestParam fromRequest: Int?): Mono<Long> =
+            equities.save(dto).flatMap { requests.attachEquity(it!!, fromRequest) }
 
     @PutMapping
     @Transactional

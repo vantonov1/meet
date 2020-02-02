@@ -14,6 +14,10 @@ const slice = createSlice({
         setRequests: (state, {payload}) => {
             state.requests = payload
         },
+        updateRequests: state => {
+            state.loadFinished = false;
+            state.selectedRequest = null
+        },
         startLoading: state => {
             state.loading = true;
             state.selectedRequest = null
@@ -32,7 +36,7 @@ const slice = createSlice({
 });
 
 export default slice.reducer
-export const {selectRequest, unselectRequest} = slice.actions;
+export const {selectRequest, unselectRequest, updateRequests} = slice.actions;
 
 export const loadRequests = () => async (dispatch, getState) => {
     const {setRequests, startLoading, finishLoading} = slice.actions;

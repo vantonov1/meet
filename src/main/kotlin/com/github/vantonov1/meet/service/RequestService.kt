@@ -24,6 +24,13 @@ class RequestService(private val requestRepository: RequestRepository,
             assignFromCustomer(dto, dto.issuedBy.id)
     }
 
+    fun attachEquity(equityId: Long, id: Int?): Mono<Long> {
+        return if (id != null)
+            requestRepository.attachEquity(equityId, id).map { if(it) equityId else throw IllegalArgumentException("Заявка не найдена") }
+        else
+            Mono.just(equityId)
+    }
+
     fun delete(id: Int) = requestRepository.deleteById(id)
 
     fun findByPersons(issuedBy: Int?, assignedTo: Int?): Flux<RequestDTO> {

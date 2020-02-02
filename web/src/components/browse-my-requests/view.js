@@ -36,7 +36,7 @@ export default function BrowseMyRequests() {
                              }}/>)}
 
         </List>
-        {<Menu open={menuAnchor != null} anchorEl={menuAnchor}>
+        {<Menu open={menuAnchor != null} anchorEl={menuAnchor} onClose={() => setMenuAnchor(null)}>
             <MenuItem onClick={() => {
                 setConfirmDelete(true);
                 setMenuAnchor(null)
