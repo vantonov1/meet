@@ -55,14 +55,18 @@ class ProcessTest {
         val requestToBuy = requestService.save(RequestDTO(null, RequestType.BUY.name, createdEquity, buyer, null, null)).block()
         assert(requestToBuy!!.assignedTo?.id == agentId)
 
-        val schedule = ZonedDateTime.now().format(DateTimeFormatter.ISO_ZONED_DATE_TIME)
+        val schedule = ZonedDateTime.now().plusDays(1).format(DateTimeFormatter.ISO_ZONED_DATE_TIME)
         val meetingId = meetingService.save(MeetingDTO(null, requestToBuy.id!!, createdEquity, agent, requestToBuy.issuedBy, schedule, "123")).block()
         val today = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS)
-        val buyerInbox = meetingService.findByPersons(agentId, null, today, today.plusDays(1)).collectList().block()
+        val buyerInbox = meetingService.findByPersons(agentId, null,
+                today.format(DateTimeFormatter.ISO_ZONED_DATE_TIME), today.plusDays(7).format(DateTimeFormatter.ISO_ZONED_DATE_TIME))
+                .collectList().block()
         assert(!buyerInbox.isNullOrEmpty() && buyerInbox[0].attends.id == requestToBuy.issuedBy.id && buyerInbox[0].at!!.id == equityId)
 
         meetingService.delete(meetingId!!).block()
-        val cleanInbox = meetingService.findByPersons(agentId, null, today, today.plusDays(1)).collectList().block()
+        val cleanInbox = meetingService.findByPersons(agentId, null,
+                today.format(DateTimeFormatter.ISO_ZONED_DATE_TIME), today.plusDays(1).format(DateTimeFormatter.ISO_ZONED_DATE_TIME))
+                .collectList().block()
         assert(cleanInbox.isNullOrEmpty())
     }
 }

@@ -3,7 +3,7 @@ import {showError} from "../show-error/slice"
 import RequestAPI from "../../api/RequestAPI";
 
 const slice = createSlice({
-    name: 'browse-equities',
+    name: 'browse-my-requests',
     initialState: {
         requests: [],
         loading: false,

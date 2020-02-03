@@ -6,6 +6,7 @@ import MainAppBar from "../app-bar/view";
 import BrowseEquities from "../browse-equities/view";
 import BrowseMyRequests from "../browse-my-requests/view";
 import BrowseAssignedRequests from "../browse-assigned-requests/view";
+import BrowseMyMeetings from "../browse-my-meetings/view";
 
 export default function AppRouter(props) {
     return (
@@ -25,6 +26,9 @@ export default function AppRouter(props) {
                 </Route>
                 <Route path="/assigned-requests" {...props}>
                     <BrowseAssignedRequests/>
+                </Route>
+                <Route path="/my-meetings" {...props}>
+                    <BrowseMyMeetings/>
                 </Route>
             </Switch>
         </Router>

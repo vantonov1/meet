@@ -5,7 +5,7 @@ import {List, MenuItem, Toolbar} from "@material-ui/core";
 import {deleteRequest, loadRequests, selectRequest} from "./slice";
 import {setAppTitle} from "../app-bar/slice";
 import LoadRecordsProgress from "../common/load-records-progress";
-import {RequestListItem} from "../common/request-list-item";
+import {RequestListItem} from "../common/list-items";
 import ConfirmAction from "../common/confirm-action";
 import Menu from "@material-ui/core/Menu";
 

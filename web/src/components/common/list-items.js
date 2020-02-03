@@ -10,7 +10,8 @@ import isToday from 'date-fns/isToday'
 import isTomorrow from "date-fns/isTomorrow";
 
 const useStyles = makeStyles(theme => ({
-    item: {cursor: "pointer", display: 'flex', flexDirection: 'column'},
+    meetingRoot: {cursor: "pointer", display: 'flex'},
+    requestItem: {cursor: "pointer", display: 'flex', flexDirection: 'column'},
     justify: {display: "flex", justifyContent: "space-between", whiteSpace: 'nowrap'}
 }));
 
@@ -33,7 +34,7 @@ export function RequestListItem(props) {
 export function MergedRequestListItem(props) {
     const {equity, buyer, seller, meeting, selected, onClick} = props;
     const classes = useStyles();
-    return <ListItem className={classes.item} divider selected={selected} onClick={onClick}>
+    return <ListItem className={classes.requestItem} divider selected={selected} onClick={onClick}>
         {equity && <Box width={1} className={classes.justify}><Equity equity={equity}/>{meeting ? <span>Встреча: {parseMeeting(meeting)}</span> :''}</Box>}
         {buyer && <Box width={1}>{isSale(equity) ? 'Покупатель': 'Арендатор'}: {buyer.name} <Contacts person={buyer}/></Box>}
         {seller && <Box width={1}>{isSale(equity) ? 'Продавец' : 'Арендодатель'}: {seller.name} <Contacts person={seller}/></Box>}
@@ -42,6 +43,23 @@ export function MergedRequestListItem(props) {
         </Box>}
     </ListItem>;
 }
+
+export function MeetingListItem(props) {
+    const {equity, person, selected, schedule, onClick} = props;
+    const classes = useStyles();
+
+    return <ListItem className={classes.meetingRoot}
+                     divider
+                     selected={selected}
+                     onClick={onClick}>
+        <ListItemText secondary={equity && EQUITY_TYPES[equity.type]}>
+            {equity && <Box width={1} className={classes.justify}><Equity equity={equity}/><span>Встреча: {parseMeeting(schedule)}</span></Box>}
+            {person && <span>{person.name}</span>}
+            {person && <Contacts person={person}/>}
+        </ListItemText>
+    </ListItem>;
+}
+
 
 function Equity(props) {
     const {equity} = props;

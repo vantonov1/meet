@@ -11,12 +11,14 @@ export default class RequestAPI {
         })
     }
 
-    static findMeetings(customer, agent) {
+    static findMeetings(customer, agent, dateMin, dateMax) {
         let url = new URL(BASE);
         if (customer)
             url.searchParams.append("attends", customer);
         if (agent)
             url.searchParams.append("scheduledBy", agent);
+        url.searchParams.append("dateMin", dateMin);
+        url.searchParams.append("dateMax", dateMax);
         return fetchJSON(url)
     }
 

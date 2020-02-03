@@ -27,7 +27,7 @@ class MeetingController(private val meetingService: MeetingService) {
     @Transactional(readOnly = true)
     fun findByPersons(@RequestParam(required = false) scheduledBy: Int?,
                       @RequestParam(required = false) attends: Int?,
-                      @RequestParam dateMin: ZonedDateTime,
-                      @RequestParam dateMax: ZonedDateTime
+                      @RequestParam dateMin: String,
+                      @RequestParam dateMax: String
     ) = meetingService.findByPersons(scheduledBy, attends, dateMin, dateMax)
 }

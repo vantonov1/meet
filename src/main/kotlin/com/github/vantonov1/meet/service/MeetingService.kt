@@ -33,9 +33,11 @@ class MeetingService(private val meetingRepository: MeetingRepository,
 
     fun delete(id: Int) = meetingRepository.deleteById(id)
 
-    fun findByPersons(scheduledBy: Int?, attends: Int?, dateMin: ZonedDateTime, dateMax: ZonedDateTime): Flux<MeetingDTO> {
-        return if (scheduledBy != null) meetingRepository.findByScheduler(scheduledBy, dateMin, dateMax).flatMap { collectMeetingInfo(it) }
-        else if (attends != null) meetingRepository.findByAttending(attends, dateMin, dateMax).flatMap { collectMeetingInfo(it) }
+    fun findByPersons(scheduledBy: Int?, attends: Int?, dateMin: String, dateMax: String): Flux<MeetingDTO> {
+        val min = ZonedDateTime.parse(dateMin)
+        val max = ZonedDateTime.parse(dateMax)
+        return if (scheduledBy != null) meetingRepository.findByScheduler(scheduledBy, min, max).flatMap { collectMeetingInfo(it) }
+        else if (attends != null) meetingRepository.findByAttending(attends, min, max).flatMap { collectMeetingInfo(it) }
         else Flux.empty()
     }
 

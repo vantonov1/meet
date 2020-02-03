@@ -17,6 +17,7 @@ import appBar from "./components/app-bar/slice";
 import browseRequests from "./components/browse-my-requests/slice";
 import browseAssignedRequests from "./components/browse-assigned-requests/slice";
 import createMeeting from "./components/create-meeting/slice";
+import browseMeetings from "./components/browse-my-meetings/slice";
 
 const store = configureStore({
     reducer: {
@@ -32,7 +33,8 @@ const store = configureStore({
         createAgent: createAgent,
         browseRequests: browseRequests,
         browseAssignedRequests: browseAssignedRequests,
-        createMeeting: createMeeting
+        createMeeting: createMeeting,
+        browseMeetings: browseMeetings
     },
 });
 
