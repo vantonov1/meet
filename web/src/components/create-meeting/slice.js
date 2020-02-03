@@ -29,6 +29,7 @@ export const {showCreateMeeting, setDate, setComment} = slice.actions;
 export const saveMeeting = (request, date, comment) => async dispatch => {
     try {
         const meeting = {
+            fromRequest: request.buyId,
             at: request.about,
             scheduledBy: request.assignedTo,
             attends: request.buyer,

@@ -8,6 +8,7 @@ import java.time.ZonedDateTime
 data class Meeting(
         @Id
         val id: Int? = null,
+        val fromRequest: Int,
         val at: Long?,
         val scheduledBy: Int,
         val attends: Int,

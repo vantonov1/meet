@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 @RunWith(SpringRunner::class)
@@ -39,7 +40,7 @@ class ProcessTest {
         assert(agent!!.id == agentId)
 
         val seller = CustomerDTO(null, "Martin Luther", listOf(phone), 2)
-        val requestToSale = requestService.save(RequestDTO(null, RequestType.SELL.name, null, seller, null)).block()
+        val requestToSale = requestService.save(RequestDTO(null, RequestType.SELL.name, null, seller, null, null)).block()
         assert(requestToSale!!.assignedTo?.id == agentId)
 
         val agentInbox = requestService.findByPersons(null, agentId).collectList().block()
@@ -51,10 +52,11 @@ class ProcessTest {
 
         val buyer = CustomerDTO(null, "Pinoccio", listOf(telegram), 2)
         val createdEquity = equityService.findById(equityId!!).block()
-        val requestToBuy = requestService.save(RequestDTO(null, RequestType.BUY.name, createdEquity, buyer, null)).block()
+        val requestToBuy = requestService.save(RequestDTO(null, RequestType.BUY.name, createdEquity, buyer, null, null)).block()
         assert(requestToBuy!!.assignedTo?.id == agentId)
 
-        val meetingId = meetingService.save(MeetingDTO(null, createdEquity, agent, requestToBuy.issuedBy, ZonedDateTime.now(), "123")).block()
+        val schedule = ZonedDateTime.now().format(DateTimeFormatter.ISO_ZONED_DATE_TIME)
+        val meetingId = meetingService.save(MeetingDTO(null, requestToBuy.id!!, createdEquity, agent, requestToBuy.issuedBy, schedule, "123")).block()
         val today = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS)
         val buyerInbox = meetingService.findByPersons(agentId, null, today, today.plusDays(1)).collectList().block()
         assert(!buyerInbox.isNullOrEmpty() && buyerInbox[0].attends.id == requestToBuy.issuedBy.id && buyerInbox[0].at!!.id == equityId)

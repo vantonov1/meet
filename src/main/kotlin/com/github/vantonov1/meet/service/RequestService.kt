@@ -8,12 +8,14 @@ import org.springframework.context.annotation.DependsOn
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.time.ZonedDateTime
 
 @Service
 @DependsOn("liquibase")
 class RequestService(private val requestRepository: RequestRepository,
                      private val customerService: CustomerService,
                      private val agentService: AgentService,
+                     private val meetingService: MeetingService,
                      private val equityService: EquityService
 ) {
     fun save(dto: RequestDTO): Mono<RequestDTO> {
@@ -52,11 +54,12 @@ class RequestService(private val requestRepository: RequestRepository,
                 Mono.zip(
                         equityService.findById(req.about),
                         customerService.findById(req.issuedBy),
-                        agentService.findById(req.assignedTo)
-                ).map { fromEntity(req, it.t1, it.t2, it.t3) }
+                        agentService.findById(req.assignedTo),
+                        meetingService.findDateByRequest(req.id!!)
+                ).map { fromEntity(req, it.t1, it.t2, it.t3, if(it.t4.isBefore(ZonedDateTime.now())) null else it.t4) }
             else
                 Mono.zip(
                         customerService.findById(req.issuedBy),
                         agentService.findById(req.assignedTo)
-                ).map { fromEntity(req, null, it.t1, it.t2) }
+                ).map { fromEntity(req, null, it.t1, it.t2, null) }
 }

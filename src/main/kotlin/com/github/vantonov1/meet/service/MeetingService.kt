@@ -18,7 +18,7 @@ class MeetingService(private val meetingRepository: MeetingRepository,
                      private val equityService: EquityService
 ) {
     fun save(dto: MeetingDTO): Mono<Int> {
-        if (dto.schedule.isBefore(ZonedDateTime.now())) {
+        if (ZonedDateTime.parse(dto.schedule).isBefore(ZonedDateTime.now())) {
             throw IllegalArgumentException("Встреча в прошлом")
         }
         return meetingRepository.save(dto.toEntity()).map { it.id!! }
@@ -51,4 +51,8 @@ class MeetingService(private val meetingRepository: MeetingRepository,
                         customerService.findById(meeting.attends),
                         agentService.findById(meeting.scheduledBy)
                 ).map { fromEntity(meeting, null, it.t1, it.t2) }
+
+    fun findDateByRequest(id: Int): Mono<ZonedDateTime> {
+        return meetingRepository.findByRequest(id).next().map {it.schedule}.defaultIfEmpty(ZonedDateTime.now().minusDays(1))
+    }
 }

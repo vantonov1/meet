@@ -179,6 +179,11 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
             - column:
+                  name: from_request
+                  type: int
+                  constraints:
+                    nullable: false
+            - column:
                   name: at
                   type: bigint
             - column:

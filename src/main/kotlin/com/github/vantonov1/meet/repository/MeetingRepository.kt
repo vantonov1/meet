@@ -13,4 +13,6 @@ interface MeetingRepository : ReactiveCrudRepository<Meeting, Int> {
     fun findByAttending(attends: Int, dateMin: ZonedDateTime, dateMax: ZonedDateTime): Flux<Meeting>
     @Query("select * from meeting where scheduled_by=:scheduledBy and schedule between :dateMin and :dateMax")
     fun findByScheduler(scheduledBy: Int, dateMin: ZonedDateTime, dateMax: ZonedDateTime): Flux<Meeting>
+    @Query("select * from meeting where from_request=:requestId order by schedule asc")
+    fun findByRequest(requestId: Int): Flux<Meeting>
 }

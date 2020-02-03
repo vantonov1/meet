@@ -38,6 +38,16 @@ const slice = createSlice({
 export default slice.reducer
 export const {selectRequest, unselectRequest, updateRequests} = slice.actions;
 
+export const deleteRequest = (request) => async dispatch => {
+    try {
+        await RequestAPI.deleteRequest(request.id);
+        dispatch(unselectRequest());
+        dispatch(updateRequests())
+    } catch (reason) {
+        dispatch(showError(reason.message))
+    }
+};
+
 export const loadRequests = () => async (dispatch, getState) => {
     const {setRequests, startLoading, finishLoading} = slice.actions;
     const {loading, loadFinished} = getState().browseAssignedRequests;

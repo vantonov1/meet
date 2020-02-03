@@ -26,11 +26,11 @@ export const CONTACT_TYPES = {
 };
 
 export function isSale(equity) {
-    return ['SALE_ROOM', 'SALE_FLAT', 'SALE_HOUSE', 'SALE_BUSINESS'].includes(equity.type);
+    return equity ? ['SALE_ROOM', 'SALE_FLAT', 'SALE_HOUSE', 'SALE_BUSINESS'].includes(equity.type) : true;
 }
 
 export function isRent(equity) {
-    return ['RENT_ROOM', 'RENT_FLAT', 'RENT_HOUSE', 'RENT_BUSINESS'].includes(equity.type);
+    return equity ? ['RENT_ROOM', 'RENT_FLAT', 'RENT_HOUSE', 'RENT_BUSINESS'].includes(equity.type) : false;
 }
 
 
