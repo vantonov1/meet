@@ -18,6 +18,7 @@ import browseRequests from "./components/browse-my-requests/slice";
 import browseAssignedRequests from "./components/browse-assigned-requests/slice";
 import createMeeting from "./components/create-meeting/slice";
 import browseMeetings from "./components/browse-my-meetings/slice";
+import browseAssignedMeetings from "./components/browse-assigned-meetings/slice";
 
 const store = configureStore({
     reducer: {
@@ -34,7 +35,8 @@ const store = configureStore({
         browseRequests: browseRequests,
         browseAssignedRequests: browseAssignedRequests,
         createMeeting: createMeeting,
-        browseMeetings: browseMeetings
+        browseMeetings: browseMeetings,
+        browseAssignedMeetings: browseAssignedMeetings
     },
 });
 

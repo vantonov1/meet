@@ -7,6 +7,7 @@ import BrowseEquities from "../browse-equities/view";
 import BrowseMyRequests from "../browse-my-requests/view";
 import BrowseAssignedRequests from "../browse-assigned-requests/view";
 import BrowseMyMeetings from "../browse-my-meetings/view";
+import BrowseAssignedMeetings from "../browse-assigned-meetings/view";
 
 export default function AppRouter(props) {
     return (
@@ -29,6 +30,9 @@ export default function AppRouter(props) {
                 </Route>
                 <Route path="/my-meetings" {...props}>
                     <BrowseMyMeetings/>
+                </Route>
+               <Route path="/assigned-meetings" {...props}>
+                    <BrowseAssignedMeetings/>
                 </Route>
             </Switch>
         </Router>
