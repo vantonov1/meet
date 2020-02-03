@@ -34,7 +34,7 @@ export default function EditEquityContent(props) {
                       value={equity.address.street}
                       error={validation.street?.error}
                       helperText={validation.street?.text}
-                      inputValue={streetText}
+                      inputValue={streetText ? streetText : ''}
                       onChange={(e, v) => {
                           onEquityFieldChange({name: "address", value: {...equity.address, street: v}});
                           onFieldChange({name: "streetText", value: v});
