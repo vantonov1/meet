@@ -1,11 +1,11 @@
 @startuml
 
 hide members
-class Equity #lightgreen
-class Photo #lightgreen
-class Agent #lightgreen
-class Customer #lightgreen
-class Request #lightgreen
+class Equity 
+class Photo 
+class Agent 
+class Customer 
+class Request 
 
 Equity <-- Photo: of
 Equity --> Customer : ownedBy

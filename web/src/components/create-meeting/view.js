@@ -2,7 +2,7 @@ import React from "react";
 import {Dialog, DialogContent, TextField} from "@material-ui/core";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import DateFnsUtils from '@date-io/date-fns';
-import {DateTimePicker, MuiPickersUtilsProvider,} from '@material-ui/pickers';
+import {DatePicker, MuiPickersUtilsProvider, TimePicker,} from '@material-ui/pickers';
 import {saveMeeting, setComment, setDate, showCreateMeeting} from "./slice";
 import ruLocale from "date-fns/locale/ru";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -17,12 +17,22 @@ export default function CreateMeeting(props) {
             <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ruLocale}>
                 <TextField autoFocus multiline fullWidth label="Комментарий" value={comment}
                            onChange={e => dispatch(setComment(e.target.value))}/>
-                <DateTimePicker
+                <DatePicker
                     fullWidth
                     autoOk
                     disablePast
-                    variant="inline"
-                    format="dd.MM.yy HH:mm"
+                    format="dd.MM.yy"
+                    margin="normal"
+                    label="Дата"
+                    value={date}
+                    onChange={e => {
+                        dispatch(setDate(e.toISOString()))
+                    }}
+                />
+                <TimePicker
+                    fullWidth
+                    autoOk
+                    ampm={false}
                     margin="normal"
                     label="Время"
                     value={date}

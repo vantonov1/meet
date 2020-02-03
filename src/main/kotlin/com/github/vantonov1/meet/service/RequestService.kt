@@ -36,11 +36,9 @@ class RequestService(private val requestRepository: RequestRepository,
     fun findById(id: Int) = requestRepository.findById(id).flatMap { collectRequestInfo(it) }
 
     fun findByPersons(issuedBy: Int?, assignedTo: Int?): Flux<RequestDTO> {
-        return when {
-            issuedBy != null -> requestRepository.findByIssuer(issuedBy).flatMap { collectRequestInfo(it) }
-            assignedTo != null -> requestRepository.findByAssignee(assignedTo).flatMap { collectRequestInfo(it) }
-            else -> Flux.empty()
-        }
+        return if (issuedBy != null) requestRepository.findByIssuer(issuedBy).flatMap { collectRequestInfo(it) }
+        else if (assignedTo != null) requestRepository.findByAssignee(assignedTo).flatMap { collectRequestInfo(it) }
+        else Flux.empty()
     }
 
     private fun assignFromCustomer(dto: RequestDTO, customerId: Int) =
