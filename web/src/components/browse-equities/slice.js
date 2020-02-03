@@ -5,7 +5,7 @@ import {showError} from "../show-error/slice"
 const slice = createSlice({
     name: 'browse-equities',
     initialState: {
-        equities: [],
+        records: [],
         locations: [],
         loading: false,
         loadFinished: false,
@@ -18,7 +18,7 @@ const slice = createSlice({
             state.locations = payload
         },
         setEquities: (state, {payload}) => {
-            state.equities = payload
+            state.records = payload
         },
         startLoading: state => {
             state.loading = true;
@@ -76,9 +76,9 @@ export const loadEquities = (ids) => async (dispatch) => {
 
 export const loadMoreEquities = () => async (dispatch, getState) => {
     const {setEquities} = slice.actions;
-    const {locations, equities} = getState().browseEquities;
+    const {locations, records} = getState().browseEquities;
     try {
-        dispatch(setEquities(await loadPage(locations, equities)))
+        dispatch(setEquities(await loadPage(locations, records)))
     } catch (reason) {
         dispatch(showError(reason.message))
     }

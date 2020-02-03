@@ -7,18 +7,18 @@ import addDays from 'date-fns/addDays'
 const slice = createSlice({
     name: 'browse-my-meetings',
     initialState: {
-        meetings: [],
+        records: [],
         loading: false,
         loadFinished: false,
-        selectedMeeting: null
+        selected: null
     },
     reducers: {
         setMeetings: (state, {payload}) => {
-            state.meetings = payload
+            state.records = payload
         },
         startLoading: state => {
             state.loading = true;
-            state.selectedMeetings = null
+            state.selected = null
         },
         finishLoading: state => {
             state.loading = false;
@@ -28,10 +28,10 @@ const slice = createSlice({
             state.loadFinished = false;
         },
         selectMeeting: (state, {payload}) => {
-            state.selectedMeetings = payload
+            state.selected = payload
         },
         unselectMeeting: (state) => {
-            state.selectedMeetings = null
+            state.selected = null
         },
     }
 });

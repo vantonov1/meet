@@ -37,7 +37,7 @@ export default function MainAppBar() {
     const classes = useStyles();
 
     return <AppBar position="fixed" className={classes.appBar}>
-        <Toolbar variant="dense">
+        <Toolbar>
             <IconButton edge="start" className={classes.menuButton} color="inherit"
                         onClick={e => setAnchorEl(e.currentTarget)}>
                 <MenuIcon/>

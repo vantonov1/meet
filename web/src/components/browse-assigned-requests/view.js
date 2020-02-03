@@ -1,42 +1,29 @@
-import React, {useEffect, useLayoutEffect, useState} from "react";
+import React, {useState} from "react";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
-import Box from "@material-ui/core/Box";
-import {List, MenuItem, Toolbar} from "@material-ui/core";
-import {loadRequests, selectRequest} from "./slice";
-import {setAppTitle} from "../app-bar/slice";
-import LoadRecordsProgress from "../common/load-records-progress";
+import {List, MenuItem} from "@material-ui/core";
+import {deleteRequest, loadRequests, selectRequest} from "./slice";
 import {MergedRequestListItem} from "../common/list-items";
 import Menu from "@material-ui/core/Menu";
 import ConfirmAction from "../common/confirm-action";
-import {deleteRequest} from "../browse-assigned-requests/slice";
 import AddEquity from "../add-equity/view";
 import {showAddEquity} from "../add-equity/slice";
 import {showCreateMeeting} from "../create-meeting/slice";
 import CreateMeeting from "../create-meeting/view";
 import {isBefore} from "date-fns";
 import parse from 'date-fns/parseISO'
+import Browse from "../common/abstract-browser";
 
 const compareDates = (a, b) => a.meeting ? b.meeting ? isBefore(parse(a.meeting), parse(b.meeting)) ? -1 : 1 : -1 : 1;
 
 export default function BrowseAssignedRequests() {
-    const {requests, selectedRequest, loading} = useSelector(state => state.browseAssignedRequests, shallowEqual);
+    const {records, selectedRequest} = useSelector(state => state.browseAssignedRequests, shallowEqual);
     const {filter} = useSelector(state => state.browseEquities, shallowEqual);
     const [menuAnchor, setMenuAnchor] = useState(null);
     const [confirmDelete, setConfirmDelete] = useState(false);
     const dispatch = useDispatch();
 
-    useEffect(() => {
-        dispatch(loadRequests())
-    });
-
-    useLayoutEffect(() => {
-        dispatch(setAppTitle('Заявки в работе'))
-    });
-
-    return <Box>
-        <Toolbar/>
-        <LoadRecordsProgress loading={loading} empty={requests.length === 0}/>
-        <List> {mergeRequests(requests).sort(compareDates).map(r =>
+    return <Browse slice="browseAssignedRequests" title='Заявки в работе' loader={loadRequests}>
+        <List> {mergeRequests(records).sort(compareDates).map(r =>
             <MergedRequestListItem key={r.id} equity={r.about} buyer={r.buyer} seller={r.seller} meeting={r.meeting}
                                    selected={selectedRequest?.id === r.id}
                                    onClick={(e) => {
@@ -65,13 +52,21 @@ export default function BrowseAssignedRequests() {
                        }}/>
         <AddEquity type={filter.type} city={filter.city} fromRequest={selectedRequest}/>
         <CreateMeeting fromRequest={selectedRequest}/>
-    </Box>
+    </Browse>
 }
 
 function mergeRequests(requests) {
     const counterReq = requests.filter(r => r.type === 'BUY');
     return requests.filter(r => r.type === 'SELL').map((r) => {
         const buy = counterReq.find(c => c.about?.id === r.about?.id);
-        return {id: r.id, buyId: buy?.id, about: r.about, assignedTo: r.assignedTo, seller: r.issuedBy, buyer: buy?.issuedBy, meeting: buy?.meetingScheduled}
+        return {
+            id: r.id,
+            buyId: buy?.id,
+            about: r.about,
+            assignedTo: r.assignedTo,
+            seller: r.issuedBy,
+            buyer: buy?.issuedBy,
+            meeting: buy?.meetingScheduled
+        }
     })
 }

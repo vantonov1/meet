@@ -5,14 +5,14 @@ import RequestAPI from "../../api/RequestAPI";
 const slice = createSlice({
     name: 'browse-assigned-equities',
     initialState: {
-        requests: [],
+        records: [],
         loading: false,
         loadFinished: false,
         selectedRequest: null
     },
     reducers: {
         setRequests: (state, {payload}) => {
-            state.requests = payload
+            state.records = payload
         },
         updateRequests: state => {
             state.loadFinished = false;

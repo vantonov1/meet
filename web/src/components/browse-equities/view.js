@@ -1,4 +1,4 @@
-import React, {useEffect, useLayoutEffect} from 'react';
+import React, {useEffect} from 'react';
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import Drawer from "@material-ui/core/Drawer";
 import EquitiesList from "../common/equities-list";
@@ -24,12 +24,10 @@ import PhotoGallery from "../common/photo-gallery";
 import CloseIcon from "@material-ui/icons/Close";
 import Fab from "@material-ui/core/Fab";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import Toolbar from "@material-ui/core/Toolbar";
 import {EQUITY_TYPES} from "../common/constants";
-import {setAppTitle} from "../app-bar/slice";
-import LoadRecordsProgress from "../common/load-records-progress";
 import AddIcon from "@material-ui/icons/Add";
 import {showAddEquity} from "../add-equity/slice";
+import Browse from "../common/abstract-browser";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -42,10 +40,10 @@ const useStyles = makeStyles(theme => ({
         bottom: theme.spacing(1),
         position: "fixed"
     },
-    equityInfo: {minHeight:theme.spacing(6)},
+    equityInfo: {minHeight: theme.spacing(6)},
     info: {
         width: "100%",
-        maxHeight:100,
+        maxHeight: 100,
         marginBottom: theme.spacing(1),
         textAlign: "left"
     },
@@ -57,12 +55,7 @@ export default function BrowseEquities() {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(loadLocations());
         OsmMap.setupClusters(locations)
-    });
-
-    useLayoutEffect(() => {
-        dispatch(setAppTitle(EQUITY_TYPES[filter.type]))
     });
 
     return (
@@ -83,23 +76,21 @@ export default function BrowseEquities() {
 }
 
 function EquitiesDrawer(props) {
-    const {locations, equities, filter, loading, drawerOpen} = useSelector(state => state.browseEquities, shallowEqual);
+    const {locations, records, filter, drawerOpen} = useSelector(state => state.browseEquities, shallowEqual);
     const dispatch = useDispatch();
     const classes = useStyles();
 
     return <Drawer open={drawerOpen} variant={props.variant} onClose={() => dispatch(toggleDrawer(false))}>
-        <Toolbar />
-        {<Box className={classes.root}>
-            <LoadRecordsProgress loading={loading} empty={equities.length === 0}/>
-            {equities.length !== 0 && <EquitiesList
-                equities={equities}
-                hasMore={equities.length < locations.length}
+        <Browse slice="browseEquities" title={EQUITY_TYPES[filter.type]} loader={loadLocations} className={classes.root}>
+            <EquitiesList
+                equities={records}
+                hasMore={records.length < locations.length}
                 onFetch={() => dispatch(loadMoreEquities())}
                 onClick={(equity) => {
                     dispatch(selectEquity(equity))
                 }}
-            />}
-        </Box>}
+            />
+        </Browse>
         <Fab color="primary" className={classes.addEquity}>
             <AddIcon onClick={() => dispatch(showAddEquity(true))}/>
         </Fab>
@@ -112,18 +103,18 @@ function EquityInfoDrawer(props) {
     const dispatch = useDispatch();
     const classes = useStyles();
     return <Drawer open={selectedEquity != null}
-                            variant={props.variant}
-                            anchor="bottom"
-                            onClose={() => dispatch(unselectEquity())}
-                            ModalProps={{
-                                keepMounted: true, // Better open performance on mobile.
-                            }}>
+                   variant={props.variant}
+                   anchor="bottom"
+                   onClose={() => dispatch(unselectEquity())}
+                   ModalProps={{
+                       keepMounted: true, // Better open performance on mobile.
+                   }}>
         {(selectedEquity?.info || selectedEquity?.photos) && <div className={classes.equityInfo}>
             {selectedEquity.info && <Box className={classes.info}>
                 {selectedEquity.info}
             </Box>}
             {selectedEquity.photos && <PhotoGallery images={selectedEquity.photos.map(f => PhotoAPI.url(f))}/>}
-         </div>}
+        </div>}
         <Fab className={classes.unselectEquity} size="small" onClick={() => {
             dispatch(unselectEquity())
         }}>
