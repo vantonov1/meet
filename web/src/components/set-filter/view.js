@@ -22,7 +22,7 @@ const useStyles = makeStyles(theme => ({
     root: {
         position: 'fixed',
         right: theme.spacing(1),
-        top: theme.spacing(7)
+        top: theme.spacing(2) + theme.mixins.toolbar.minHeight
     },
     priceRange: {
         marginTop: theme.spacing(5),

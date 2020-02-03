@@ -59,7 +59,7 @@ export default function BrowseEquities() {
     });
 
     return (
-        <div>
+        <>
             <EquitiesDrawer variant="permanent"/>
             <EquityInfoDrawer variant="permanent"/>
             <OsmMap ref={OsmMap.ref} onLocationsSelect={(locations) => dispatch(loadEquities(locations))}/>
@@ -71,7 +71,7 @@ export default function BrowseEquities() {
                 onPriceRangeSelected={value => dispatch(priceRangeSelected(value))}
                 onPriceRangeCommitted={() => dispatch(priceRangeCommitted())}
             />
-        </div>
+        </>
     );
 }
 

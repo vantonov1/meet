@@ -21,7 +21,7 @@ export default function Browse(props) {
         dispatch(setAppTitle(title))
     });
 
-    return <Box {...other} style={{marginTop: theme.mixins.toolbar.minHeight}}>
+    return <Box {...other} style={{marginTop: theme.spacing(1) + theme.mixins.toolbar.minHeight}}>
         <LoadRecordsProgress loading={loading} empty={records.length === 0}/>
         {records.length !== 0 && children}
     </Box>
