@@ -13,6 +13,10 @@ import AddEquity from "../add-equity/view";
 import {showAddEquity} from "../add-equity/slice";
 import {showCreateMeeting} from "../create-meeting/slice";
 import CreateMeeting from "../create-meeting/view";
+import {isBefore} from "date-fns";
+import parse from 'date-fns/parseISO'
+
+const compareDates = (a, b) => a.meeting ? b.meeting ? isBefore(parse(a.meeting), parse(b.meeting)) ? -1 : 1 : -1 : 1;
 
 export default function BrowseAssignedRequests() {
     const {requests, selectedRequest, loading} = useSelector(state => state.browseAssignedRequests, shallowEqual);
@@ -32,7 +36,7 @@ export default function BrowseAssignedRequests() {
     return <Box>
         <Toolbar/>
         <LoadRecordsProgress loading={loading} empty={requests.length === 0}/>
-        <List> {mergeRequests(requests).map(r =>
+        <List> {mergeRequests(requests).sort(compareDates).map(r =>
             <MergedRequestListItem key={r.id} equity={r.about} buyer={r.buyer} seller={r.seller} meeting={r.meeting}
                                    selected={selectedRequest?.id === r.id}
                                    onClick={(e) => {
