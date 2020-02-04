@@ -1,57 +1,19 @@
 import React from "react";
-import {Dialog, DialogContent, TextField} from "@material-ui/core";
+import {TextField} from "@material-ui/core";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
-import DateFnsUtils from '@date-io/date-fns';
-import {DatePicker, MuiPickersUtilsProvider, TimePicker,} from '@material-ui/pickers';
 import {saveMeeting, setComment, setDate, showCreateMeeting} from "./slice";
-import ruLocale from "date-fns/locale/ru";
-import DialogActions from "@material-ui/core/DialogActions";
-import Button from "@material-ui/core/Button";
+import EditDateTime from "../common/edit-datetime";
+import EnterValue from "../common/enter-value";
 
 export default function CreateMeeting(props) {
     const {open, date, comment} = useSelector(state => state.createMeeting, shallowEqual);
     const dispatch = useDispatch();
 
-    return <Dialog open={open} maxWidth="xs">
-        <DialogContent>
-            <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ruLocale}>
-                <TextField autoFocus multiline fullWidth label="Комментарий" value={comment}
-                           onChange={e => dispatch(setComment(e.target.value))}/>
-                <DatePicker
-                    fullWidth
-                    autoOk
-                    disablePast
-                    format="dd.MM.yy"
-                    margin="normal"
-                    label="Дата"
-                    value={date}
-                    onChange={e => {
-                        dispatch(setDate(e.toISOString()))
-                    }}
-                />
-                <TimePicker
-                    fullWidth
-                    autoOk
-                    ampm={false}
-                    margin="normal"
-                    label="Время"
-                    value={date}
-                    onChange={e => {
-                        dispatch(setDate(e.toISOString()))
-                    }}
-                />
-            </MuiPickersUtilsProvider>
-        </DialogContent>
-        <DialogActions>
-            <Button onClick={() => dispatch(showCreateMeeting(false))}>
-                Отменить
-            </Button>
-            <Button onClick={() => {
-                dispatch(saveMeeting(props.fromRequest, date, comment))
-            }} color="primary">
-                Сохранить
-            </Button>
-        </DialogActions>
-
-    </Dialog>
+    return <EnterValue open={open}
+                       onCancel={() => dispatch(showCreateMeeting(false))}
+                       onOk={() => dispatch(saveMeeting(props.fromRequest, date, comment))}>
+        <TextField autoFocus multiline fullWidth label="Комментарий" value={comment}
+                   onChange={e => dispatch(setComment(e.target.value))}/>
+        <EditDateTime value={date} onChange={e => dispatch(setDate(e))}/>
+    </EnterValue>
 }

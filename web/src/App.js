@@ -17,6 +17,7 @@ import appBar from "./components/app-bar/slice";
 import browseRequests from "./components/browse-my-requests/slice";
 import browseAssignedRequests from "./components/browse-assigned-requests/slice";
 import createMeeting from "./components/create-meeting/slice";
+import rescheduleMeeting from "./components/reschedule-meeting/slice";
 import browseMeetings from "./components/browse-my-meetings/slice";
 import browseAssignedMeetings from "./components/browse-assigned-meetings/slice";
 
@@ -35,6 +36,7 @@ const store = configureStore({
         browseRequests: browseRequests,
         browseAssignedRequests: browseAssignedRequests,
         createMeeting: createMeeting,
+        rescheduleMeeting: rescheduleMeeting,
         browseMeetings: browseMeetings,
         browseAssignedMeetings: browseAssignedMeetings
     },

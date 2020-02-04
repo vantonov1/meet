@@ -4,7 +4,6 @@ import com.github.vantonov1.meet.dto.MeetingDTO
 import com.github.vantonov1.meet.service.MeetingService
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
-import java.time.ZonedDateTime
 
 @RestController
 @RequestMapping("/api/v1/meeting")
@@ -17,7 +16,7 @@ class MeetingController(private val meetingService: MeetingService) {
 
     @PutMapping("/{id}")
     @Transactional
-    fun reschedule(@PathVariable id: Int, @RequestParam schedule: ZonedDateTime) = meetingService.reschedule(id, schedule)
+    fun reschedule(@PathVariable id: Int, @RequestParam schedule: String) = meetingService.reschedule(id, schedule)
 
     @DeleteMapping("/{id}")
     @Transactional

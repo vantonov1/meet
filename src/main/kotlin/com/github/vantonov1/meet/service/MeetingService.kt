@@ -24,11 +24,12 @@ class MeetingService(private val meetingRepository: MeetingRepository,
         return meetingRepository.save(dto.toEntity()).map { it.id!! }
     }
 
-    fun reschedule(id: Int, schedule: ZonedDateTime): Mono<Any> {
-        if (schedule.isBefore(ZonedDateTime.now())) {
+    fun reschedule(id: Int, schedule: String): Mono<Any> {
+        val s = ZonedDateTime.parse(schedule)
+        if (s.isBefore(ZonedDateTime.now())) {
             throw IllegalArgumentException("Встреча в прошлом")
         }
-        return meetingRepository.findById(id).flatMap { meetingRepository.save(it.copy(schedule = schedule)).map { it.id!! } }
+        return meetingRepository.findById(id).flatMap { meetingRepository.save(it.copy(schedule = s)).map { it.id!! } }
     }
 
     fun delete(id: Int) = meetingRepository.deleteById(id)
