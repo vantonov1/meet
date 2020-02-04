@@ -1,4 +1,3 @@
-import DialogContent from "@material-ui/core/DialogContent";
 import {MenuItem, Select} from "@material-ui/core";
 import {EQUITY_TYPES} from "./constants";
 import TextField from "@material-ui/core/TextField";
@@ -11,7 +10,7 @@ export default function EditEquityContent(props) {
     const {equity, districts, subways, validation, streets, streetText, onFieldChange, onEquityFieldChange, onLocationChange} = props;
     const selectedFiles = getSelectedFiles();
 
-    return <DialogContent>
+    return <>
         <Select label="Тип"
                 required
                 value={equity.type ? equity.type : props.type}
@@ -84,7 +83,7 @@ export default function EditEquityContent(props) {
                    onChange={e => onEquityFieldChange({name: "info", value: e.target.value})}
         />
         {selectedFiles.length > 0 && <PhotoGallery images={selectedFiles.map(f => f.url)}/>}
-    </DialogContent>
+    </>
 
 }
 

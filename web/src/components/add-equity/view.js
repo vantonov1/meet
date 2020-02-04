@@ -18,6 +18,7 @@ import PhotoUpload from "../common/photo-upload";
 import Typography from "@material-ui/core/Typography";
 import EditEquityContent from "../common/edit_equity_content";
 import makeStyles from "@material-ui/core/styles/makeStyles";
+import DialogContent from "@material-ui/core/DialogContent";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -60,13 +61,15 @@ export default function AddEquity(props) {
         <div className={classes.root}>
             <SaveProgress save={save}/>
             <Dialog open={showDialog} maxWidth="xs">
-                <EditEquityContent equity={equity} type={type} validation={validation}
-                                   districts={districts} subways={subways}
-                                   streets={streets} streetText={streetText}
-                                   onFieldChange={change => dispatch(setField(change))}
-                                   onEquityFieldChange={change => dispatch(setEquityField(change))}
-                                   onLocationChange={(address) => dispatch(setLocation(address))}
-                />
+                <DialogContent>
+                    <EditEquityContent equity={equity} type={type} validation={validation}
+                                       districts={districts} subways={subways}
+                                       streets={streets} streetText={streetText}
+                                       onFieldChange={change => dispatch(setField(change))}
+                                       onEquityFieldChange={change => dispatch(setEquityField(change))}
+                                       onLocationChange={(address) => dispatch(setLocation(address))}
+                    />
+                </DialogContent>
                 <DialogActions>
                     <PhotoUpload files={selectedPhotos} onFileUploaded={f => dispatch(addPhoto(f))}/>
                     <Button onClick={() => dispatch(showAddEquity(false))}>

@@ -1,5 +1,5 @@
 import React from "react";
-import {DialogContent, ListItem, TextField} from "@material-ui/core";
+import {ListItem, TextField} from "@material-ui/core";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Radio from "@material-ui/core/Radio";
@@ -22,7 +22,7 @@ export default function EditPersonContacts(props) {
             onContactsChanged([c])
     };
 
-    return <DialogContent>
+    return <>
         <TextField label="Как к Вам обращаться?"
                    required
                    fullWidth
@@ -57,5 +57,5 @@ export default function EditPersonContacts(props) {
         }}>
             Добавить ещё
         </Button>
-    </DialogContent>
+    </>
 }
