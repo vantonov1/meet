@@ -1,16 +1,18 @@
 import React, {useState} from "react";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import {List, MenuItem} from "@material-ui/core";
-import {loadMeetings, selectMeeting} from "./slice";
+import {deleteMeeting, loadMeetings, selectMeeting} from "./slice";
 import {MeetingListItem} from "../common/list-items";
 import Browse from "../common/abstract-browser";
 import Menu from "@material-ui/core/Menu";
 import {showRescheduleMeeting} from "../reschedule-meeting/slice";
 import RescheduleMeeting from "../reschedule-meeting/view";
+import ConfirmAction from "../common/confirm-action";
 
 
 export default function BrowseAssignedMeetings() {
     const {records, selected} = useSelector(state => state.browseAssignedMeetings, shallowEqual);
+    const [confirmDelete, setConfirmDelete] = useState(false);
     const [menuAnchor, setMenuAnchor] = useState(null);
     const dispatch = useDispatch();
 
@@ -28,7 +30,17 @@ export default function BrowseAssignedMeetings() {
                 dispatch(showRescheduleMeeting(selected));
                 setMenuAnchor(null)
             }}>Перенести встречу</MenuItem>
+            {selected && <MenuItem onClick={() => {
+                setConfirmDelete(true);
+                setMenuAnchor(null)
+            }}>Отменить встречу</MenuItem>}
         </Menu>}
         {selected && <RescheduleMeeting meeting={selected}/>}
+        <ConfirmAction open={confirmDelete} text="Удалить встречу?"
+                       onCancel={() => setConfirmDelete(false)}
+                       onOK={() => {
+                           setConfirmDelete(false);
+                           dispatch(deleteMeeting(selected))
+                       }}/>
     </Browse>
 }

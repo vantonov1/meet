@@ -24,21 +24,18 @@ class MeetingService(private val meetingRepository: MeetingRepository,
         return meetingRepository.save(dto.toEntity()).map { it.id!! }
     }
 
-    fun reschedule(id: Int, schedule: String): Mono<Any> {
-        val s = ZonedDateTime.parse(schedule)
-        if (s.isBefore(ZonedDateTime.now())) {
+    fun reschedule(id: Int, schedule: ZonedDateTime): Mono<Any> {
+        if (schedule.isBefore(ZonedDateTime.now())) {
             throw IllegalArgumentException("Встреча в прошлом")
         }
-        return meetingRepository.findById(id).flatMap { meetingRepository.save(it.copy(schedule = s)).map { it.id!! } }
+        return meetingRepository.findById(id).flatMap { meetingRepository.save(it.copy(schedule = schedule)).map { it.id!! } }
     }
 
     fun delete(id: Int) = meetingRepository.deleteById(id)
 
-    fun findByPersons(scheduledBy: Int?, attends: Int?, dateMin: String, dateMax: String): Flux<MeetingDTO> {
-        val min = ZonedDateTime.parse(dateMin)
-        val max = ZonedDateTime.parse(dateMax)
-        return if (scheduledBy != null) meetingRepository.findByScheduler(scheduledBy, min, max).flatMap { collectMeetingInfo(it) }
-        else if (attends != null) meetingRepository.findByAttending(attends, min, max).flatMap { collectMeetingInfo(it) }
+    fun findByPersons(scheduledBy: Int?, attends: Int?, dateMin: ZonedDateTime, dateMax: ZonedDateTime): Flux<MeetingDTO> {
+        return if (scheduledBy != null) meetingRepository.findByScheduler(scheduledBy, dateMin, dateMax).flatMap { collectMeetingInfo(it) }
+        else if (attends != null) meetingRepository.findByAttending(attends, dateMin, dateMax).flatMap { collectMeetingInfo(it) }
         else Flux.empty()
     }
 

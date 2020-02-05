@@ -24,7 +24,7 @@ const slice = createSlice({
             state.loading = false;
             state.loadFinished = true;
         },
-        updateRequests: state => {
+        updateMeetings: state => {
             state.loadFinished = false;
         },
         selectMeeting: (state, {payload}) => {

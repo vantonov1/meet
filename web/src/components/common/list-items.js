@@ -76,8 +76,8 @@ function Contacts(props) {
 function parseMeeting(meeting) {
     let date = parse(meeting);
     return meeting
-        ? isToday(date) ? 'cегодня в ' + format(date, 'HH:ss')
-            : isTomorrow(date) ? 'завтра в ' + format(date, 'HH:ss')
+        ? isToday(date) ? 'cегодня в ' + format(date, 'HH:mm')
+            : isTomorrow(date) ? 'завтра в ' + format(date, 'HH:mm')
                 : format(date, 'dd.MM.yy HH:ss')
         : '';
 }
