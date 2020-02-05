@@ -28,6 +28,10 @@ const slice = createSlice({
             state.loading = false;
             state.loadFinished = true;
         },
+        updateEquities: state => {
+            state.records = [];
+            state.loadFinished = false;
+        },
         toggleDrawer: (state, {payload}) => {
             state.drawerOpened = payload
         },
@@ -60,7 +64,7 @@ const slice = createSlice({
 });
 
 export default slice.reducer
-export const {toggleDrawer, setType, districtsSelected, subwaysSelected, priceRangeSelected, priceRangeCommitted, selectEquity, unselectEquity} = slice.actions;
+export const {toggleDrawer, updateEquities, setType, districtsSelected, subwaysSelected, priceRangeSelected, priceRangeCommitted, selectEquity, unselectEquity} = slice.actions;
 
 export const loadEquities = (ids) => async (dispatch) => {
     const {setEquities, startLoading, finishLoading} = slice.actions;
@@ -105,4 +109,19 @@ async function loadPage(locations, alreadyLoaded) {
     let page = await EquityAPI.findByIds(locations.slice(alreadyLoaded.length, alreadyLoaded.length + 50).map(l => l.id));
     return alreadyLoaded.concat(page);
 }
+
+export const findEquitiesByAddress = (type, address) => async (dispatch, getState) => {
+    const {setEquities, startLoading, finishLoading} = slice.actions;
+    const {loading, loadFinished} = getState().browseEquities;
+    if (!loading && !loadFinished && type && address.street?.length > 0) {
+        dispatch(startLoading());
+        try {
+            dispatch(setEquities(await EquityAPI.findEquitiesByAddress(type, address.city, address.street, address.building)))
+        } catch (reason) {
+            dispatch(showError(reason.message))
+        } finally {
+            dispatch(finishLoading())
+        }
+    }
+};
 

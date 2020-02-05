@@ -15,6 +15,10 @@ class RequestController(private val requestService: RequestService) {
     @Transactional
     fun create(@RequestBody dto: RequestDTO): Mono<RequestDTO> = requestService.save(dto)
 
+    @PutMapping("/{id}")
+    @Transactional
+    fun changeRequestEquity(@PathVariable id: Int, @RequestParam equityId: Long) = requestService.attachEquity(equityId, id)
+
     @DeleteMapping("/{id}")
     @Transactional
     fun delete(@PathVariable id: Int) = requestService.delete(id)

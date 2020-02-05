@@ -14,7 +14,7 @@ export default function BrowseMyRequests() {
     const [confirmDelete, setConfirmDelete] = useState(false);
     const dispatch = useDispatch();
 
-    return <Browse slice="browseRequests" title='Мои заявки' loader={loadRequests}>
+    return <Browse slice="browseRequests" title='Мои заявки' loader={loadRequests}  topLevel={true}>
         <List> {records.map(r =>
             <RequestListItem key={r.id} equity={r.about} person={r.assignedTo} selected={selectedRequest?.id === r.id}
                              onClick={(e) => {

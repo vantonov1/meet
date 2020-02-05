@@ -7,7 +7,7 @@ import LoadRecordsProgress from "../common/load-records-progress";
 
 
 export default function Browse(props) {
-    const {slice, loader, title, children, ...other} = props;
+    const {slice, loader, title, children, topLevel, ...other} = props;
     const {records, loading, loadFinished} = useSelector(state => state[slice], shallowEqual);
     const dispatch = useDispatch();
     const theme = createMuiTheme({});
@@ -15,13 +15,13 @@ export default function Browse(props) {
     useEffect(() => {
         if (!loading && !loadFinished)
             dispatch(loader())
-    }, [loading, loadFinished]);
+    });
 
     useLayoutEffect(() => {
         dispatch(setAppTitle(title))
-    });
+    }, [title]);
 
-    return <Box {...other} style={{marginTop: theme.spacing(1) + theme.mixins.toolbar.minHeight}}>
+    return <Box {...other} style={topLevel && {marginTop: theme.spacing(1) + theme.mixins.toolbar.minHeight}}>
         <LoadRecordsProgress loading={loading} empty={records.length === 0}/>
         {records.length !== 0 && children}
     </Box>

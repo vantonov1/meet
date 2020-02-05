@@ -4,57 +4,25 @@ import TextField from "@material-ui/core/TextField";
 import PhotoGallery from "./photo-gallery";
 import React from "react";
 import {getSelectedFiles} from "./photo-upload";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import EditAddress from "../edit-address/view";
 
 export default function EditEquityContent(props) {
-    const {equity, districts, subways, validation, streets, streetText, onFieldChange, onEquityFieldChange, onLocationChange} = props;
+    const {type, equity, validation, onEquityFieldChange} = props;
     const selectedFiles = getSelectedFiles();
 
     return <>
         <Select label="Тип"
                 required
-                value={equity.type ? equity.type : props.type}
+                value={equity.type ? equity.type : type}
                 fullWidth
                 onChange={e => onEquityFieldChange({name: "type", value: e.target.value})}>
             {Object.entries(EQUITY_TYPES).map(k => <MenuItem key={k[0]} value={k[0]}>{k[1]}</MenuItem>)}
         </Select>
-        <SelectDirectory label="Район"
-                         options={districts}
-                         value={equity.address.district}
-                         onChange={(e, v) => onEquityFieldChange({name: "address", value: {...equity.address, district: v}})}
-        />
-        <SelectDirectory label="Станция метро"
-                         options={subways}
-                         value={equity.address.subway}
-                         onChange={(e, v) => onEquityFieldChange({name: "address", value: {...equity.address, subway: v}})}
-        />
-        <SelectStreet label="Улица"
-                      options={streets}
-                      value={equity.address.street}
-                      error={validation.street?.error}
-                      helperText={validation.street?.text}
-                      inputValue={streetText ? streetText : ''}
-                      onChange={(e, v) => {
-                          onEquityFieldChange({name: "address", value: {...equity.address, street: v}});
-                          onFieldChange({name: "streetText", value: v});
-                          onFieldChange({name: "streets", value: []})
-                      }}
-                      onInputChange={e => {
-                          if (e?.type === 'change') {
-                              onFieldChange({name: "streetText", value: e.target.value});
-                              onFieldChange({name: "streets", value: []})
-                          }
-                      }}
-        />
-        <TextField label="Дом"
-                   value={equity.address.building}
-                   required error={validation.building?.error}
-                   helperText={validation.building?.text}
-                   onChange={e => {
-                       let address = {...equity.address, building: e.target.value};
-                       onEquityFieldChange({name: "address", value: address});
-                       onLocationChange(address)
-                   }}
+        <EditAddress city={equity.address.city}
+                     validation={validation}
+                     selectDistrict={true}
+                     selectSubway={true}
+                     onChange={a => onEquityFieldChange({name: "address", value: a})}
         />
         <TextField label="Цена"
                    type="number"
@@ -85,42 +53,4 @@ export default function EditEquityContent(props) {
         {selectedFiles.length > 0 && <PhotoGallery images={selectedFiles.map(f => f.url)}/>}
     </>
 
-}
-
-
-function SelectDirectory(props) {
-    return (
-        <Autocomplete
-            options={props.options}
-            value={props.value}
-            autoHighlight
-            autoComplete
-            disableOpenOnFocus
-            getOptionLabel={a => a && a !== '' ? a.name : ''}
-            renderInput={params => (
-                <TextField {...params} label={props.label} fullWidth/>
-            )}
-            filterOptions={(options, state) => options.filter(o => o.name.match(new RegExp("^" + state.inputValue, "i")))}
-            onChange={props.onChange}
-        />
-    )
-}
-
-function SelectStreet(props) {
-    return (<Autocomplete
-            options={props.options}
-            value={props.value}
-            inputValue={props.inputValue}
-            autoHighlight
-            autoComplete
-            disableOpenOnFocus
-            // getOptionLabel={a => (a.type ? a.type : '') + ' ' + a.name}
-            renderInput={params => (
-                <TextField {...params} label={props.label} required error={props.error} helperText={props.helperText}
-                           fullWidth/>
-            )}
-            onInputChange={props.onInputChange}
-            onChange={props.onChange}
-        />
-    )
 }

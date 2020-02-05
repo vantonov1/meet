@@ -1,16 +1,6 @@
 import React, {useEffect} from "react";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
-import {
-    addPhoto,
-    fetchStreets,
-    loadDistricts,
-    loadSubways,
-    saveEquity,
-    setEquityField,
-    setField,
-    setLocation,
-    showAddEquity,
-} from "./slice";
+import {addPhoto, saveEquity, setEquityField, setField, setLocation, showAddEquity,} from "./slice";
 import {Dialog, LinearProgress} from "@material-ui/core";
 import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
@@ -29,7 +19,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function AddEquity(props) {
-    const {showDialog, equity, selectedPhotos, districts, subways, streets, streetText, validation, save} = useSelector(state => state.addEquity, shallowEqual);
+    const {showDialog, equity, selectedPhotos, validation, save} = useSelector(state => state.addEquity, shallowEqual);
     const dispatch = useDispatch();
     const {type, city, fromRequest} = props;
     const classes = useStyles();
@@ -42,32 +32,17 @@ export default function AddEquity(props) {
         dispatch(setField({name: "fromRequest", value: fromRequest?.id}));
     }, [equity.address.city, city, equity.type, type]);
 
-    useEffect(() => {
-        if (districts?.length === 0)
-            dispatch(loadDistricts(city));
-    }, [districts, city]);
-
-    useEffect(() => {
-        if (subways?.length === 0)
-            dispatch(loadSubways(city));
-    }, [subways, city]);
-
-    useEffect(() => {
-        if (streetText && streets?.length === 0)
-            dispatch(fetchStreets(city, streetText))
-    }, [streetText, city]);
-
     return (
         <div className={classes.root}>
             <SaveProgress save={save}/>
             <Dialog open={showDialog} maxWidth="xs">
                 <DialogContent>
                     <EditEquityContent equity={equity} type={type} validation={validation}
-                                       districts={districts} subways={subways}
-                                       streets={streets} streetText={streetText}
-                                       onFieldChange={change => dispatch(setField(change))}
-                                       onEquityFieldChange={change => dispatch(setEquityField(change))}
-                                       onLocationChange={(address) => dispatch(setLocation(address))}
+                                       onEquityFieldChange={change => {
+                                           dispatch(setEquityField(change));
+                                           if (change.name === 'address')
+                                               dispatch(setLocation(change.value))
+                                       }}
                     />
                 </DialogContent>
                 <DialogActions>

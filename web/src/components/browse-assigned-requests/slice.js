@@ -48,6 +48,16 @@ export const deleteRequest = (request) => async dispatch => {
     }
 };
 
+export const changeRequestEquity = (request, newEquity) => async dispatch => {
+    try {
+        await RequestAPI.changeRequestEquity(request.buyId, newEquity.id);
+        dispatch(unselectRequest());
+        dispatch(updateRequests())
+    } catch (reason) {
+        dispatch(showError(reason.message))
+    }
+};
+
 export const loadRequests = () => async (dispatch, getState) => {
     const {setRequests, startLoading, finishLoading} = slice.actions;
     const {loading, loadFinished} = getState().browseAssignedRequests;

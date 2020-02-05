@@ -223,6 +223,20 @@ databaseChangeLog:
             - column:
                     name: id #covered column
       - createIndex:
+            indexName: find_equities_by_address_idx
+            tableName: equity
+            columns:
+            - column:
+                    name: type
+            - column:
+                    name: city
+            - column:
+                    name: street
+            - column:
+                    name: building
+            - column:
+                    name: hidden
+      - createIndex:
             indexName: equities_by_district_idx
             tableName: equity
             columns:

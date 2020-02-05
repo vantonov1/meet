@@ -40,7 +40,7 @@ export default function EquitiesList(props) {
     )
 }
 
-function Equity(props) {
+export function Equity(props) {
     const classes = useStyles();
     const subway = props.address.subway;
     const district = props.address.district;

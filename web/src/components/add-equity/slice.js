@@ -1,7 +1,5 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {showError} from "../show-error/slice"
-import DirectoryAPI from "../../api/DirectoryAPI";
-import KladrAPI from "../../api/KladrAPI";
 import EquityAPI from "../../api/EquityAPI";
 import PhotoAPI from "../../api/PhotoAPI";
 import {clearSelectedFiles, getSelectedFiles} from "../common/photo-upload";
@@ -37,10 +35,6 @@ function createInitialState() {
             info: '',
         },
         selectedPhotos: [],
-        districts: [],
-        subways: [],
-        streets: [],
-        streetText: '',
         validation: {
             street: {
                 error: false,
@@ -75,8 +69,6 @@ const slice = createSlice({
             let initial = createInitialState();
             state.equity = initial.equity;
             state.selectedPhotos = [];
-            state.streets = [];
-            state.streetText = '';
             state.validation = initial.validation;
             state.save = initial.save;
             state.showDialog = payload;
@@ -96,32 +88,6 @@ const slice = createSlice({
 
 export default slice.reducer
 export const {showAddEquity, setField, setEquityField, addPhoto} = slice.actions;
-
-function validate(equity) {
-    let result = {};
-    if (!equity.type) {
-        result.type = {error: true, text: "Обязательное поле"}
-    }
-    if (!equity.address.street) {
-        result.street = {error: true, text: "Обязательное поле"}
-    }
-    if (!equity.address.building) {
-        result.building = {error: true, text: "Обязательное поле"}
-    } else if(equity.address.lat == null) {
-        result.building = {error: true, text: "Местоположение не определено"}
-    }
-    if (!equity.price) {
-        result.price = {error: true, text: "Обязательное поле"}
-    } else if (equity.price < LIMITS.price.min || equity.price > LIMITS.price.max) {
-        result.price = {error: true, text: "Недопустимое значение"}
-    }
-    if (!equity.square) {
-        result.square = {error: true, text: "Обязательное поле"}
-    } else if (equity.square < LIMITS.square.min || equity.square > LIMITS.square.max) {
-        result.square = {error: true, text: "Недопустимое значение"}
-    }
-    return result;
-}
 
 export const setLocation = (address) => async (dispatch, getState) => {
     const {setEquityField} = slice.actions;
@@ -160,7 +126,10 @@ export const saveEquity = (equity) => async (dispatch, getState) => {
             if (selectedFiles.length !== 0) {
                 dispatch(setSave({uploadingFiles: true, uploadingFilesProgress: 0}));
                 try {
-                    unfreeze.photos = await PhotoAPI.upload(selectedFiles.map(f => f.file), (p) => dispatch(setSave({uploadingFiles: true, uploadingFilesProgress: p})))
+                    unfreeze.photos = await PhotoAPI.upload(selectedFiles.map(f => f.file), (p) => dispatch(setSave({
+                        uploadingFiles: true,
+                        uploadingFilesProgress: p
+                    })))
                 } finally {
                     dispatch(setSave({creatingEquity: true, uploadingFiles: false, uploadingFilesProgress: 0}));
                 }
@@ -168,7 +137,7 @@ export const saveEquity = (equity) => async (dispatch, getState) => {
             dispatch(setSave({creatingEquity: true}));
             try {
                 await EquityAPI.create(unfreeze, fromRequest);
-                if(fromRequest) {
+                if (fromRequest) {
                     dispatch(updateRequests())
                 }
             } finally {
@@ -183,34 +152,28 @@ export const saveEquity = (equity) => async (dispatch, getState) => {
     }
 };
 
-export const loadDistricts = (city) => async (dispatch) => {
-    const {setField} = slice.actions;
-    try {
-        let districts = await DirectoryAPI.fetchDistricts(city);
-        dispatch(setField({name: "districts", value: districts}))
-    } catch (reason) {
-        dispatch(showError(reason.message))
+function validate(equity) {
+    let result = {};
+    if (!equity.type) {
+        result.type = {error: true, text: "Обязательное поле"}
     }
-};
-
-export const loadSubways = (city) => async (dispatch) => {
-    const {setField} = slice.actions;
-    try {
-        let subways = await DirectoryAPI.fetchSubways(city);
-        dispatch(setField({name: "subways", value: subways}))
-    } catch (reason) {
-        dispatch(showError(reason.message))
+    if (!equity.address.street) {
+        result.street = {error: true, text: "Обязательное поле"}
     }
-};
-
-export const fetchStreets = (city, query) => async (dispatch, getState) => {
-    const {setField} = slice.actions;
-    try {
-        let streets = await KladrAPI.fetchStreets(city, query);
-        const {streetText} = getState().addEquity;
-        if (query === streetText)
-            dispatch(setField({name: "streets", value: streets}))
-    } catch (reason) {
-        dispatch(showError(reason.message))
+    if (!equity.address.building) {
+        result.building = {error: true, text: "Обязательное поле"}
+    } else if (equity.address.lat == null) {
+        result.building = {error: true, text: "Местоположение не определено"}
     }
-};
+    if (!equity.price) {
+        result.price = {error: true, text: "Обязательное поле"}
+    } else if (equity.price < LIMITS.price.min || equity.price > LIMITS.price.max) {
+        result.price = {error: true, text: "Недопустимое значение"}
+    }
+    if (!equity.square) {
+        result.square = {error: true, text: "Обязательное поле"}
+    } else if (equity.square < LIMITS.square.min || equity.square > LIMITS.square.max) {
+        result.square = {error: true, text: "Недопустимое значение"}
+    }
+    return result;
+}

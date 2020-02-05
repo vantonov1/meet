@@ -63,4 +63,13 @@ export default class EquityAPI {
         }
         return url;
     }
+
+    static async findEquitiesByAddress(type, city, street, building) {
+        let url = new URL(this.BASE + "/address");
+        url.searchParams.append("type", type);
+        url.searchParams.append("city", city);
+        url.searchParams.append("street", street);
+        url.searchParams.append("building", building);
+        return fetchJSON(url)
+    }
 }

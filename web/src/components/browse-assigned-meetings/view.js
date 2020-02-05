@@ -16,7 +16,7 @@ export default function BrowseAssignedMeetings() {
     const [menuAnchor, setMenuAnchor] = useState(null);
     const dispatch = useDispatch();
 
-    return <Browse slice="browseAssignedMeetings" title='Запланированные встречи' loader={loadMeetings}>
+    return <Browse slice="browseAssignedMeetings" title='Запланированные встречи' loader={loadMeetings} topLevel={true}>
         <List> {records.map(r =>
             <MeetingListItem key={r.id} equity={r.at} person={r.attends} selected={selected?.id === r.id}
                              schedule={r.schedule}

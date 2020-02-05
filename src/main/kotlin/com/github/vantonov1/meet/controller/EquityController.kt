@@ -57,6 +57,15 @@ class EquityController(private val equities: EquityService,
             @RequestParam(required = false) maxPrice: Int?
     ): Flux<LocationDTO> = equities.find(Filter(getTypes(type), city, district, subway, minPrice, maxPrice))
 
+    @GetMapping("/address")
+    @Transactional(readOnly = true)
+    fun findByAddress(
+            @RequestParam type: String,
+            @RequestParam city: Short,
+            @RequestParam street: String,
+            @RequestParam(required = false) building: String?
+    ): Flux<EquityDTO> = equities.findByAddress(EquityType.valueOf(type).value, city, street, building)
+
     @GetMapping("/ids")
     @Transactional(readOnly = true)
     fun findByIds(@RequestParam ids: List<Long>): Mono<List<EquityDTO>> = equities.findByIds(ids)

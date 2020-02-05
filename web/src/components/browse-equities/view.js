@@ -81,7 +81,7 @@ function EquitiesDrawer(props) {
     const classes = useStyles();
 
     return <Drawer open={drawerOpen} variant={props.variant} onClose={() => dispatch(toggleDrawer(false))}>
-        <Browse slice="browseEquities" title={EQUITY_TYPES[filter.type]} loader={loadLocations} className={classes.root}>
+        <Browse slice="browseEquities" title={EQUITY_TYPES[filter.type]} loader={loadLocations} className={classes.root} topLevel={true}>
             <EquitiesList
                 equities={records}
                 hasMore={records.length < locations.length}

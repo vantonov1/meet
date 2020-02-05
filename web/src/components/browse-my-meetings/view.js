@@ -10,7 +10,7 @@ export default function BrowseMyMeetings() {
     const {records, selected} = useSelector(state => state.browseMeetings, shallowEqual);
     const dispatch = useDispatch();
 
-    return <Browse slice="browseMeetings" title='Мои запланированные встречи' loader={loadMeetings}>
+    return <Browse slice="browseMeetings" title='Мои запланированные встречи' loader={loadMeetings} topLevel={true}>
         <List> {records.map(r =>
             <MeetingListItem key={r.id} equity={r.at} person={r.scheduledBy} selected={selected?.id === r.id}
                              schedule={r.schedule}

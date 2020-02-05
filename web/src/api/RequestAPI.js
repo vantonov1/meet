@@ -21,8 +21,12 @@ export default class RequestAPI {
     }
 
     static deleteRequest(id) {
-        return fetchEmpty(BASE + '/' + id, {
-            method: 'DELETE'
-        })
+        return fetchEmpty(BASE + '/' + id, {method: 'DELETE'})
+    }
+
+    static changeRequestEquity(id, equityId) {
+        let url = new URL(BASE+ '/' + id);
+        url.searchParams.append("equityId", equityId);
+        return fetchEmpty(url, {method: 'PUT'})
     }
 }

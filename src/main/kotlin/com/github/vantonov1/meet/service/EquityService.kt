@@ -1,9 +1,12 @@
 package com.github.vantonov1.meet.service
 
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.vantonov1.meet.dto.EquityDTO
 import com.github.vantonov1.meet.dto.LocationDTO
 import com.github.vantonov1.meet.dto.PriceRangeDTO
 import com.github.vantonov1.meet.dto.fromEntity
+import com.github.vantonov1.meet.entities.Equity
 import com.github.vantonov1.meet.entities.Filter
 import com.github.vantonov1.meet.entities.PriceRange
 import com.github.vantonov1.meet.repository.EquityPriceRangeRepository
@@ -52,6 +55,14 @@ class EquityService(
         return locations.map { LocationDTO(it.id!!, it.lat, it.lon) }
     }
 
+    fun findByAddress(type: Byte, city: Short, street: String, building: String?): Flux<EquityDTO> {
+        val equities = if (building.isNullOrEmpty())
+            equityRepository.findByAddress(type, city, street)
+        else
+            equityRepository.findByAddress(type, city, street, building)
+        return equities.map { fromEntity(it,  districts.findById(it.district), stations.findById(it.subway), null) }
+    }
+
     fun delete(id: Long, hide: Boolean?): Mono<Void> = if (hide != null && hide) equityRepository.hide(id) else equityRepository.deleteById(id)
 
     fun getPriceRange(f: Filter): Mono<PriceRangeDTO> {
@@ -70,7 +81,7 @@ class EquityService(
     @PostConstruct
     @Suppress("unused")
     private fun loadFakeEquities() {
-//        val equities = jacksonObjectMapper().readValue(javaClass.getResource("/fake_equities.json"), object : TypeReference<List<Equity>>() {})
-//        equityRepository.saveAll(equities).subscribe()
+        val equities = jacksonObjectMapper().readValue(javaClass.getResource("/fake_equities.json"), object : TypeReference<List<Equity>>() {})
+        equityRepository.saveAll(equities).subscribe()
     }
 }

@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import {List, MenuItem} from "@material-ui/core";
-import {deleteRequest, loadRequests, selectRequest} from "./slice";
+import {changeRequestEquity, deleteRequest, loadRequests, selectRequest} from "./slice";
 import {MergedRequestListItem} from "../common/list-items";
 import Menu from "@material-ui/core/Menu";
 import ConfirmAction from "../common/confirm-action";
@@ -12,6 +12,7 @@ import CreateMeeting from "../create-meeting/view";
 import {isBefore} from "date-fns";
 import parse from 'date-fns/parseISO'
 import Browse from "../common/abstract-browser";
+import SelectEquity from "../common/select-equity";
 
 const compareDates = (a, b) => a.meeting ? b.meeting ? isBefore(parse(a.meeting), parse(b.meeting)) ? -1 : 1 : -1 : 1;
 
@@ -20,9 +21,10 @@ export default function BrowseAssignedRequests() {
     const {filter} = useSelector(state => state.browseEquities, shallowEqual);
     const [menuAnchor, setMenuAnchor] = useState(null);
     const [confirmDelete, setConfirmDelete] = useState(false);
+    const [changeEquity, setChangeEquity] = useState(false);
     const dispatch = useDispatch();
 
-    return <Browse slice="browseAssignedRequests" title='Заявки в работе' loader={loadRequests}>
+    return <Browse slice="browseAssignedRequests" title='Заявки в работе' loader={loadRequests} topLevel={true}>
         <List> {mergeRequests(records).sort(compareDates).map(r =>
             <MergedRequestListItem key={r.id} equity={r.about} buyer={r.buyer} seller={r.seller} meeting={r.meeting}
                                    selected={selectedRequest?.id === r.id}
@@ -44,6 +46,10 @@ export default function BrowseAssignedRequests() {
                 dispatch(showCreateMeeting(true));
                 setMenuAnchor(null)
             }}>Назначить встречу</MenuItem>
+            <MenuItem disabled={selectedRequest?.buyer == null} onClick={() => {
+                setChangeEquity(true);
+                setMenuAnchor(null)
+            }}>Предложить другой объект</MenuItem>
         </Menu>}
         <ConfirmAction open={confirmDelete} text="Удалить заявку?" onCancel={() => setConfirmDelete(false)}
                        onOK={() => {
@@ -52,6 +58,15 @@ export default function BrowseAssignedRequests() {
                        }}/>
         <AddEquity type={filter.type} city={filter.city} fromRequest={selectedRequest}/>
         <CreateMeeting fromRequest={selectedRequest}/>
+        {selectedRequest && <SelectEquity open={changeEquity}
+                                          city={selectedRequest.about?.address.city}
+                                          type={selectedRequest.about?.type}
+                                          onCancel={() => setChangeEquity(false)}
+                                          onSelect={(e) => {
+                                              dispatch(changeRequestEquity(selectedRequest, e));
+                                              setChangeEquity(false);
+                                          }}
+        />}
     </Browse>
 }
 
