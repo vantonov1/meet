@@ -1,11 +1,11 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import {MenuItem, Table, TextField} from "@material-ui/core";
 import {MuiPickersUtilsProvider, TimePicker} from "@material-ui/pickers";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
-import {addTimeSlot, saveTimeSlots, setTimeSlot, showEditTimeSlots} from './slice'
+import {addTimeSlot, loadTimeSlots, saveTimeSlots, setTimeSlot, showEditTimeSlots} from './slice'
 import Button from "@material-ui/core/Button";
 import DateFnsUtils from "@date-io/date-fns";
 import ruLocale from "date-fns/locale/ru";
@@ -23,6 +23,11 @@ export default function EditTimeSlots(props) {
     const {open, records, timeSlot} = useSelector(state => state.editTimeSlots, shallowEqual);
     const {request} = props;
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(loadTimeSlots(request))
+    }, [request]);
+
     return <EnterValue open={open} onCancel={() => showEditTimeSlots(false)} onOk={() => {
         dispatch(saveTimeSlots(records, request))
     }}>

@@ -37,11 +37,11 @@ export default function BrowseMyRequests() {
                 setMenuAnchor(null)
             }}>Указать время просмотров</MenuItem>
         </Menu>}
-        <ConfirmAction open={confirmDelete} text="Удалить заявку?" onCancel={() => setConfirmDelete(false)}
+        {selectedRequest && <ConfirmAction open={confirmDelete} text="Удалить заявку?" onCancel={() => setConfirmDelete(false)}
                        onOK={() => {
                            setConfirmDelete(false);
                            dispatch(deleteRequest(selectedRequest))
-                       }}/>
-        <EditTimeSlots request={selectedRequest}/>
+                       }}/>}
+        {selectedRequest && <EditTimeSlots request={selectedRequest}/>}
     </>
 }

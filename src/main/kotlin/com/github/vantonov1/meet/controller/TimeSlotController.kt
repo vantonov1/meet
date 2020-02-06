@@ -17,5 +17,5 @@ class TimeSlotController (val service: TimeSlotService) {
 
     @GetMapping()
     @Transactional(readOnly = true)
-    fun findTimeSlots(@RequestParam requestId: Int) = service.findTimeSlots(requestId)
+    fun loadTimeSlots(@RequestParam requestId: Int) = service.findTimeSlots(requestId)
 }

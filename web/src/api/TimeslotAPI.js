@@ -1,4 +1,4 @@
-import {fetchEmpty} from "./fetch";
+import {fetchEmpty, fetchJSON} from "./fetch";
 
 const BASE = 'http://localhost:8080/api/v1/timeslots';
 
@@ -11,5 +11,11 @@ export default class TimeSlotAPI {
                 'Content-Type': 'application/json'
             }
         })
+    }
+
+    static async loadTimeSlots(requestId) {
+        let url = new URL(BASE);
+        url.searchParams.append("requestId", requestId);
+        return fetchJSON(url);
     }
 }
