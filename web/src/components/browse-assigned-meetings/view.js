@@ -1,13 +1,13 @@
 import React, {useState} from "react";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
-import {List, MenuItem} from "@material-ui/core";
+import {MenuItem} from "@material-ui/core";
 import {deleteMeeting, loadMeetings, selectMeeting} from "./slice";
 import {MeetingListItem} from "../common/list-items";
-import Browse from "../common/abstract-browser";
 import Menu from "@material-ui/core/Menu";
 import {showRescheduleMeeting} from "../reschedule-meeting/slice";
 import RescheduleMeeting from "../reschedule-meeting/view";
 import ConfirmAction from "../common/confirm-action";
+import BrowseList from "../common/browse-list";
 
 
 export default function BrowseAssignedMeetings() {
@@ -16,15 +16,17 @@ export default function BrowseAssignedMeetings() {
     const [menuAnchor, setMenuAnchor] = useState(null);
     const dispatch = useDispatch();
 
-    return <Browse slice="browseAssignedMeetings" title='Запланированные встречи' loader={loadMeetings} topLevel={true}>
-        <List> {records.map(r =>
-            <MeetingListItem key={r.id} equity={r.at} person={r.attends} selected={selected?.id === r.id}
-                             schedule={r.schedule}
-                             onClick={(e) => {
-                                 setMenuAnchor(e.target);
-                                 dispatch(selectMeeting(r));
-                             }}/>)}
-        </List>
+    return <>
+        <BrowseList slice="browseAssignedMeetings" title='Запланированные встречи' loader={loadMeetings}
+                    topLevel={true}>
+            {records.map(r =>
+                <MeetingListItem key={r.id} equity={r.at} person={r.attends} selected={selected?.id === r.id}
+                                 schedule={r.schedule}
+                                 onClick={(e) => {
+                                     setMenuAnchor(e.target);
+                                     dispatch(selectMeeting(r));
+                                 }}/>)}
+        </BrowseList>
         {<Menu open={menuAnchor != null} anchorEl={menuAnchor} onClose={() => setMenuAnchor(null)}>
             <MenuItem onClick={() => {
                 dispatch(showRescheduleMeeting(selected));
@@ -42,5 +44,5 @@ export default function BrowseAssignedMeetings() {
                            setConfirmDelete(false);
                            dispatch(deleteMeeting(selected))
                        }}/>
-    </Browse>
+    </>
 }

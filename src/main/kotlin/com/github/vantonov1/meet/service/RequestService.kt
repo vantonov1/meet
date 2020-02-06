@@ -28,7 +28,7 @@ class RequestService(private val requestRepository: RequestRepository,
 
     fun attachEquity(equityId: Long, id: Int?): Mono<Long> {
         return if (id != null)
-            requestRepository.attachEquity(equityId, id).map { if(it) equityId else throw IllegalArgumentException("Заявка не найдена") }
+            requestRepository.attachEquity(equityId, id).map { if (it) equityId else throw IllegalArgumentException("Заявка не найдена") }
         else
             Mono.just(equityId)
     }
@@ -50,16 +50,20 @@ class RequestService(private val requestRepository: RequestRepository,
                     .flatMap { collectRequestInfo(it) }
 
     private fun collectRequestInfo(req: Request) =
-            if (req.about != null)
-                Mono.zip(
-                        equityService.findById(req.about),
-                        customerService.findById(req.issuedBy),
-                        agentService.findById(req.assignedTo),
-                        meetingService.findDateByRequest(req.id!!)
-                ).map { fromEntity(req, it.t1, it.t2, it.t3, if(it.t4.isBefore(ZonedDateTime.now())) null else it.t4) }
-            else
-                Mono.zip(
-                        customerService.findById(req.issuedBy),
-                        agentService.findById(req.assignedTo)
-                ).map { fromEntity(req, null, it.t1, it.t2, null) }
+            if (req.about != null) Mono.zip(
+                    equityService.findById(req.about),
+                    customerService.findById(req.issuedBy),
+                    agentService.findById(req.assignedTo),
+                    meetingService.findDateByRequest(req.id!!)
+            ).map { fromEntity(req, it.t1, it.t2, it.t3, if (it.t4.isBefore(ZonedDateTime.now())) null else it.t4) }
+            else Mono.zip(
+                    customerService.findById(req.issuedBy),
+                    agentService.findById(req.assignedTo)
+            ).map { fromEntity(req, null, it.t1, it.t2, null) }
+
+    fun completeRequest(sellId: Int, buyId: Int, equityId: Long, contractNumber: String?) = Mono.zip(
+            requestRepository.deleteById(sellId),
+            requestRepository.deleteById(buyId),
+            equityService.delete(equityId, false)
+    ).then(Mono.empty<Void>())
 }

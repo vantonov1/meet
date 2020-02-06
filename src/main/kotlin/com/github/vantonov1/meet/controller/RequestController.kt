@@ -19,6 +19,14 @@ class RequestController(private val requestService: RequestService) {
     @Transactional
     fun changeRequestEquity(@PathVariable id: Int, @RequestParam equityId: Long) = requestService.attachEquity(equityId, id)
 
+    @PutMapping("/complete")
+    @Transactional
+    fun completeRequest(@RequestParam sellId: Int,
+                        @RequestParam buyId: Int,
+                        @RequestParam equityId: Long,
+                        @RequestParam contractNumber: String?
+                        ) = requestService.completeRequest(sellId, buyId, equityId, contractNumber)
+
     @DeleteMapping("/{id}")
     @Transactional
     fun delete(@PathVariable id: Int) = requestService.delete(id)

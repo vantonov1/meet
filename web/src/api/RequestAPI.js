@@ -29,4 +29,13 @@ export default class RequestAPI {
         url.searchParams.append("equityId", equityId);
         return fetchEmpty(url, {method: 'PUT'})
     }
+
+    static completeRequest(sellId, buyId, equityId, contractNumber) {
+        let url = new URL(BASE+ '/complete');
+        url.searchParams.append("sellId", sellId);
+        url.searchParams.append("buyId", buyId);
+        url.searchParams.append("equityId", equityId);
+        url.searchParams.append("contractNumber", contractNumber);
+        return fetchEmpty(url, {method: 'PUT'})
+    }
 }

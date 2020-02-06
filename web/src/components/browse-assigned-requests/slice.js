@@ -38,26 +38,6 @@ const slice = createSlice({
 export default slice.reducer
 export const {selectRequest, unselectRequest, updateRequests} = slice.actions;
 
-export const deleteRequest = (request) => async dispatch => {
-    try {
-        await RequestAPI.deleteRequest(request.id);
-        dispatch(unselectRequest());
-        dispatch(updateRequests())
-    } catch (reason) {
-        dispatch(showError(reason.message))
-    }
-};
-
-export const changeRequestEquity = (request, newEquity) => async dispatch => {
-    try {
-        await RequestAPI.changeRequestEquity(request.buyId, newEquity.id);
-        dispatch(unselectRequest());
-        dispatch(updateRequests())
-    } catch (reason) {
-        dispatch(showError(reason.message))
-    }
-};
-
 export const loadRequests = () => async (dispatch, getState) => {
     const {setRequests, startLoading, finishLoading} = slice.actions;
     const {loading, loadFinished} = getState().browseAssignedRequests;
@@ -73,3 +53,26 @@ export const loadRequests = () => async (dispatch, getState) => {
         }
     }
 };
+
+export const deleteRequest = (request) => async dispatch => {
+    await changeSelected(() => RequestAPI.deleteRequest(request.id), dispatch);
+};
+
+export const changeRequestEquity = (request, newEquity) => async dispatch => {
+    await changeSelected(() => RequestAPI.changeRequestEquity(request.buyId, newEquity.id), dispatch);
+};
+
+export const completeRequest = (request, contractNumber) => async dispatch => {
+    await changeSelected( () => RequestAPI.completeRequest(request.id, request.buyId, request.about.id, contractNumber), dispatch);
+};
+
+async function changeSelected(f, dispatch) {
+    try {
+        await f();
+        dispatch(unselectRequest());
+        dispatch(updateRequests())
+    } catch (reason) {
+        dispatch(showError(reason.message))
+    }
+}
+
