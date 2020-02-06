@@ -204,6 +204,36 @@ databaseChangeLog:
             - column:
                    name: comment
                    type: varchar(1024)
+      - createTable:
+            tableName: time_slot
+            columns:
+            - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+            - column:
+                  name: for_request
+                  type: int
+                  constraints:
+                    nullable: false
+            - column:
+                   name: day_of_week
+                   type: tinyint
+                   constraints:
+                       nullable: false
+            - column:
+                   name: min_time
+                   type: int
+                   constraints:
+                       nullable: false
+            - column:
+                   name: max_time
+                   type: int
+                   constraints:
+                       nullable: false
       - createIndex:
             indexName: find_equities_idx
             tableName: equity
@@ -306,3 +336,9 @@ databaseChangeLog:
                     name: attends
             - column:
                     name: schedule
+      - createIndex:
+            indexName: time_slot_by_request_idx
+            tableName: time_slot
+            columns:
+            - column:
+                    name: for_request

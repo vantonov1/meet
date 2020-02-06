@@ -10,6 +10,7 @@ import isToday from 'date-fns/isToday'
 import isTomorrow from "date-fns/isTomorrow";
 
 const useStyles = makeStyles(theme => ({
+    item: {cursor: "pointer"},
     meetingRoot: {cursor: "pointer", display: 'flex'},
     requestItem: {cursor: "pointer", display: 'flex', flexDirection: 'column'},
     justify: {display: "flex", justifyContent: "space-between", whiteSpace: 'nowrap'}

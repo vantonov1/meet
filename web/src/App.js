@@ -21,6 +21,7 @@ import rescheduleMeeting from "./components/reschedule-meeting/slice";
 import browseMeetings from "./components/browse-my-meetings/slice";
 import browseAssignedMeetings from "./components/browse-assigned-meetings/slice";
 import editAddress from "./components/edit-address/slice";
+import editTimeSlots from "./components/edit-timeslots/slice";
 
 const store = configureStore({
     reducer: {
@@ -40,7 +41,8 @@ const store = configureStore({
         rescheduleMeeting: rescheduleMeeting,
         browseMeetings: browseMeetings,
         browseAssignedMeetings: browseAssignedMeetings,
-        editAddress: editAddress
+        editAddress: editAddress,
+        editTimeSlots: editTimeSlots
     },
 });
 

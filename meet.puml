@@ -6,6 +6,7 @@ class Photo
 class Agent 
 class Customer 
 class Request 
+class TimeSlot
 
 Equity <-- Photo: of
 Equity --> Customer : ownedBy
@@ -19,5 +20,6 @@ Meeting -> Request : from
 Request --> Equity : about
 Request --> Customer : issuedBy
 Request --> Agent : assignedTo
+Request <- TimeSlot : forRequest
 
 @enduml
