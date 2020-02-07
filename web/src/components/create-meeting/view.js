@@ -39,7 +39,7 @@ export default function CreateMeeting(props) {
             </TableHead>
             <TableBody>
                 {timeTable.map((d, i) =>
-                    <TableRow key={i}>
+                    <TableRow key={i} style={{cursor: 'pointer'}} onClick={() => setDateFromTimeTable(d)}>
                         <TableCell padding='none' component="th" scope="row">{dayFromOffset(d.date)}</TableCell>
                         <TableCell padding='none' align="left" style={{whiteSpace: "nowrap"}}>{d.timeMin} - {d.timeMax}</TableCell>
                         <TableCell padding='none' style={{backgroundColor: d.agent != null && d.agent === false ? 'lightpink' : ''}}/>
@@ -49,7 +49,15 @@ export default function CreateMeeting(props) {
                 )}
             </TableBody>
         </Table>
-    </EnterValue>
+    </EnterValue>;
+
+    function setDateFromTimeTable(d) {
+        let hhmm = d.timeMin.split(':');
+        let dd = addDays(Date.now(), d.date);
+        dd.setHours(hhmm[0]);
+        dd.setMinutes(hhmm[1]);
+        dispatch(setDate(dd))
+    }
 }
 
 function dayFromOffset(offset) {
