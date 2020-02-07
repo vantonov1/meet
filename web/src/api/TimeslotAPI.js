@@ -18,4 +18,12 @@ export default class TimeSlotAPI {
         url.searchParams.append("requestId", requestId);
         return fetchJSON(url);
     }
+
+    static async collectTimeTable(agentId, buyerId, sellerId) {
+        let url = new URL(BASE + '/table');
+        url.searchParams.append("agentId", agentId);
+        url.searchParams.append("buyerId", buyerId);
+        url.searchParams.append("sellerId", sellerId);
+        return fetchJSON(url);
+    }
 }

@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono
 
 @Repository
 interface TimeSlotRepository :  ReactiveCrudRepository<TimeSlot, Int> {
-    @Query("select * from time_slot where for_request=:requestId")
+    @Query("select * from time_slot where for_request=:requestId order by day_of_week, min_time")
     fun findByRequestId(requestId: Int): Flux<TimeSlot>
 
     @Query("delete from time_slot where for_request=:requestId")

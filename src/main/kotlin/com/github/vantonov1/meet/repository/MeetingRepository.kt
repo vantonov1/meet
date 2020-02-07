@@ -9,9 +9,9 @@ import java.time.ZonedDateTime
 
 @Repository
 interface MeetingRepository : ReactiveCrudRepository<Meeting, Int> {
-    @Query("select * from meeting where attends=:attends and schedule between :dateMin and :dateMax")
+    @Query("select * from meeting where attends=:attends and schedule between :dateMin and :dateMax order by schedule asc")
     fun findByAttending(attends: Int, dateMin: ZonedDateTime, dateMax: ZonedDateTime): Flux<Meeting>
-    @Query("select * from meeting where scheduled_by=:scheduledBy and schedule between :dateMin and :dateMax")
+    @Query("select * from meeting where scheduled_by=:scheduledBy and schedule between :dateMin and :dateMax order by schedule asc")
     fun findByScheduler(scheduledBy: Int, dateMin: ZonedDateTime, dateMax: ZonedDateTime): Flux<Meeting>
     @Query("select * from meeting where from_request=:requestId order by schedule asc")
     fun findByRequest(requestId: Int): Flux<Meeting>

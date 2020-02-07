@@ -13,10 +13,10 @@ fun fromEntity(t: TimeSlot) = TimeSlotDTO(DAYS_OF_WEEK[t.dayOfWeek.toInt()], fro
 fun fromMillis(time: Int): String {
     val HH = time / 1000 / 60
     val mm = time / 1000 % 60
-    return "%2s:%2s".format(HH, mm)
+    return "%02d:%02d".format(HH, mm)
 }
 
-private fun toMillis(time: String) : Int {
+fun toMillis(time: String) : Int {
     val (HH, mm) = time.split(":")
     return (HH.toInt() * 60 + mm.toInt()) * 1000
 }

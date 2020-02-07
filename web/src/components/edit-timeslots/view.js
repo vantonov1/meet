@@ -10,10 +10,10 @@ import Button from "@material-ui/core/Button";
 import DateFnsUtils from "@date-io/date-fns";
 import ruLocale from "date-fns/locale/ru";
 import parse from 'date-fns/parse'
+import format from 'date-fns/format'
 import TableHead from "@material-ui/core/TableHead";
 import EnterValue from "../common/enter-value";
-
-const DAYS_OF_WEEK = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'];
+import {DAYS_OF_WEEK} from "../common/constants";
 
 function parseTime(t) {
     return parse(t, "HH:mm", Date.now());
@@ -25,8 +25,9 @@ export default function EditTimeSlots(props) {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(loadTimeSlots(request))
-    }, [request]);
+        if (open)
+            dispatch(loadTimeSlots(request))
+    }, [open, request]);
 
     return <EnterValue open={open} onCancel={() => showEditTimeSlots(false)} onOk={() => {
         dispatch(saveTimeSlots(records, request))
@@ -40,19 +41,28 @@ export default function EditTimeSlots(props) {
                                 <TextField className="MuiFormControl-marginNormal" style={{width: 70}}
                                            select
                                            value={timeSlot.dayOfWeek}
-                                           onChange={e => dispatch(setTimeSlot({...timeSlot, dayOfWeek: e.target.value}))}
+                                           onChange={e => dispatch(setTimeSlot({
+                                               ...timeSlot,
+                                               dayOfWeek: e.target.value
+                                           }))}
                                 >
                                     {DAYS_OF_WEEK.map((d, i) => <MenuItem key={i} value={d}>{d}</MenuItem>)}
                                 </TextField>
                             </TableCell>
                             <TableCell>
                                 <TimePicker autoOk ampm={false} margin="normal" value={parseTime(timeSlot.minTime)}
-                                            onChange={e => dispatch(setTimeSlot({...timeSlot, minTime: e.toISOString()}))}
+                                            onChange={e => dispatch(setTimeSlot({
+                                                ...timeSlot,
+                                                minTime: format(e, "HH:mm")
+                                            }))}
                                 />
                             </TableCell>
                             <TableCell>
                                 <TimePicker autoOk ampm={false} margin="normal" value={parseTime(timeSlot.maxTime)}
-                                            onChange={e => dispatch(setTimeSlot({...timeSlot, maxTime: e.toISOString()}))}
+                                            onChange={e => dispatch(setTimeSlot({
+                                                ...timeSlot,
+                                                maxTime: format(e, "HH:mm")
+                                            }))}
                                 />
                             </TableCell>
                         </TableRow>

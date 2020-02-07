@@ -18,4 +18,12 @@ class TimeSlotController (val service: TimeSlotService) {
     @GetMapping()
     @Transactional(readOnly = true)
     fun loadTimeSlots(@RequestParam requestId: Int) = service.findTimeSlots(requestId)
+
+    @GetMapping("/table")
+    @Transactional(readOnly = true)
+    fun collectTimeTable(
+            @RequestParam agentId: Int,
+            @RequestParam buyerId: Int,
+            @RequestParam sellerId: Int
+    ) = service.collectTimeTable(agentId, buyerId, sellerId)
 }
