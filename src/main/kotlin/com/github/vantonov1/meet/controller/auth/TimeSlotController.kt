@@ -1,4 +1,4 @@
-package com.github.vantonov1.meet.controller
+package com.github.vantonov1.meet.controller.auth
 
 import com.github.vantonov1.meet.dto.TimeSlotDTO
 import com.github.vantonov1.meet.service.TimeSlotService
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*
 
 
 @RestController
-@RequestMapping("/api/v1/timeslots")
+@RequestMapping("/api/auth/v1/timeslots")
 @CrossOrigin("http://localhost:3000")
 @Suppress("unused")
 class TimeSlotController (val service: TimeSlotService) {

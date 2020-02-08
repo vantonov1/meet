@@ -1,4 +1,4 @@
-package com.github.vantonov1.meet.controller
+package com.github.vantonov1.meet.controller.any
 
 import com.github.vantonov1.meet.entities.District
 import com.github.vantonov1.meet.entities.Subway
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
 
 @RestController
-@RequestMapping("/api/v1/dir")
+@RequestMapping("/api/public/v1/dir")
 @CrossOrigin("http://localhost:3000")
 @Suppress("unused")
 class DirectoriesController(

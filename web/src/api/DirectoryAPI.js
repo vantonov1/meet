@@ -1,7 +1,7 @@
 import {fetchJSON} from "./fetch";
 
 export default class DirectoryAPI {
-    static BASE = 'http://localhost:8080/api/v1/dir';
+    static BASE = 'http://localhost:8080/api/public/v1/dir';
 
     static fetchDistricts(city) {
         return fetchJSON(this.BASE + "/districts/" + city)

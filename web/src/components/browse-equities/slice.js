@@ -1,6 +1,6 @@
 import {createSlice} from "@reduxjs/toolkit";
-import EquityAPI from "../../api/EquityAPI";
 import {showError} from "../show-error/slice"
+import EquityPublicAPI from "../../api/EquityPublicAPI";
 
 const slice = createSlice({
     name: 'browse-equities',
@@ -70,7 +70,7 @@ export const loadEquities = (ids) => async (dispatch) => {
     const {setEquities, startLoading, finishLoading} = slice.actions;
     dispatch(startLoading());
     try {
-        dispatch(setEquities(await EquityAPI.findByIds(ids)))
+        dispatch(setEquities(await EquityPublicAPI.findByIds(ids)))
     } catch (reason) {
         dispatch(showError(reason.message))
     } finally {
@@ -94,7 +94,7 @@ export const loadLocations = () => async (dispatch, getState) => {
     if (!loading && !loadFinished) {
         dispatch(startLoading());
         try {
-            let locations = await EquityAPI.findLocations(filter);
+            let locations = await EquityPublicAPI.findLocations(filter);
             dispatch(setLocations(locations));
             dispatch(setEquities(await loadPage(locations, [])))
         } catch (reason) {
@@ -106,7 +106,7 @@ export const loadLocations = () => async (dispatch, getState) => {
 };
 
 async function loadPage(locations, alreadyLoaded) {
-    let page = await EquityAPI.findByIds(locations.slice(alreadyLoaded.length, alreadyLoaded.length + 50).map(l => l.id));
+    let page = await EquityPublicAPI.findByIds(locations.slice(alreadyLoaded.length, alreadyLoaded.length + 50).map(l => l.id));
     return alreadyLoaded.concat(page);
 }
 
@@ -116,7 +116,7 @@ export const findEquitiesByAddress = (type, address) => async (dispatch, getStat
     if (!loading && !loadFinished && type && address.street?.length > 0) {
         dispatch(startLoading());
         try {
-            dispatch(setEquities(await EquityAPI.findEquitiesByAddress(type, address.city, address.street, address.building)))
+            dispatch(setEquities(await EquityPublicAPI.findEquitiesByAddress(type, address.city, address.street, address.building)))
         } catch (reason) {
             dispatch(showError(reason.message))
         } finally {

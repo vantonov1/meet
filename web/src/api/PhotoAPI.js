@@ -1,4 +1,4 @@
-const BASE = 'http://localhost:8080/api/v1/photo';
+const BASE = 'http://localhost:8080/api/public/v1/photo';
 
 export default class PhotoAPI {
     static upload(files, progress) {

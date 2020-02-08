@@ -1,4 +1,4 @@
-package com.github.vantonov1.meet.controller
+package com.github.vantonov1.meet.controller.auth
 
 import com.github.vantonov1.meet.dto.MeetingDTO
 import com.github.vantonov1.meet.service.MeetingService
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*
 import java.time.ZonedDateTime
 
 @RestController
-@RequestMapping("/api/v1/meeting")
+@RequestMapping("/api/auth/v1/meeting")
 @CrossOrigin("http://localhost:3000")
 @Suppress("unused")
 class MeetingController(private val meetingService: MeetingService) {

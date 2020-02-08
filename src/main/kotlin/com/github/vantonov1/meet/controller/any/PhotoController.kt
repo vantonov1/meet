@@ -1,4 +1,4 @@
-package com.github.vantonov1.meet.controller
+package com.github.vantonov1.meet.controller.any
 
 import com.github.vantonov1.meet.service.PhotoService
 import org.springframework.http.CacheControl
@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit
 
 
 @RestController
-@RequestMapping("/api/v1/photo")
+@RequestMapping("/api/public/v1/photo")
 @CrossOrigin("http://localhost:3000")
 @Suppress("unused")
 class PhotoController(val service: PhotoService) {

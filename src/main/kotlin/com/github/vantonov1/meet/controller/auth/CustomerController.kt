@@ -1,4 +1,4 @@
-package com.github.vantonov1.meet.controller
+package com.github.vantonov1.meet.controller.auth
 
 import com.github.vantonov1.meet.dto.CustomerDTO
 import com.github.vantonov1.meet.service.CustomerService
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
 
 @RestController
-@RequestMapping("/api/v1/customer")
+@RequestMapping("/api/auth/v1/customer")
 @CrossOrigin("http://localhost:3000")
 @Suppress("unused")
 class CustomerController(private val customerService: CustomerService) {

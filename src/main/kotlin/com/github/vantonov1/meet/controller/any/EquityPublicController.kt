@@ -1,4 +1,4 @@
-package com.github.vantonov1.meet.controller
+package com.github.vantonov1.meet.controller.any
 
 import com.github.vantonov1.meet.dto.EquityDTO
 import com.github.vantonov1.meet.dto.LocationDTO
@@ -14,34 +14,12 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @RestController
-@RequestMapping("/api/v1/equities")
+@RequestMapping("/api/public/v1/equities")
 @CrossOrigin("http://localhost:3000")
 @Suppress("unused")
-class EquityController(private val equities: EquityService,
-                       private val photos: PhotoService,
-                       private val requests: RequestService) {
-    @PostMapping
-    @Transactional
-    fun create(@RequestBody dto: EquityDTO, @RequestParam fromRequest: Int?): Mono<Long> {
-        val equity = if (fromRequest != null) {
-            requests.findById(fromRequest)
-                    .flatMap { req -> equities.save(dto.copy(ownedBy = req?.issuedBy?.id, responsible = req?.assignedTo?.id)) }
-        } else {
-            equities.save(dto)
-        }
-        return equity.flatMap { requests.attachEquity(it!!, fromRequest) }
-    }
-
-    @PutMapping
-    @Transactional
-    fun update(@RequestBody dto: EquityDTO): Mono<Void> =
-            if (dto.id != null) equities.save(dto).then()
-            else throw IllegalArgumentException("no equity id on update")
-
-    @DeleteMapping("/{id}")
-    @Transactional
-    fun delete(id: Long, @RequestParam hide: Boolean?) = equities.delete(id, hide)
-
+class EquityPublicController(private val equities: EquityService,
+                             private val photos: PhotoService,
+                             private val requests: RequestService) {
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
     fun findById(id: Long): Mono<EquityDTO> = equities.findById(id)

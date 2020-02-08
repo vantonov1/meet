@@ -1,6 +1,6 @@
 import {fetchEmpty, fetchJSON} from "./fetch";
 
-const BASE = 'http://localhost:8080/api/v1/timeslots';
+const BASE = 'http://localhost:8080/api/auth/v1/timeslots';
 
 export default class TimeSlotAPI {
     static createTimeSlots(slots, requestId) {

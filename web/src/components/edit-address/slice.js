@@ -1,7 +1,7 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {showError} from "../show-error/slice"
 import DirectoryAPI from "../../api/DirectoryAPI";
-import KladrAPI from "../../api/KladrAPI";
+import AddressAPI from "../../api/AddressAPI";
 
 const slice = createSlice({
     name: 'edit-address',
@@ -57,7 +57,7 @@ export const loadSubways = (city) => async (dispatch) => {
 
 export const fetchStreets = (city, query) => async (dispatch, getState) => {
     try {
-        let streets = await KladrAPI.fetchStreets(city, query);
+        let streets = await AddressAPI.fetchStreets(city, query);
         const {streetText} = getState().editAddress;
         if (query === streetText)
             dispatch(setField({name: "streets", value: streets}))

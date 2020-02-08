@@ -1,4 +1,4 @@
-package com.github.vantonov1.meet.controller
+package com.github.vantonov1.meet.controller.auth
 
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.reactive.function.client.WebClient
@@ -10,7 +10,7 @@ const val TOKEN = "GTN7zYb83YRDnRzB4R9Q5Bk3EZYZF85a"
 val FIAS = mapOf(Pair(2, "7800000000000"))
 
 @RestController
-@RequestMapping("/api/v1/address")
+@RequestMapping("/api/auth/v1/address")
 @CrossOrigin("http://localhost:3000")
 @Suppress("unused")
 class AddressController {

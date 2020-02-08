@@ -1,4 +1,4 @@
-package com.github.vantonov1.meet.controller
+package com.github.vantonov1.meet.controller.auth
 
 import com.github.vantonov1.meet.dto.AgentDTO
 import com.github.vantonov1.meet.service.AgentService
@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/v1/agent")
+@RequestMapping("/api/auth/v1/agent")
 @CrossOrigin("http://localhost:3000")
 @Suppress("unused")
 class AgentController(private val agentService: AgentService) {

@@ -1,7 +1,7 @@
 import {fetchJSON} from "./fetch";
 
-export default class KladrAPI {
-    static BASE = 'http://localhost:8080/api/v1/address';
+export default class AddressAPI {
+    static BASE = 'http://localhost:8080/api/auth/v1/address';
 
     static fetchStreets(city, query) {
         if(city && city !== 0 && query && query !== '') {

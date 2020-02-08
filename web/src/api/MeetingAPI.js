@@ -1,6 +1,6 @@
 import {fetchEmpty, fetchJSON} from "./fetch";
 
-const BASE = 'http://localhost:8080/api/v1/meeting';
+const BASE = 'http://localhost:8080/api/auth/v1/meeting';
 
 export default class RequestAPI {
     static createMeeting(dto) {
