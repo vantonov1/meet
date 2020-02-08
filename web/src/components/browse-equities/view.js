@@ -57,7 +57,7 @@ export default function BrowseEquities() {
     useEffect(() => {
         OsmMap.setupClusters(locations);
         OsmMap.placeMarker(selectedEquity?.address.lon, selectedEquity?.address.lat)
-    });
+    }, [locations, selectedEquity]);
 
     return (
         <>
@@ -77,7 +77,7 @@ export default function BrowseEquities() {
 }
 
 function EquitiesDrawer(props) {
-    const {locations, records, filter, drawerOpen} = useSelector(state => state.browseEquities, shallowEqual);
+    const {locations, records, selectedEquity, filter, drawerOpen} = useSelector(state => state.browseEquities, shallowEqual);
     const dispatch = useDispatch();
     const classes = useStyles();
 
@@ -87,6 +87,7 @@ function EquitiesDrawer(props) {
                 equities={records}
                 hasMore={records.length < locations.length}
                 onFetch={() => dispatch(loadMoreEquities())}
+                selectedEquity={selectedEquity}
                 onClick={(equity) => {
                     dispatch(selectEquity(equity));
                 }}

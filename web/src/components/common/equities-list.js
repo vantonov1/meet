@@ -13,24 +13,23 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function EquitiesList(props) {
-    const [selectedItem, setSelectedItem] = React.useState(-1);
+    const {equities, selectedEquity, hasMore, onFetch, onClick} = props;
     return (
         <AutoSizer>
             {({height, width}) => (
                 <InfiniteScroll style={{width: width}}
-                                dataLength={props.equities.length}
-                                next={props.onFetch}
-                                hasMore={props.hasMore}
+                                dataLength={equities.length}
+                                next={onFetch}
+                                hasMore={hasMore}
                                 loader={<LinearProgress/>}
                                 height={height}
                                 endMessage={<p/>}
                 >
-                    {props.equities?.map((equity, index) => (
-                        <Equity key={equity.id} selected={index === selectedItem}
+                    {equities?.map((equity, index) => (
+                        <Equity key={equity.id} selected={equity.id === selectedEquity?.id}
                                 {...equity}
                                 onClick={() => {
-                                    setSelectedItem(index);
-                                    props.onClick(equity)
+                                    onClick(equity)
                                 }}
                         />
                     ))}
