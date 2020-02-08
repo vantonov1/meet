@@ -1,4 +1,4 @@
-package com.github.vantonov1.meet.controller.impl
+package com.github.vantonov1.meet.service.impl
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean

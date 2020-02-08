@@ -1,8 +1,8 @@
 package com.github.vantonov1.meet.service
 
-import com.github.vantonov1.meet.controller.impl.PhotoStorage
 import com.github.vantonov1.meet.entities.Photo
 import com.github.vantonov1.meet.repository.PhotoRepository
+import com.github.vantonov1.meet.service.impl.PhotoStorage
 import org.springframework.core.io.Resource
 import org.springframework.http.CacheControl
 import org.springframework.http.HttpHeaders
