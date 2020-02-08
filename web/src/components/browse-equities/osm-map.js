@@ -9,6 +9,8 @@ import Geolocation from "ol/Geolocation";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 import withStyles from "@material-ui/core/styles/withStyles";
+import Icon from "ol/style/Icon";
+import Place from "./place-24px.svg"
 
 const useStyles = {
     root: {
@@ -24,11 +26,14 @@ class OsmMap extends Component {
         this.source = new VectorSource({
             features: []
         });
+        this.markerSource = new VectorSource({
+            features: []
+        });
         this.mounted = false;
     }
 
     componentDidMount() {
-        let map = renderMap(this.source);
+        let map = renderMap(this.source, this.markerSource);
         map.on('click', e => {
             map.forEachFeatureAtPixel(e.pixel, (feature, layer) => {
                 map.getView().setCenter(feature.get("geometry").flatCoordinates);
@@ -55,11 +60,39 @@ class OsmMap extends Component {
                 map.source.addFeatures(locations.map(l => toFeature(l)));
         }
     }
+
+    static placeMarker(lon, lat) {
+        let map = this.ref.current;
+        if (map.mounted) {
+            map.markerSource.clear();
+            if (lon && lat)
+                map.markerSource.addFeature(createMarkerFeature(lon, lat));
+        }
+    }
 }
 
 export default withStyles(useStyles) (OsmMap)
 
-function renderMap(clustersSource) {
+function createMarkerFeature(lon, lat) {
+    const iconFeature = new Feature({
+        geometry: new Point(fromLonLat([lon, lat])),
+    });
+
+    const icon = new Icon({
+        anchor: [0.5, 0.75],
+        anchorXUnits: 'fraction',
+        anchorYUnits: 'fraction',
+        src: Place,
+    });
+
+    iconFeature.setStyle(new Style({
+        image: icon
+    }));
+
+    return iconFeature;
+}
+
+function renderMap(clustersSource, markerSource) {
 
     let view = new View({
         center: fromLonLat([30.3064796, 59.9374987]),
@@ -79,21 +112,18 @@ function renderMap(clustersSource) {
         style: (feature) => clusterStyle(feature)
     });
 
-    let geolocation = new Geolocation({
-        // enableHighAccuracy must be set to true to have the heading value.
-        trackingOptions: {
-            enableHighAccuracy: true
-        },
-        projection: view.getProjection()
-    });
     let position = new Vector({
         source: new VectorSource({
-            features: [(createPositionFeature(view, geolocation))]
+            features: [(createPositionFeature(view))]
         })
     });
 
+    let marker = new Vector({
+        source: markerSource
+    });
+
     return new Map({
-        layers: [tiles, clusters, position],
+        layers: [tiles, clusters, position, marker],
         target: 'map',
         view: view
     });
@@ -138,7 +168,7 @@ function clusterStyle(feature) {
     return style(feature.get('features').length);
 }
 
-function createPositionFeature(view, location) {
+function createPositionFeature(view) {
     let positionFeature = new Feature();
     positionFeature.setStyle(new Style({
         image: new CircleStyle({
@@ -152,6 +182,14 @@ function createPositionFeature(view, location) {
             })
         })
     }));
+
+    let location = new Geolocation({
+        // enableHighAccuracy must be set to true to have the heading value.
+        trackingOptions: {
+            enableHighAccuracy: true
+        },
+        projection: view.getProjection()
+    });
 
     location.setTracking(true);
     location.on('change:position', function () {

@@ -87,7 +87,8 @@ function EquitiesDrawer(props) {
                 hasMore={records.length < locations.length}
                 onFetch={() => dispatch(loadMoreEquities())}
                 onClick={(equity) => {
-                    dispatch(selectEquity(equity))
+                    dispatch(selectEquity(equity));
+                    OsmMap.placeMarker(equity.address.lon, equity.address.lat)
                 }}
             />
         </Browse>
