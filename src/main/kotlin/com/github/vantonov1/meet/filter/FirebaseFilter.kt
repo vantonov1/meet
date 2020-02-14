@@ -1,5 +1,6 @@
 package com.github.vantonov1.meet.filter
 
+import com.github.vantonov1.meet.service.impl.getAuthorities
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseToken
 import org.springframework.http.HttpHeaders
@@ -39,7 +40,7 @@ class BearerTokenReactiveAuthenticationManager : ReactiveAuthenticationManager {
     }
 }
 
-class FirebaseAuthenticationToken(val user: FirebaseToken) : AbstractAuthenticationToken(null) {
+class FirebaseAuthenticationToken(val user: FirebaseToken) : AbstractAuthenticationToken(getAuthorities(user)) {
     override fun getCredentials() = ""
     override fun getPrincipal() = user
 }

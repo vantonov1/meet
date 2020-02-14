@@ -12,11 +12,14 @@ import org.springframework.context.annotation.Bean
 import org.springframework.data.r2dbc.connectionfactory.R2dbcTransactionManager
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories
 import org.springframework.http.HttpMethod
+import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.web.server.SecurityWebFilterChain
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter
+import org.springframework.security.web.server.context.ServerSecurityContextRepository
+import org.springframework.security.web.server.context.WebSessionServerSecurityContextRepository
 import org.springframework.security.web.server.util.matcher.OrServerWebExchangeMatcher
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers
 import org.springframework.transaction.TransactionManager
@@ -30,6 +33,7 @@ import org.springframework.web.reactive.config.WebFluxConfigurer
 @SpringBootApplication
 @EnableWebFlux
 @EnableWebFluxSecurity
+@EnableReactiveMethodSecurity(proxyTargetClass = true)
 @EnableR2dbcRepositories
 @Suppress("unused")
 class MeetApplication(val connectionFactory: ConnectionPool) : TransactionManagementConfigurer, WebFluxConfigurer {
@@ -71,6 +75,13 @@ class MeetApplication(val connectionFactory: ConnectionPool) : TransactionManage
                 }
                 .and().csrf().disable()
         return http.build()
+    }
+
+    @Bean
+    fun securityContextRepository() : ServerSecurityContextRepository {
+        val securityContextRepository = WebSessionServerSecurityContextRepository();
+        securityContextRepository.setSpringSecurityContextAttrName("securityContext");
+        return securityContextRepository;
     }
 }
 

@@ -4,6 +4,7 @@ import com.github.vantonov1.meet.dto.EquityDTO
 import com.github.vantonov1.meet.service.EquityService
 import com.github.vantonov1.meet.service.PhotoService
 import com.github.vantonov1.meet.service.RequestService
+import org.springframework.security.access.annotation.Secured
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
@@ -17,6 +18,7 @@ class EquityController(private val equities: EquityService,
                        private val requests: RequestService) {
     @PostMapping
     @Transactional
+    @Secured("ROLE_AGENT")
     fun create(@RequestBody dto: EquityDTO, @RequestParam fromRequest: Int?): Mono<Long> {
         val equity = if (fromRequest != null) {
             requests.findById(fromRequest)
@@ -29,11 +31,13 @@ class EquityController(private val equities: EquityService,
 
     @PutMapping
     @Transactional
+    @Secured("ROLE_AGENT")
     fun update(@RequestBody dto: EquityDTO): Mono<Void> =
             if (dto.id != null) equities.save(dto).then()
             else throw IllegalArgumentException("no equity id on update")
 
     @DeleteMapping("/{id}")
     @Transactional
+    @Secured("ROLE_AGENT")
     fun delete(id: Long, @RequestParam hide: Boolean?) = equities.delete(id, hide)
 }

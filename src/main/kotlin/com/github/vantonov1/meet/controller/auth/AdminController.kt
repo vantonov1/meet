@@ -1,6 +1,7 @@
 package com.github.vantonov1.meet.controller.auth
 
 import com.github.vantonov1.meet.service.AdminService
+import org.springframework.security.access.annotation.Secured
 import org.springframework.security.authentication.InsufficientAuthenticationException
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
@@ -12,13 +13,15 @@ import reactor.core.publisher.Mono
 @Suppress("unused")
 class AdminController(val service: AdminService) {
     @PostMapping("/invite")
-    fun invite(@RequestParam email: String, auth: Authentication) = checkIsAdmin(auth).then(service.invite(email))
+    @Secured("ROLE_ADMIN")
+    fun invite(@RequestParam email: String, auth: Authentication) = service.invite(email)
 
     @PutMapping
     fun register(@RequestParam invitation: String, auth: Authentication) = service.register(invitation, auth)
 
     @GetMapping
-    fun findAll(auth: Authentication) = checkIsAdmin(auth).then(service.findAll())
+    @Secured("ROLE_ADMIN")
+    fun findAll(auth: Authentication) = service.findAll()
 
     private fun checkIsAdmin(authentication: Authentication) =
             if (service.isAdmin(authentication)) Mono.just(true)

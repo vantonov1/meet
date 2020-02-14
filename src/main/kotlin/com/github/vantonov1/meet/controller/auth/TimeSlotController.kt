@@ -2,6 +2,7 @@ package com.github.vantonov1.meet.controller.auth
 
 import com.github.vantonov1.meet.dto.TimeSlotDTO
 import com.github.vantonov1.meet.service.TimeSlotService
+import org.springframework.security.access.annotation.Secured
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 
@@ -21,6 +22,7 @@ class TimeSlotController (val service: TimeSlotService) {
 
     @GetMapping("/table")
     @Transactional(readOnly = true)
+    @Secured("ROLE_AGENT")
     fun collectTimeTable(
             @RequestParam agentId: Int,
             @RequestParam buyerId: Int,

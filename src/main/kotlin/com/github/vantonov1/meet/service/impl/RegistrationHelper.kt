@@ -2,8 +2,11 @@ package com.github.vantonov1.meet.service.impl
 
 import com.github.vantonov1.meet.filter.FirebaseAuthenticationToken
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseToken
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import reactor.core.publisher.Mono
 import java.net.URLEncoder
 import java.util.*
@@ -24,4 +27,14 @@ fun saveClaim(token: Authentication, claim: Pair<String, Any>) =
             Mono.just(FirebaseAuth.getInstance().setCustomUserClaims(token.user.uid, claims))
         } else
             Mono.error(BadCredentialsException("Неавторизованный запрос"))
+
+fun getAuthorities(user: FirebaseToken): Collection<GrantedAuthority> {
+    val result = mutableListOf<GrantedAuthority>()
+    CLAIMS.forEach {
+        val claim = user.claims[it]
+        if(claim != null)
+            result.add(SimpleGrantedAuthority("ROLE_${it.toUpperCase()}"))
+    }
+    return result
+}
 
