@@ -22,12 +22,17 @@ import browseMeetings from "./components/browse-my-meetings/slice";
 import browseAssignedMeetings from "./components/browse-assigned-meetings/slice";
 import editAddress from "./components/edit-address/slice";
 import editTimeSlots from "./components/edit-timeslots/slice";
+import browseAdmin from "./components/browse-admins/slice";
+import browseAgents from "./components/browse-agents/slice";
+import Auth from "./components/show-error/auth";
 
 const store = configureStore({
     reducer: {
         error: error,
         success: success,
-        appBar:appBar,
+        appBar: appBar,
+        browseAdmin: browseAdmin,
+        browseAgents: browseAgents,
         browseEquities: browseEquities,
         filter: filter,
         selectDistricts: selectDistricts,
@@ -49,13 +54,12 @@ const store = configureStore({
 export default function App() {
     const theme = createMuiTheme({}, ruRU);
     return (
-        <div>
-            <ThemeProvider theme={theme}>
-                <Provider store={store}>
-                    <AppRouter/>
-                </Provider>
-            </ThemeProvider>
-        </div>
+        <ThemeProvider theme={theme}>
+            <Provider store={store}>
+                <Auth/>
+                <AppRouter/>
+            </Provider>
+        </ThemeProvider>
     );
 }
 

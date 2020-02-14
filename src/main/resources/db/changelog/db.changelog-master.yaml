@@ -140,6 +140,9 @@ databaseChangeLog:
             - column:
                   name: active
                   type: boolean
+            - column:
+                  name: invitation
+                  type: varchar(64)
       - createTable:
             tableName: request
             columns:
@@ -232,6 +235,24 @@ databaseChangeLog:
             - column:
                    name: max_time
                    type: int
+                   constraints:
+                       nullable: false
+      - createTable:
+            tableName: admin
+            columns:
+            - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+            - column:
+                  name: invitation
+                  type: varchar(64)
+            - column:
+                   name: email
+                   type: varchar(64)
                    constraints:
                        nullable: false
       - createIndex:

@@ -8,8 +8,6 @@ import React, {useState} from "react";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import CreateCustomerRequest from "../create-request/view";
-import CreateAgent from "../create-agent/view";
-import {showCreateAgent} from "../create-agent/slice";
 import {setAbout, showCreateRequest} from "../create-request/slice";
 import {Link as RouterLink} from 'react-router-dom';
 import {isRent, isSale} from "../common/constants";
@@ -57,7 +55,6 @@ export default function MainAppBar() {
             </Button>
         </Toolbar>
         {Boolean(anchorEl) && <Menu anchorEl={anchorEl} keepMounted open={true} onClose={() => setAnchorEl(null)}>
-            <MenuItem onClick={() =>{dispatch(showCreateAgent(true)); setAnchorEl(null)}}>Добавить контрагента</MenuItem>
             <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/equities'>Объекты на карте</MenuItem>
             <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/my-requests'>Мои заявки</MenuItem>
             <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/assigned-requests'>Заявки в работе</MenuItem>
@@ -65,6 +62,5 @@ export default function MainAppBar() {
             <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/assigned-meetings'>Запланированные встречи</MenuItem>
         </Menu>}
         <CreateCustomerRequest/>
-        <CreateAgent/>
     </AppBar>
 }

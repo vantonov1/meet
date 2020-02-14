@@ -1,17 +1,17 @@
 import React from "react";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
-import {saveAgent, setContacts, setName, showCreateAgent} from "./slice";
+import {registerAgent, setContacts, setName} from "./slice";
 import EditPersonContacts from "../common/edit-person-contacts";
 import EnterValue from "../common/enter-value";
 
-export default function CreateAgent(props) {
-    const {open, name, contacts} = useSelector(state => state.createAgent, shallowEqual);
+export default function RegisterAgent() {
+    const {name, contacts} = useSelector(state => state.createAgent, shallowEqual);
     const dispatch = useDispatch();
 
-    return <EnterValue open={open}
+    return <EnterValue open={true}
                        okDisabled={() => {return name === '' || contacts.length === 0 || contacts[0].contact === ''}}
-                       onCancel={() =>dispatch(showCreateAgent(false))}
-                       onOk={() => dispatch(saveAgent(name, contacts))}
+                       onCancel={() => window.history.back()}
+                       onOk={() => dispatch(registerAgent(name, contacts))}
     >
         <EditPersonContacts name={name}
                             contacts={contacts}

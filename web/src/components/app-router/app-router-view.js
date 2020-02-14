@@ -8,6 +8,9 @@ import BrowseMyRequests from "../browse-my-requests/view";
 import BrowseAssignedRequests from "../browse-assigned-requests/view";
 import BrowseMyMeetings from "../browse-my-meetings/view";
 import BrowseAssignedMeetings from "../browse-assigned-meetings/view";
+import RegisterAdmin from "../register-admin/view";
+import BrowseAdmin from "../browse-admin/view";
+import RegisterAgent from "../create-agent/view";
 
 export default function AppRouter(props) {
     return (
@@ -16,23 +19,38 @@ export default function AppRouter(props) {
             <Error/>
             <Success/>
             <Switch>
-                <Route path="/" exact {...props}>
+                <Route path="/" exact>
                     <Redirect to={{pathname: "/equities"}}/>
                 </Route>
-                <Route path="/equities" {...props}>
+                <Route path="/equities">
                     <BrowseEquities/>
                 </Route>
-                <Route path="/my-requests" {...props}>
+                <Route path="/my-requests">
                     <BrowseMyRequests/>
                 </Route>
-                <Route path="/assigned-requests" {...props}>
+                <Route path="/assigned-requests">
                     <BrowseAssignedRequests/>
                 </Route>
-                <Route path="/my-meetings" {...props}>
+                <Route path="/my-meetings">
                     <BrowseMyMeetings/>
                 </Route>
-               <Route path="/assigned-meetings" {...props}>
+                <Route path="/assigned-meetings">
                     <BrowseAssignedMeetings/>
+                </Route>
+                <Route path="/admin" exact>
+                    <Redirect to={{pathname: "/admin/agents"}}/>
+                </Route>
+                <Route path="/admin/agents" exact>
+                    <BrowseAdmin tab="0"/>
+                </Route>
+                <Route path="/admin/administrators" exact>
+                    <BrowseAdmin tab="1"/>
+                </Route>
+                <Route path="/admin/administrators/registration">
+                    <RegisterAdmin/>
+                </Route>
+                <Route path="/admin/agents/registration">
+                    <RegisterAgent/>
                 </Route>
             </Switch>
         </Router>

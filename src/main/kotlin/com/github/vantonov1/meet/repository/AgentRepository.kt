@@ -16,4 +16,7 @@ interface AgentRepository : ReactiveCrudRepository<Agent, Int> {
 
     @Query("select * from agent where city=:city and active=true")
     fun findActive(city: Short): Flux<Agent>
+
+    @Query("select * from agent where invitation=:invitation")
+    fun findByInvitation(invitation: String): Flux<Agent>
 }
