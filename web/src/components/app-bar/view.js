@@ -11,6 +11,7 @@ import CreateCustomerRequest from "../create-request/view";
 import {setAbout, showCreateRequest} from "../create-request/slice";
 import {Link as RouterLink} from 'react-router-dom';
 import {isRent, isSale} from "../common/constants";
+import {getRoles} from "../../api/FirebaseAPI";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -33,6 +34,9 @@ export default function MainAppBar() {
     const dispatch = useDispatch();
     const [anchorEl, setAnchorEl] = useState(null);
     const classes = useStyles();
+    const roles = getRoles().map(a => a.authority);
+    const isAdmin = roles.includes("ROLE_ADMIN");
+    const isAgent = roles.includes("ROLE_AGENT");
 
     return <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
@@ -56,10 +60,11 @@ export default function MainAppBar() {
         </Toolbar>
         {Boolean(anchorEl) && <Menu anchorEl={anchorEl} keepMounted open={true} onClose={() => setAnchorEl(null)}>
             <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/equities'>Объекты на карте</MenuItem>
-            <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/my-requests'>Мои заявки</MenuItem>
-            <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/assigned-requests'>Заявки в работе</MenuItem>
-            <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/my-meetings'>Мои запланированные встречи</MenuItem>
-            <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/assigned-meetings'>Запланированные встречи</MenuItem>
+            {isAdmin && <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/admin'>Консоль администратора</MenuItem>}
+            {isAgent && <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/assigned-requests'>Заявки в работе</MenuItem>}
+            {isAgent && <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/assigned-meetings'>Запланированные встречи</MenuItem>}
+            {!isAdmin && !isAgent && <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/my-requests'>Мои заявки</MenuItem>}
+            {!isAdmin && !isAgent && <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/my-meetings'>Мои запланированные встречи</MenuItem>}
         </Menu>}
         <CreateCustomerRequest/>
     </AppBar>

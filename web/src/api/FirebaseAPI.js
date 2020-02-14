@@ -1,6 +1,7 @@
 import * as firebaseui from "firebaseui";
 import firebase from 'firebase/app';
 import 'firebase/auth';
+import AuthAPI from "./AuthAPI";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBhLc5GOWnVT60daI1UdNQt-ARUe0f6Mok",
@@ -12,6 +13,18 @@ const firebaseConfig = {
     appId: "1:534129874386:web:61ff135fda1f14199ea40b"
 };
 const firebaseApp = firebase.initializeApp(firebaseConfig);
+
+let roles = [];
+
+export function getRoles() {
+    return roles;
+}
+
+export async function initFirebase() {
+    if(getAuthToken() != null) {
+        roles = await AuthAPI.getAuthorities()
+    }
+}
 
 export function getAuthToken() {
     return localStorage.getItem("firebaseToken");

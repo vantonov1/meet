@@ -16,34 +16,39 @@ import java.util.*
 val CLAIMS = listOf("admin", "agent")
 
 fun invitation(): String = URLEncoder.encode(UUID.randomUUID().toString(), "UTF-8")
-fun saveClaim(token: Authentication, claim: Pair<String, Any>) =
-        if (token is FirebaseAuthenticationToken) {
+
+fun getFirebaseAuthenticationToken(authentication: Authentication) =
+        if (authentication is FirebaseAuthenticationToken) Mono.just(authentication)
+        else Mono.error(BadCredentialsException("Неавторизованный запрос"))
+
+
+fun saveClaim(authentication: Authentication, claim: Pair<String, Any>) =
+        getFirebaseAuthenticationToken(authentication).map {token ->
             val claims = mutableMapOf<String, Any>()
             CLAIMS.forEach {
                 val existingClaim = token.user.claims[it]
-                if(existingClaim != null) {
+                if (existingClaim != null) {
                     claims[it] = existingClaim;
                 }
             }
             claims[claim.first] = claim.second
             Mono.just(FirebaseAuth.getInstance().setCustomUserClaims(token.user.uid, claims))
-        } else
-            Mono.error(BadCredentialsException("Неавторизованный запрос"))
+        }
 
 fun getAuthorities(user: FirebaseToken): Collection<GrantedAuthority> {
     val result = mutableListOf<GrantedAuthority>()
     CLAIMS.forEach {
         val claim = user.claims[it]
-        if(claim != null)
+        if (claim != null)
             result.add(SimpleGrantedAuthority("ROLE_${it.toUpperCase()}"))
     }
     return result
 }
 
-fun getAgentId() = ReactiveSecurityContextHolder.getContext().flatMap  {
-    if(it.authentication is FirebaseAuthenticationToken) {
+fun getAgentId() = ReactiveSecurityContextHolder.getContext().flatMap {
+    if (it.authentication is FirebaseAuthenticationToken) {
         val id: Any? = (it.authentication as FirebaseAuthenticationToken).user.claims["agent"]
-        if(id is Number) Mono.just(id.toInt())
+        if (id is Number) Mono.just(id.toInt())
         else Mono.error(InsufficientAuthenticationException("Пользователь не является агентом"))
     } else
         Mono.error(InsufficientAuthenticationException("Пользователь не авторизован"))
