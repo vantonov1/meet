@@ -4,9 +4,11 @@ import com.github.vantonov1.meet.filter.FirebaseAuthenticationToken
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseToken
 import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.security.authentication.InsufficientAuthenticationException
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import reactor.core.publisher.Mono
 import java.net.URLEncoder
 import java.util.*
@@ -36,5 +38,15 @@ fun getAuthorities(user: FirebaseToken): Collection<GrantedAuthority> {
             result.add(SimpleGrantedAuthority("ROLE_${it.toUpperCase()}"))
     }
     return result
+}
+
+fun getAgentId() = ReactiveSecurityContextHolder.getContext().flatMap  {
+    if(it.authentication is FirebaseAuthenticationToken) {
+        val id: Any? = (it.authentication as FirebaseAuthenticationToken).user.claims["agent"]
+        if(id is Number) Mono.just(id.toInt())
+        else Mono.error(InsufficientAuthenticationException("Пользователь не является агентом"))
+    } else
+        Mono.error(InsufficientAuthenticationException("Пользователь не авторизован"))
+
 }
 

@@ -2,6 +2,7 @@ package com.github.vantonov1.meet.controller.auth
 
 import com.github.vantonov1.meet.dto.MeetingDTO
 import com.github.vantonov1.meet.service.MeetingService
+import com.github.vantonov1.meet.service.impl.getAgentId
 import org.springframework.security.access.annotation.Secured
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
@@ -33,5 +34,8 @@ class MeetingController(private val meetingService: MeetingService) {
                       @RequestParam(required = false) attends: Int?,
                       @RequestParam dateMin: String,
                       @RequestParam dateMax: String
-    ) = meetingService.findByPersons(scheduledBy, attends, ZonedDateTime.parse(dateMin), ZonedDateTime.parse(dateMax))
+    ) = getAgentId().flatMapMany {
+        assert(it == scheduledBy)
+        meetingService.findByPersons(it, attends, ZonedDateTime.parse(dateMin), ZonedDateTime.parse(dateMax))
+    }
 }

@@ -4,6 +4,7 @@ import com.github.vantonov1.meet.dto.EquityDTO
 import com.github.vantonov1.meet.service.EquityService
 import com.github.vantonov1.meet.service.PhotoService
 import com.github.vantonov1.meet.service.RequestService
+import com.github.vantonov1.meet.service.impl.getAgentId
 import org.springframework.security.access.annotation.Secured
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
@@ -21,8 +22,14 @@ class EquityController(private val equities: EquityService,
     @Secured("ROLE_AGENT")
     fun create(@RequestBody dto: EquityDTO, @RequestParam fromRequest: Int?): Mono<Long> {
         val equity = if (fromRequest != null) {
-            requests.findById(fromRequest)
-                    .flatMap { req -> equities.save(dto.copy(ownedBy = req?.issuedBy?.id, responsible = req?.assignedTo?.id)) }
+            Mono.zip(requests.findById(fromRequest), getAgentId())
+                .switchIfEmpty(Mono.error(java.lang.IllegalArgumentException("Запрос не найден")))
+                .flatMap {
+                    val req = it.t1
+                    val agentId = it.t2
+                    assert(agentId == req.assignedTo?.id)
+                    equities.save(dto.copy(ownedBy = req.issuedBy.id, responsible = agentId))
+                }
         } else {
             equities.save(dto)
         }

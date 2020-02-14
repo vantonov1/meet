@@ -1,6 +1,7 @@
 package com.github.vantonov1.meet.controller.auth
 
 import com.github.vantonov1.meet.service.RequestService
+import com.github.vantonov1.meet.service.impl.getAgentId
 import org.springframework.security.access.annotation.Secured
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
@@ -22,7 +23,7 @@ class RequestController(private val requestService: RequestService) {
                         @RequestParam buyId: Int,
                         @RequestParam equityId: Long,
                         @RequestParam contractNumber: String?
-                        ) = requestService.completeRequest(sellId, buyId, equityId, contractNumber)
+    ) = requestService.completeRequest(sellId, buyId, equityId, contractNumber)
 
     @DeleteMapping("/{id}")
     @Transactional
@@ -31,5 +32,8 @@ class RequestController(private val requestService: RequestService) {
     @GetMapping
     @Transactional(readOnly = true)
     fun findByPersons(@RequestParam(required = false) issuedBy: Int?,
-                      @RequestParam(required = false) assignedTo: Int?) = requestService.findByPersons(issuedBy, assignedTo)
+                      @RequestParam(required = false) assignedTo: Int?) = getAgentId().flatMapMany {
+        assert(it == assignedTo)
+        requestService.findByPersons(issuedBy, it)
+    }
 }
