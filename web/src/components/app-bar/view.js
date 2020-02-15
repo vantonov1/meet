@@ -34,9 +34,9 @@ export default function MainAppBar() {
     const dispatch = useDispatch();
     const [anchorEl, setAnchorEl] = useState(null);
     const classes = useStyles();
-    const roles = getRoles().map(a => a.authority);
-    const isAdmin = roles.includes("ROLE_ADMIN");
-    const isAgent = roles.includes("ROLE_AGENT");
+    const roles = getRoles()?.map(a => a.authority);
+    const isAdmin = roles?.includes("ROLE_ADMIN");
+    const isAgent = roles?.includes("ROLE_AGENT");
 
     return <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
@@ -47,16 +47,16 @@ export default function MainAppBar() {
             <Typography variant="h6" className={classes.title}>
                 {title}
             </Typography>
-            {selectedEquity && <Button color={"inherit"} onClick={() => {
+            {!isAdmin && selectedEquity && <Button color={"inherit"} onClick={() => {
                 dispatch(setAbout(selectedEquity));
                 dispatch(showCreateRequest(true))
             }}>
                 {isSale(selectedEquity) && "Хочу купить"}
                 {isRent(selectedEquity) && "Хочу снять"}
             </Button>}
-           <Button color={"inherit"} onClick={() => dispatch(showCreateRequest(true))}>
+            {!isAdmin && !isAgent && <Button color={"inherit"} onClick={() => dispatch(showCreateRequest(true))}>
                 Хочу сдать/продать
-            </Button>
+            </Button>}
         </Toolbar>
         {Boolean(anchorEl) && <Menu anchorEl={anchorEl} keepMounted open={true} onClose={() => setAnchorEl(null)}>
             <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/equities'>Объекты на карте</MenuItem>
