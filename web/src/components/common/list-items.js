@@ -21,31 +21,39 @@ const useStyles = makeStyles(() => ({
 }));
 
 export function RequestListItem(props) {
-    const {equity, person, comments, selected, onClick} = props;
+    const {equity, comments} = props;
     const [showComments, setShowComments] = useState(false);
-    const classes = useStyles();
-    const sec = comments.length > 0
-        ? comments.map(c => c.text).join('↵')
-        : equity && EQUITY_TYPES[equity.type];
 
-    return <>
-        <ListItem className={classes.item} divider selected={selected}>
-            <ListItemText secondary={sec} onClick={onClick}>
-                {equity && <Equity equity={equity}/>}
-                {person && <span>{person.name}</span>}
-                {person && <Contacts person={person}/>}
-            </ListItemText>
-            <ListItemSecondaryAction onClick={() => setShowComments(true)} style={{cursor: 'pointer'}}>
-                <Rating readOnly value={avg(comments)} precision={0.5}/>
-            </ListItemSecondaryAction>
-        </ListItem>;
-        {comments.length > 0 && <ShowInfo open={showComments} onOk={() => setShowComments(false)}>
-            {comments.map((c, i) => <p key={i}>{c.text}</p>)}
-        </ShowInfo>}
-    </>
+    if(comments.length > 0)
+        return <>
+            <SimpleRequestListItem {...props}
+               secondary={comments.map(c => c.text).join('↵')}
+               action={<ListItemSecondaryAction onClick={() => setShowComments(true)} style={{cursor: 'pointer'}}>
+                   <Rating readOnly value={avg(comments)} precision={0.5}/>
+               </ListItemSecondaryAction>}
+            />
+            <ShowInfo open={showComments} onOk={() => setShowComments(false)}>
+                {comments.map((c, i) => <p key={i}>{c.text}</p>)}
+            </ShowInfo>
+        </>;
+    else
+        return <SimpleRequestListItem secondary={equity && EQUITY_TYPES[equity.type]} {...props}/>;
 }
 
 const avg = comments => comments.map(c => c.rate).reduce((a, b) => a + b, 0) / comments.length;
+
+function SimpleRequestListItem(props) {
+    const {equity, person, selected, secondary, action, onClick} = props;
+    const classes = useStyles();
+    return <ListItem className={classes.item} divider selected={selected}>
+        <ListItemText secondary={secondary} onClick={onClick}>
+            {equity && <Equity equity={equity}/>}
+            {person && <span>{person.name}</span>}
+            {person && <Contacts person={person}/>}
+        </ListItemText>
+        {action}
+    </ListItem>;
+}
 
 export function MergedRequestListItem(props) {
     const {equity, buyer, seller, meeting, selected, onClick} = props;
