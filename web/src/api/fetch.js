@@ -1,6 +1,18 @@
 import {getAuthToken} from "./FirebaseAPI";
 
 export function fetchJSON(url, options) {
+    return fetch(url, setAuth(options)).then(response => handleResponse(response));
+}
+
+export function fetchEmpty(url, options) {
+    return fetch(url, setAuth(options)).then(response => {
+        if (!response.ok) {
+            return handleError(response);
+        }
+    });
+}
+
+function setAuth(options) {
     let authToken = getAuthToken();
     if (authToken !== null)
         if (options)
@@ -10,15 +22,7 @@ export function fetchJSON(url, options) {
                 Authorization: 'Bearer ' + authToken
             }
         };
-    return fetch(url, options).then(response => handleResponse(response));
-}
-
-export function fetchEmpty(url, options) {
-    return fetch(url, options).then(response => {
-        if (!response.ok) {
-            throw new Error(response.status + ' ' + response.statusText);
-        }
-    });
+    return options;
 }
 
 function handleResponse(response) {
@@ -27,11 +31,16 @@ function handleResponse(response) {
             return json;
         })
     } else {
-        if ([401, 403].includes(response.status)) {
-            return Promise.reject({message: response.status});
-        } else
-            response.json().then(json => {
-                return Promise.reject(json)
-            })
+        return handleError(response);
     }
 }
+
+function handleError(response) {
+    if ([401, 403].includes(response.status)) {
+        return Promise.reject({message: response.status});
+    } else
+        response.json().then(json => {
+            return Promise.reject(json)
+        })
+}
+

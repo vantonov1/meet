@@ -255,6 +255,34 @@ databaseChangeLog:
                    type: varchar(64)
                    constraints:
                        nullable: false
+      - createTable:
+            tableName: comment
+            columns:
+            - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+            - column:
+                  name: created_by
+                  type: int
+                  constraints:
+                       nullable: false
+            - column:
+                   name: about
+                   type: bigint
+                   constraints:
+                       nullable: false
+            - column:
+                   name: rate
+                   type: tinyint
+            - column:
+                   name: text
+                   type: varchar
+                   constraints:
+                       nullable: false
       - createIndex:
             indexName: find_equities_idx
             tableName: equity
@@ -363,3 +391,11 @@ databaseChangeLog:
             columns:
             - column:
                     name: for_request
+      - createIndex:
+            indexName: comments_idx
+            tableName: comment
+            columns:
+            - column:
+                    name: created_by
+            - column:
+                    name: about

@@ -42,6 +42,7 @@ export const saveRequest = (name, contacts) => async (dispatch, getState) => {
         const customer = {name: name, contacts: contacts, city: filter.city};
         const request = {type: about ? 'BUY' : 'SELL', issuedBy: customer, about: about};
         let saved = await RequestPublicAPI.createRequest(request);
+        console.log("request created", saved)
         localStorage.setItem("customerId", saved.issuedBy?.id);
         dispatch(showAgent(saved.assignedTo));
         dispatch(updateRequests())

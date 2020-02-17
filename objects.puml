@@ -15,6 +15,7 @@ object Request2 #lightblue {
     type: BUY
 }
 object Meeting
+object Comment
 
 Equity --> Customer1 : ownedBy
 Equity --> Agent : responsible
@@ -32,4 +33,6 @@ Meeting --> Request2 : from
 Meeting --> Customer2 : attends
 Meeting --> Agent : scheduledBy
 
+Comment -> Customer2: createdBy
+Comment --> Equity : about
 @enduml

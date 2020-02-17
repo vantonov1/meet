@@ -11,10 +11,11 @@ data class RequestDTO(
         val about: EquityDTO?,
         val issuedBy: CustomerDTO,
         val assignedTo: AgentDTO?,
-        val meetingScheduled: String?
+        val meetingScheduled: String?,
+        val comments: List<CommentDTO>?
 ){
     fun toEntity(issuedBy: Int, assignedTo: Int) = Request(id, RequestType.valueOf(type).value, about?.id, issuedBy , assignedTo)
 }
 
-fun fromEntity(request: Request, about: EquityDTO?, issuedBy: CustomerDTO, assignedTo: AgentDTO?, meeting: ZonedDateTime?) =
-        RequestDTO(request.id, RequestType.valueOf(request.type).name, about, issuedBy, assignedTo, meeting?.format(DateTimeFormatter.ISO_ZONED_DATE_TIME) )
+fun fromEntity(request: Request, about: EquityDTO?, issuedBy: CustomerDTO, assignedTo: AgentDTO?, meeting: ZonedDateTime?, comments: List<CommentDTO>) =
+        RequestDTO(request.id, RequestType.valueOf(request.type).name, about, issuedBy, assignedTo, meeting?.format(DateTimeFormatter.ISO_ZONED_DATE_TIME), comments )

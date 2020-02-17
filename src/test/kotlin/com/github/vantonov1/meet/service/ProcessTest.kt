@@ -40,7 +40,7 @@ class ProcessTest {
         assert(agent!!.id == agentId)
 
         val seller = CustomerDTO(null, "Martin Luther", listOf(phone), 2)
-        val requestToSale = requestService.save(RequestDTO(null, RequestType.SELL.name, null, seller, null, null)).block()
+        val requestToSale = requestService.save(RequestDTO(null, RequestType.SELL.name, null, seller, null, null, listOf())).block()
         assert(requestToSale!!.assignedTo?.id == agentId)
 
         val agentInbox = requestService.findByPersons(null, agentId).collectList().block()
@@ -52,7 +52,7 @@ class ProcessTest {
 
         val buyer = CustomerDTO(null, "Pinoccio", listOf(telegram), 2)
         val createdEquity = equityService.findById(equityId!!).block()
-        val requestToBuy = requestService.save(RequestDTO(null, RequestType.BUY.name, createdEquity, buyer, null, null)).block()
+        val requestToBuy = requestService.save(RequestDTO(null, RequestType.BUY.name, createdEquity, buyer, null, null, listOf())).block()
         assert(requestToBuy!!.assignedTo?.id == agentId)
 
         val schedule = ZonedDateTime.now().plusDays(1).format(DateTimeFormatter.ISO_ZONED_DATE_TIME)

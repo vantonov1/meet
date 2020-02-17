@@ -16,7 +16,8 @@ class RequestService(private val requestRepository: RequestRepository,
                      private val customerService: CustomerService,
                      private val agentService: AgentService,
                      private val meetingService: MeetingService,
-                     private val equityService: EquityService
+                     private val equityService: EquityService,
+                     private val commentService: CommentService
 ) {
     fun save(dto: RequestDTO): Mono<RequestDTO> {
         assert(dto.assignedTo == null)
@@ -54,12 +55,13 @@ class RequestService(private val requestRepository: RequestRepository,
                     equityService.findById(req.about),
                     customerService.findById(req.issuedBy),
                     agentService.findById(req.assignedTo),
-                    meetingService.findDateByRequest(req.id!!)
-            ).map { fromEntity(req, it.t1, it.t2, it.t3, if (it.t4.isBefore(ZonedDateTime.now())) null else it.t4) }
+                    meetingService.findDateByRequest(req.id!!),
+                    commentService.findCustomerCommentsByEquity(req.issuedBy, req.about)
+            ).map { fromEntity(req, it.t1, it.t2, it.t3, if (it.t4.isBefore(ZonedDateTime.now())) null else it.t4, it.t5) }
             else Mono.zip(
                     customerService.findById(req.issuedBy),
                     agentService.findById(req.assignedTo)
-            ).map { fromEntity(req, null, it.t1, it.t2, null) }
+            ).map { fromEntity(req, null, it.t1, it.t2, null, listOf()) }
 
     fun completeRequest(sellId: Int, buyId: Int, equityId: Long, contractNumber: String?) = Mono.zip(
             requestRepository.deleteById(sellId),

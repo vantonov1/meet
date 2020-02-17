@@ -24,6 +24,7 @@ import editAddress from "./components/edit-address/slice";
 import editTimeSlots from "./components/edit-timeslots/slice";
 import browseAdmin from "./components/browse-admins/slice";
 import browseAgents from "./components/browse-agents/slice";
+import createComment from "./components/create-comment/slice";
 import Auth from "./components/show-error/auth";
 
 const store = configureStore({
@@ -47,7 +48,8 @@ const store = configureStore({
         browseMeetings: browseMeetings,
         browseAssignedMeetings: browseAssignedMeetings,
         editAddress: editAddress,
-        editTimeSlots: editTimeSlots
+        editTimeSlots: editTimeSlots,
+        createComment: createComment
     },
 });
 

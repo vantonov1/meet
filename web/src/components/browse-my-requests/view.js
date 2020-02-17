@@ -8,6 +8,8 @@ import Menu from "@material-ui/core/Menu";
 import BrowseList from "../common/browse-list";
 import {showEditTimeSlots} from "../edit-timeslots/slice";
 import EditTimeSlots from "../edit-timeslots/view";
+import CreateComment from "../create-comment/view";
+import {showCreateComment} from "../create-comment/slice";
 
 
 export default function BrowseMyRequests() {
@@ -19,7 +21,7 @@ export default function BrowseMyRequests() {
     return <>
         <BrowseList slice="browseRequests" title='Мои заявки' loader={loadRequests} topLevel={true}>
             {records.map(r =>
-                <RequestListItem key={r.id} equity={r.about} person={r.assignedTo}
+                <RequestListItem key={r.id} equity={r.about} person={r.assignedTo} comments={r.comments}
                                  selected={selectedRequest?.id === r.id}
                                  onClick={(e) => {
                                      dispatch(selectRequest(r));
@@ -36,12 +38,19 @@ export default function BrowseMyRequests() {
                 dispatch(showEditTimeSlots(true));
                 setMenuAnchor(null)
             }}>Указать время просмотров</MenuItem>
+            {selectedRequest?.about && <MenuItem onClick={() => {
+                dispatch(showCreateComment(true));
+                setMenuAnchor(null)
+            }}>Комментарий</MenuItem>}
         </Menu>}
-        {selectedRequest && <ConfirmAction open={confirmDelete} text="Удалить заявку?" onCancel={() => setConfirmDelete(false)}
+        {selectedRequest &&
+        <ConfirmAction open={confirmDelete} text="Удалить заявку?" onCancel={() => setConfirmDelete(false)}
                        onOK={() => {
                            setConfirmDelete(false);
                            dispatch(deleteRequest(selectedRequest))
                        }}/>}
         {selectedRequest && <EditTimeSlots request={selectedRequest}/>}
+        {selectedRequest && selectedRequest.about && <CreateComment request={selectedRequest}/>}
+
     </>
 }

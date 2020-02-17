@@ -1,11 +1,10 @@
 import React from "react";
-import {ListItem} from "@material-ui/core";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import {saveRequest, setContacts, setName, showAgent, showCreateRequest} from "./slice";
-import {CONTACT_TYPES} from "../common/constants";
 import EditPersonContacts from "../common/edit-person-contacts";
 import EnterValue from "../common/enter-value";
 import ShowInfo from "../common/showInfo";
+import {Contacts} from "../common/contacts";
 
 export default function CreateCustomerRequest() {
     const {open, name, contacts, agent} = useSelector(state => state.createRequest, shallowEqual);
@@ -25,7 +24,7 @@ export default function CreateCustomerRequest() {
             dispatch(showCreateRequest(false))
         }}>
              <p>Ваш запрос отправлен агенту {agent?.name}</p>
-             {agent?.contacts.map((c, i) => <ListItem key={i}>{CONTACT_TYPES[c.contactType].label}&nbsp;{c.contact}</ListItem>)}
+             {agent? <Contacts person={agent}/> : ''}
         </ShowInfo>
     </EnterValue>
 }

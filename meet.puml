@@ -7,6 +7,7 @@ class Agent
 class Customer 
 class Request 
 class TimeSlot
+class Comment
 
 Equity <-- Photo: of
 Equity --> Customer : ownedBy
@@ -21,5 +22,8 @@ Request --> Equity : about
 Request --> Customer : issuedBy
 Request --> Agent : assignedTo
 Request <- TimeSlot : forRequest
+
+Comment -> Customer: createdBy
+Comment -> Equity : about
 
 @enduml
