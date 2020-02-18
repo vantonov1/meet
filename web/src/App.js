@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles';
 import {ruRU} from '@material-ui/core/locale';
 import {Provider} from "react-redux";
@@ -26,6 +26,8 @@ import browseAdmin from "./components/browse-admins/slice";
 import browseAgents from "./components/browse-agents/slice";
 import createComment from "./components/create-comment/slice";
 import Auth from "./components/show-error/auth";
+import {CircularProgress, makeStyles} from "@material-ui/core";
+import {initFirebase} from "./api/FirebaseAPI";
 
 const store = configureStore({
     reducer: {
@@ -53,14 +55,34 @@ const store = configureStore({
     },
 });
 
+const useStyles = makeStyles(theme => ({
+    waitAuth: {
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+    }
+}));
+
 export default function App() {
     const theme = createMuiTheme({}, ruRU);
-    return (
-        <ThemeProvider theme={theme}>
-            <Provider store={store}>
-                <Auth/>
-                <AppRouter/>
-            </Provider>
-        </ThemeProvider>
-    );
+    const [authInitialised, setAuthInitialised] = useState(false);
+    const classes = useStyles();
+
+    useEffect(() => {
+        if (!authInitialised)
+            initFirebase().then(() => setAuthInitialised(true))
+    });
+
+    if (authInitialised)
+        return (
+            <ThemeProvider theme={theme}>
+                <Provider store={store}>
+                    <Auth/>
+                    <AppRouter/>
+                </Provider>
+            </ThemeProvider>
+        );
+    else
+        return <div className={classes.waitAuth}><CircularProgress/></div>
 }

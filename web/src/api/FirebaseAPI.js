@@ -14,24 +14,37 @@ const firebaseConfig = {
 };
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 
-let roles = [];
+export function initFirebase() {
+    if (localStorage.getItem("signedToFirebase")) {
+        return new Promise(function (resolve, reject) {
+            const unsubscribe = firebaseApp.auth().onAuthStateChanged(function (user) {
+                unsubscribe();
+                if (roles == null)
+                    AuthAPI.getAuthorities().then((r) => {
+                        roles = r;
+                        resolve(user.uid);
+                    })
+            });
+        });
+    } else {
+        firebase.auth().onAuthStateChanged(() => {
+            localStorage.setItem("signedToFirebase", "true");
+        });
+    }
+}
+
+let roles = null;
 
 export function getRoles() {
     return roles;
 }
 
-export async function initFirebase() {
-    if(getAuthToken() != null) {
-        roles = await AuthAPI.getAuthorities()
-    }
-}
-
-export function getAuthToken() {
-    return localStorage.getItem("firebaseToken");
-}
-
-function setAuthToken(token) {
-    localStorage.setItem("firebaseToken", token);
+export async function getAuthToken() {
+    if (localStorage.getItem("signedToFirebase")) {
+        let currentUser = firebase.auth().currentUser;
+        return await currentUser?.getIdToken(false)
+    } else
+        return null;
 }
 
 export function showAuth() {
@@ -39,14 +52,6 @@ export function showAuth() {
     firebase.auth().languageCode = 'ru';
     setTimeout(() => {
         ui.start('#firebaseui-auth-container', {
-            callbacks: {
-                signInSuccessWithAuthResult: function (authResult, redirectUrl) {
-                    firebase.auth().currentUser.getIdToken(false).then(idToken => {
-                        setAuthToken(idToken);
-                    });
-                    return true;
-                },
-            },
             signInSuccessUrl: window.location.href,
             signInFlow: 'redirect',
             signInOptions: [
