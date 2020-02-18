@@ -1,6 +1,7 @@
 package com.github.vantonov1.meet.service
 
 import com.github.vantonov1.meet.dto.AgentDTO
+import com.github.vantonov1.meet.dto.CustomerDTO
 import com.github.vantonov1.meet.dto.RequestDTO
 import com.github.vantonov1.meet.dto.fromEntity
 import com.github.vantonov1.meet.entities.Agent
@@ -50,9 +51,9 @@ class AgentService(val repository: AgentRepository, val contactService: ContactS
     fun findById(id: Int) = Mono.zip(repository.findById(id), contactService.findByPersonId(id))
             .map { fromEntity(it.t1, it.t2.map { c -> fromEntity(c) }) }
 
-    fun selectAgent(dto: RequestDTO): Mono<Int> {
+    fun selectAgent(dto: RequestDTO, customer: CustomerDTO): Mono<Int> {
         return repository
-                .findActive(if (dto.about != null) dto.about.address.city else dto.issuedBy.city)
+                .findActive(if (dto.about != null) dto.about.address.city else customer.city)
                 .map { it.id!! }
                 .collectList()
                 .map { if (it.isNotEmpty()) it[Random.nextInt(it.size)] else throw IllegalStateException("Нет активных агентов") }

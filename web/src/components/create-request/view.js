@@ -1,15 +1,21 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
-import {saveRequest, setContacts, setName, showAgent, showCreateRequest} from "./slice";
+import {saveRequest, saveRequestFromKnownCustomer, setContacts, setName, showAgent, showCreateRequest} from "./slice";
 import EditPersonContacts from "../common/edit-person-contacts";
 import EnterValue from "../common/enter-value";
 import ShowInfo from "../common/showInfo";
 import {Contacts} from "../common/contacts";
 
 export default function CreateCustomerRequest() {
-    const {open, name, contacts, agent} = useSelector(state => state.createRequest, shallowEqual);
+    const {open, name, contacts, agent, customerId} = useSelector(state => state.createRequest, shallowEqual);
     const dispatch = useDispatch();
-    return <EnterValue open={open}
+
+    useEffect(() => {
+       if(customerId)
+           dispatch(saveRequestFromKnownCustomer(customerId))
+    }, [customerId]);
+
+    return <EnterValue open={open && customerId == null}
                        okDisabled={() => {return name === '' || contacts.length === 0 || contacts[0].contact === ''}}
                        onCancel={() => dispatch(showCreateRequest(false))}
                        onOk={() => {dispatch(saveRequest(name, contacts))}}

@@ -9,7 +9,7 @@ data class RequestDTO(
         val id: Int? =null,
         val type: String, //RequestType
         val about: EquityDTO?,
-        val issuedBy: CustomerDTO,
+        val issuedBy: CustomerDTO?,
         val assignedTo: AgentDTO?,
         val meetingScheduled: String?,
         val comments: List<CommentDTO>?

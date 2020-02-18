@@ -10,4 +10,14 @@ export default class RequestPublicAPI {
             }
         })
     }
+
+    static saveRequestFromKnownCustomer(dto, customerId) {
+        let url = new URL(BASE);
+        url.searchParams.append("customerId", customerId);
+        return fetchJSON(url, {
+            method: 'POST', body: JSON.stringify(dto), headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+    }
 }

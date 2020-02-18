@@ -28,7 +28,7 @@ class EquityController(private val equities: EquityService,
                     val req = it.t1
                     val agentId = it.t2
                     assert(agentId == req.assignedTo?.id)
-                    equities.save(dto.copy(ownedBy = req.issuedBy.id, responsible = agentId))
+                    equities.save(dto.copy(ownedBy = req.issuedBy!!.id, responsible = agentId))
                 }
         } else {
             equities.save(dto)

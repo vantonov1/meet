@@ -40,26 +40,26 @@ class ProcessTest {
         assert(agent!!.id == agentId)
 
         val seller = CustomerDTO(null, "Martin Luther", listOf(phone), 2)
-        val requestToSale = requestService.save(RequestDTO(null, RequestType.SELL.name, null, seller, null, null, listOf())).block()
+        val requestToSale = requestService.save(RequestDTO(null, RequestType.SELL.name, null, seller, null, null, listOf()), null).block()
         assert(requestToSale!!.assignedTo?.id == agentId)
 
         val agentInbox = requestService.findByPersons(null, agentId).collectList().block()
         assert(!agentInbox.isNullOrEmpty() && agentInbox[0].assignedTo?.id == agentId)
 
         val address = AddressDTO(2, null, null, null, null, null, null)
-        val equity = EquityDTO(null, EquityType.SALE_ROOM.name, requestToSale.issuedBy.id, address, 100500, 100, 5, "test", agentId, null)
+        val equity = EquityDTO(null, EquityType.SALE_ROOM.name, requestToSale.issuedBy!!.id, address, 100500, 100, 5, "test", agentId, null)
         val equityId = equityService.save(equity).block()
 
         val buyer = CustomerDTO(null, "Pinoccio", listOf(telegram), 2)
         val createdEquity = equityService.findById(equityId!!).block()
-        val requestToBuy = requestService.save(RequestDTO(null, RequestType.BUY.name, createdEquity, buyer, null, null, listOf())).block()
+        val requestToBuy = requestService.save(RequestDTO(null, RequestType.BUY.name, createdEquity, buyer, null, null, listOf()), null).block()
         assert(requestToBuy!!.assignedTo?.id == agentId)
 
         val schedule = ZonedDateTime.now().plusDays(1).format(DateTimeFormatter.ISO_ZONED_DATE_TIME)
-        val meetingId = meetingService.save(MeetingDTO(null, requestToBuy.id!!, createdEquity, agent, requestToBuy.issuedBy, schedule, "123")).block()
+        val meetingId = meetingService.save(MeetingDTO(null, requestToBuy.id!!, createdEquity, agent, requestToBuy.issuedBy!!, schedule, "123")).block()
         val today = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS)
         val buyerInbox = meetingService.findByPersons(agentId, null, today, today.plusDays(7)).collectList().block()
-        assert(!buyerInbox.isNullOrEmpty() && buyerInbox[0].attends.id == requestToBuy.issuedBy.id && buyerInbox[0].at!!.id == equityId)
+        assert(!buyerInbox.isNullOrEmpty() && buyerInbox[0].attends.id == requestToBuy.issuedBy!!.id && buyerInbox[0].at!!.id == equityId)
 
         meetingService.delete(meetingId!!).block()
         val cleanInbox = meetingService.findByPersons(agentId, null,today, today.plusDays(7)).collectList().block()

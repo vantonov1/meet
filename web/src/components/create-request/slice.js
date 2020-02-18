@@ -10,11 +10,13 @@ const slice = createSlice({
         name: '',
         contacts: [],
         about: null,
-        agent: null
+        agent: null,
+        customerId: null
     },
     reducers: {
         showCreateRequest: (state, {payload}) => {
-            state.open = payload
+            state.open = payload;
+            state.customerId = localStorage.getItem("customerId")
         },
         setAbout: (state, {payload}) => {
             state.about = payload
@@ -42,8 +44,21 @@ export const saveRequest = (name, contacts) => async (dispatch, getState) => {
         const customer = {name: name, contacts: contacts, city: filter.city};
         const request = {type: about ? 'BUY' : 'SELL', issuedBy: customer, about: about};
         let saved = await RequestPublicAPI.createRequest(request);
-        console.log("request created", saved)
         localStorage.setItem("customerId", saved.issuedBy?.id);
+        dispatch(showAgent(saved.assignedTo));
+        dispatch(updateRequests())
+    } catch (reason) {
+        dispatch(showError(reason.message))
+    }
+};
+
+
+export const saveRequestFromKnownCustomer = (customerId) => async (dispatch, getState) => {
+    const {showAgent} = slice.actions;
+    const {about} = getState().createRequest;
+    try {
+        const request = {type: about ? 'BUY' : 'SELL', about: about};
+        let saved = await RequestPublicAPI.saveRequestFromKnownCustomer(request, customerId);
         dispatch(showAgent(saved.assignedTo));
         dispatch(updateRequests())
     } catch (reason) {

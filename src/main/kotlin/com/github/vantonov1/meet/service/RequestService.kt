@@ -1,5 +1,6 @@
 package com.github.vantonov1.meet.service
 
+import com.github.vantonov1.meet.dto.CustomerDTO
 import com.github.vantonov1.meet.dto.RequestDTO
 import com.github.vantonov1.meet.dto.fromEntity
 import com.github.vantonov1.meet.entities.Request
@@ -19,12 +20,13 @@ class RequestService(private val requestRepository: RequestRepository,
                      private val equityService: EquityService,
                      private val commentService: CommentService
 ) {
-    fun save(dto: RequestDTO): Mono<RequestDTO> {
+    fun save(dto: RequestDTO, customerId: Int?): Mono<RequestDTO> {
         assert(dto.assignedTo == null)
-        return if (dto.issuedBy.id == null)
-            customerService.save(dto.issuedBy).flatMap { customerId -> assignFromCustomer(dto, customerId) }
-        else
-            assignFromCustomer(dto, dto.issuedBy.id)
+        return if (customerId == null) {
+            if(dto.issuedBy == null) throw IllegalArgumentException("Не указан пользователь")
+            customerService.save(dto.issuedBy).flatMap { assignFromCustomer(dto, dto.issuedBy.copy(id = it)) }
+        } else
+            customerService.findById(customerId).flatMap {assignFromCustomer(dto, it)}
     }
 
     fun attachEquity(equityId: Long, id: Int?): Mono<Long> {
@@ -44,10 +46,10 @@ class RequestService(private val requestRepository: RequestRepository,
         else Flux.empty()
     }
 
-    private fun assignFromCustomer(dto: RequestDTO, customerId: Int) =
+    private fun assignFromCustomer(dto: RequestDTO, customer: CustomerDTO) =
             (if (dto.about?.responsible != null) Mono.just(dto.about.responsible)
-            else agentService.selectAgent(dto))
-                    .flatMap { agentId -> requestRepository.save(dto.toEntity(customerId, agentId)) }
+            else agentService.selectAgent(dto, customer))
+                    .flatMap { agentId -> requestRepository.save(dto.toEntity(customer.id!!, agentId)) }
                     .flatMap { collectRequestInfo(it) }
 
     private fun collectRequestInfo(req: Request) =
