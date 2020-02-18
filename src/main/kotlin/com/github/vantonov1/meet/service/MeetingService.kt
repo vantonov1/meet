@@ -6,6 +6,7 @@ import com.github.vantonov1.meet.entities.Meeting
 import com.github.vantonov1.meet.repository.MeetingRepository
 import org.springframework.context.annotation.DependsOn
 import org.springframework.stereotype.Service
+import org.springframework.web.server.ServerWebInputException
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.ZonedDateTime
@@ -19,14 +20,14 @@ class MeetingService(private val meetingRepository: MeetingRepository,
 ) {
     fun save(dto: MeetingDTO): Mono<Int> {
         if (ZonedDateTime.parse(dto.schedule).isBefore(ZonedDateTime.now())) {
-            throw IllegalArgumentException("Встреча в прошлом")
+            throw ServerWebInputException("Встреча в прошлом")
         }
         return meetingRepository.save(dto.toEntity()).map { it.id!! }
     }
 
     fun reschedule(id: Int, schedule: ZonedDateTime): Mono<Any> {
         if (schedule.isBefore(ZonedDateTime.now())) {
-            throw IllegalArgumentException("Встреча в прошлом")
+            throw ServerWebInputException("Встреча в прошлом")
         }
         return meetingRepository.findById(id).flatMap { meetingRepository.save(it.copy(schedule = schedule)).map { it.id!! } }
     }

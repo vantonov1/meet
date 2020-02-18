@@ -7,6 +7,7 @@ import com.github.vantonov1.meet.entities.Request
 import com.github.vantonov1.meet.repository.RequestRepository
 import org.springframework.context.annotation.DependsOn
 import org.springframework.stereotype.Service
+import org.springframework.web.server.ServerWebInputException
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.ZonedDateTime
@@ -23,15 +24,16 @@ class RequestService(private val requestRepository: RequestRepository,
     fun save(dto: RequestDTO, customerId: Int?): Mono<RequestDTO> {
         assert(dto.assignedTo == null)
         return if (customerId == null) {
-            if(dto.issuedBy == null) throw IllegalArgumentException("Не указан пользователь")
+            if(dto.issuedBy == null) throw ServerWebInputException("Не указан пользователь")
             customerService.save(dto.issuedBy).flatMap { assignFromCustomer(dto, dto.issuedBy.copy(id = it)) }
         } else
-            customerService.findById(customerId).flatMap {assignFromCustomer(dto, it)}
+            customerService.findById(customerId)
+                    .flatMap {assignFromCustomer(dto, it)}
     }
 
     fun attachEquity(equityId: Long, id: Int?): Mono<Long> {
         return if (id != null)
-            requestRepository.attachEquity(equityId, id).map { if (it) equityId else throw IllegalArgumentException("Заявка не найдена") }
+            requestRepository.attachEquity(equityId, id).map { if (it) equityId else throw ServerWebInputException("Заявка не найдена") }
         else
             Mono.just(equityId)
     }

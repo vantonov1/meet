@@ -12,6 +12,7 @@ import com.github.vantonov1.meet.service.impl.saveClaim
 import org.springframework.context.annotation.DependsOn
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
+import org.springframework.web.server.ServerWebInputException
 import reactor.core.publisher.Mono
 import kotlin.random.Random
 
@@ -23,7 +24,7 @@ class AgentService(val repository: AgentRepository, val contactService: ContactS
 
     fun register(dto: AgentDTO, invitation: String, token: Authentication) =
             if (invitation.isEmpty())
-                Mono.error(IllegalArgumentException("Неизвестное приглашение"))
+                Mono.error(ServerWebInputException("Неизвестное приглашение"))
             else
                 repository.findByInvitation(invitation).collectList().flatMap { invited ->
                     if (invited.isNotEmpty()) {
@@ -32,7 +33,7 @@ class AgentService(val repository: AgentRepository, val contactService: ContactS
                                 .then(repository.save(dto.toEntity().copy(id = id, active = true, invitation = "")))
                                 .flatMap { contactService.save(id, dto.contacts) }
                     } else
-                        Mono.error(IllegalArgumentException("Неизвестное приглашение"))
+                        Mono.error(ServerWebInputException("Неизвестное приглашение"))
                 }
 
     fun save(dto: AgentDTO) = repository.save(dto.toEntity().copy(active = true))
@@ -60,6 +61,6 @@ class AgentService(val repository: AgentRepository, val contactService: ContactS
     }
 
     fun setActive(id: Int, active: Boolean): Mono<Any> {
-        return repository.setActive(id, active).map { if (it) Any() else throw IllegalArgumentException("Агент не найден") }
+        return repository.setActive(id, active).map { if (it) Any() else throw ServerWebInputException("Агент не найден") }
     }
 }

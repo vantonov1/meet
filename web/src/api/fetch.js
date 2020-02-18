@@ -1,15 +1,19 @@
 import {getAuthToken} from "./FirebaseAPI";
 
-export function fetchJSON(url, options) {
-    return fetch(url, setAuth(options)).then(response => handleResponse(response));
+export async function fetchJSON(url, options) {
+    const response = await fetch(url, setAuth(options));
+    if (response.ok) {
+        return await response.json()
+    } else {
+        return await handleError(response);
+    }
 }
 
-export function fetchEmpty(url, options) {
-    return fetch(url, setAuth(options)).then(response => {
-        if (!response.ok) {
-            return handleError(response);
-        }
-    });
+export async function fetchEmpty(url, options) {
+    const response = await fetch(url, setAuth(options));
+    if (!response.ok) {
+        await handleError(response);
+    }
 }
 
 function setAuth(options) {
@@ -25,22 +29,11 @@ function setAuth(options) {
     return options;
 }
 
-function handleResponse(response) {
-    if (response.ok) {
-        return response.json().then(json => {
-            return json;
-        })
-    } else {
-        return handleError(response);
-    }
-}
-
-function handleError(response) {
+async function handleError(response) {
     if ([401, 403].includes(response.status)) {
         return Promise.reject({message: response.status});
-    } else
-        response.json().then(json => {
-            return Promise.reject(json)
-        })
+    } else {
+        return Promise.reject(await response.json())
+    }
 }
 

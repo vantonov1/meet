@@ -8,6 +8,7 @@ import org.springframework.core.io.FileSystemResource
 import org.springframework.core.io.Resource
 import org.springframework.http.codec.multipart.FilePart
 import org.springframework.stereotype.Component
+import org.springframework.web.server.ServerWebInputException
 import reactor.core.publisher.Mono
 import java.io.File
 import java.nio.file.Files
@@ -47,7 +48,7 @@ class LocalFilePhotoStorage : PhotoStorage {
 
     override fun get(id: String): Mono<Resource> =
             if (!id.contains("..")) Mono.just(FileSystemResource(Paths.get(contentRoot, id)))
-            else throw IllegalArgumentException("relative photo id")
+            else throw ServerWebInputException("relative photo id")
 
 
     override fun getName(name: String): String {
@@ -81,7 +82,7 @@ class MemoryPhotoStorage : PhotoStorage {
         return if (content != null)
             Mono.just(ByteArrayResource(content.reduce { acc, bytes -> acc.plus(bytes) }))
         else
-            throw java.lang.IllegalArgumentException("content not found, id=$id")
+            throw ServerWebInputException("content not found, id=$id")
     }
 
     override fun getName(name: String): String {

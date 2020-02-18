@@ -11,12 +11,10 @@ const slice = createSlice({
         contacts: [],
         about: null,
         agent: null,
-        customerId: null
     },
     reducers: {
         showCreateRequest: (state, {payload}) => {
             state.open = payload;
-            state.customerId = localStorage.getItem("customerId")
         },
         setAbout: (state, {payload}) => {
             state.about = payload
@@ -35,6 +33,14 @@ const slice = createSlice({
 
 export default slice.reducer
 export const {showCreateRequest, setAbout, setName, setContacts, showAgent} = slice.actions;
+
+export const createRequest = () => async dispatch => {
+    let customerId = localStorage.getItem("customerId");
+    if(customerId)
+        dispatch(saveRequestFromKnownCustomer(customerId));
+    else
+        dispatch(showCreateRequest(true))
+};
 
 export const saveRequest = (name, contacts) => async (dispatch, getState) => {
     const {showAgent} = slice.actions;

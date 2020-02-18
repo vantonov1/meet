@@ -8,6 +8,7 @@ import com.github.vantonov1.meet.service.impl.getAgentId
 import org.springframework.security.access.annotation.Secured
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ServerWebInputException
 import reactor.core.publisher.Mono
 
 @RestController
@@ -23,7 +24,7 @@ class EquityController(private val equities: EquityService,
     fun create(@RequestBody dto: EquityDTO, @RequestParam fromRequest: Int?): Mono<Long> {
         val equity = if (fromRequest != null) {
             Mono.zip(requests.findById(fromRequest), getAgentId())
-                .switchIfEmpty(Mono.error(java.lang.IllegalArgumentException("Запрос не найден")))
+                .switchIfEmpty(Mono.error(ServerWebInputException("Запрос не найден")))
                 .flatMap {
                     val req = it.t1
                     val agentId = it.t2
@@ -41,7 +42,7 @@ class EquityController(private val equities: EquityService,
     @Secured("ROLE_AGENT")
     fun update(@RequestBody dto: EquityDTO): Mono<Void> =
             if (dto.id != null) equities.save(dto).then()
-            else throw IllegalArgumentException("no equity id on update")
+            else throw ServerWebInputException("no equity id on update")
 
     @DeleteMapping("/{id}")
     @Transactional
