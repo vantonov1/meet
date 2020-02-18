@@ -3,6 +3,7 @@ import {showError} from "../show-error/slice"
 import MeetingAPI from "../../api/MeetingAPI";
 import formatISO from 'date-fns/formatISO'
 import addDays from 'date-fns/addDays'
+import {getAgentId} from "../../api/FirebaseAPI";
 
 const slice = createSlice({
     name: 'browse-assigned-meetings',
@@ -51,7 +52,7 @@ export const deleteMeeting = (request) => async dispatch => {
 
 export const loadMeetings = () => async dispatch => {
     const {setMeetings, startLoading, finishLoading} = slice.actions;
-    const agentId = localStorage.getItem("agentId");
+    const agentId = getAgentId();
     if (agentId) {
         dispatch(startLoading());
         try {

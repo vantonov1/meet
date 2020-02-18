@@ -1,6 +1,7 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {showError} from "../show-error/slice"
 import RequestAPI from "../../api/RequestAPI";
+import {getAgentId} from "../../api/FirebaseAPI";
 
 const slice = createSlice({
     name: 'browse-assigned-equities',
@@ -41,7 +42,7 @@ export const {selectRequest, unselectRequest, updateRequests} = slice.actions;
 export const loadRequests = () => async (dispatch, getState) => {
     const {setRequests, startLoading, finishLoading} = slice.actions;
     const {loading, loadFinished} = getState().browseAssignedRequests;
-    const agentId = localStorage.getItem("agentId");
+    const agentId = getAgentId();
     if (!loading && !loadFinished && agentId) {
         dispatch(startLoading());
         try {

@@ -34,7 +34,7 @@ export default function MainAppBar() {
     const dispatch = useDispatch();
     const [anchorEl, setAnchorEl] = useState(null);
     const classes = useStyles();
-    const roles = getRoles()?.map(a => a.authority);
+    const roles = getRoles();
     const isAdmin = roles?.includes("ROLE_ADMIN");
     const isAgent = roles?.includes("ROLE_AGENT");
 

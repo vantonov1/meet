@@ -1,7 +1,6 @@
 import * as firebaseui from "firebaseui";
 import firebase from 'firebase/app';
 import 'firebase/auth';
-import AuthAPI from "./AuthAPI";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBhLc5GOWnVT60daI1UdNQt-ARUe0f6Mok",
@@ -19,11 +18,15 @@ export function initFirebase() {
         return new Promise(function (resolve, reject) {
             const unsubscribe = firebaseApp.auth().onAuthStateChanged(function (user) {
                 unsubscribe();
-                if (roles == null)
-                    AuthAPI.getAuthorities().then((r) => {
-                        roles = r;
-                        resolve(user.uid);
-                    })
+                user.getIdTokenResult().then((result) => {
+                    let admin = result.claims["admin"];
+                    let agent = result.claims["agent"];
+                    roles = [];
+                    if (admin) roles.push('ROLE_ADMIN');
+                    if (agent) roles.push('ROLE_AGENT');
+                    agentId = agent;
+                    resolve(user.uid)
+                })
             });
         });
     } else {
@@ -34,9 +37,13 @@ export function initFirebase() {
 }
 
 let roles = null;
+let agentId = null;
 
 export function getRoles() {
     return roles;
+}
+export function getAgentId() {
+    return agentId;
 }
 
 export async function getAuthToken() {
