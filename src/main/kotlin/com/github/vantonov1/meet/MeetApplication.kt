@@ -44,7 +44,7 @@ class MeetApplication(val connectionFactory: ConnectionPool) : TransactionManage
     override fun addCorsMappings(corsRegistry: CorsRegistry) {
         corsRegistry.addMapping("/**")
                 .allowedOrigins("http://localhost:3000")
-                .allowedMethods("PUT", "GET", "POST", "DElETE")
+                .allowedMethods("PUT", "GET", "POST", "DELETE")
     }
 
 //    @Bean
@@ -71,6 +71,7 @@ class MeetApplication(val connectionFactory: ConnectionPool) : TransactionManage
                 .cors().configurationSource {
                     val c = CorsConfiguration().applyPermitDefaultValues()
                     c.addAllowedMethod(HttpMethod.PUT)
+                    c.addAllowedMethod(HttpMethod.DELETE)
                     c
                 }
                 .and().csrf().disable()
