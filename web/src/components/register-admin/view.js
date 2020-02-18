@@ -7,15 +7,11 @@ import {showError} from "../show-error/slice";
 export default function RegisterAdmin() {
     const dispatch = useDispatch();
     useEffect(() => {
-        register().then(r => {
+        let invitation = new URLSearchParams(window.location.search).get("invitation");
+        AdminAPI.register(invitation).then(() => {
             window.location.href = window.location.origin + '/admin'
         }).catch((reason) => dispatch(showError(reason.message)))
-     });
+    });
     return <CircularProgress/>
 
 }
-
-const register = async () => {
-    let invitation = window.location.search.replace("\?invitation=", "");
-    await AdminAPI.register(invitation);
-};

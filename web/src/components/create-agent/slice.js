@@ -1,7 +1,6 @@
 import {createSlice} from "@reduxjs/toolkit";
 import AgentAPI from "../../api/AgentAPI";
 import {showError} from "../show-error/slice"
-import AdminAPI from "../../api/AdminAPI";
 
 const slice = createSlice({
     name: 'create-agent',
@@ -24,8 +23,7 @@ export const {setName, setContacts} = slice.actions;
 
 export const registerAgent = (name, contacts) => async (dispatch, getState) => {
     try {
-        let invitation = window.location.search.replace("\?invitation=", "");
-        await AdminAPI.register(invitation);
+        let invitation = new URLSearchParams(window.location.search).get("invitation");
         let agentId = await AgentAPI.register(invitation,{name: name, contacts: contacts, city: 2});
         localStorage.setItem("agentId", agentId);
         window.location.href = window.location.origin + '/assigned-requests'
