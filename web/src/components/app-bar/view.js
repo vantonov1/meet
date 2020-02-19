@@ -8,9 +8,8 @@ import React, {useState} from "react";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import CreateCustomerRequest from "../create-request/view";
-import {createRequest, setAbout} from "../create-request/slice";
+import {createRequest} from "../create-request/slice";
 import {Link as RouterLink} from 'react-router-dom';
-import {isRent, isSale} from "../common/constants";
 import {getRoles} from "../../api/FirebaseAPI";
 
 const useStyles = makeStyles(theme => ({
@@ -47,14 +46,7 @@ export default function MainAppBar() {
             <Typography variant="h6" className={classes.title}>
                 {title}
             </Typography>
-            {!isAdmin && selectedEquity && <Button color={"inherit"} onClick={() => {
-                dispatch(setAbout(selectedEquity));
-                dispatch(createRequest())
-            }}>
-                {isSale(selectedEquity) && "Хочу купить"}
-                {isRent(selectedEquity) && "Хочу снять"}
-            </Button>}
-            {!isAdmin && !isAgent && <Button color={"inherit"} onClick={() => dispatch(createRequest())}>
+            {/*!isAdmin && !isAgent &&*/ <Button color={"inherit"} onClick={() => dispatch(createRequest())}>
                 Хочу сдать/продать
             </Button>}
         </Toolbar>

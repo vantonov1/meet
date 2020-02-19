@@ -26,17 +26,22 @@ class EquityService(
         private val locationRepository: LocationRepository,
         private val districts: DistrictService,
         private val stations: SubwayService,
-        private val photos: PhotoService) {
+        private val photos: PhotoService,
+        private val comments: CommentService
+) {
 
     fun save(dto: EquityDTO): Mono<Long> = equityRepository.save(dto.toEntity()).map { it.id!! }.flatMap { photos.save(it, dto.photos) }
 
-    fun findById(id: Long): Mono<EquityDTO> = Mono.zip(equityRepository.findById(id), photos.findByEquityId(id))
-            .map { fromEntity(it.t1, districts.findById(it.t1.district), stations.findById(it.t1.subway), it.t2) }
+    fun findById(id: Long): Mono<EquityDTO> = equityRepository.findById(id)
+            .map { fromEntity(it, districts.findById(it.district), stations.findById(it.subway), null, null) }
 
-    fun findByIds(ids: List<Long>): Mono<List<EquityDTO>> = Mono.zip(equityRepository.findAllById(ids).collectList(), photos.findAllByEquityId(ids))
+    fun findByIds(ids: List<Long>): Mono<List<EquityDTO>> = Mono.zip(
+            equityRepository.findAllById(ids).collectList(),
+            photos.findAllByEquityId(ids),
+            comments.findSharedCommentsByEquities(ids))
             .map {
-                it.t1.sortBy { it.price }
-                it.t1.map { e -> fromEntity(e, districts.findById(e.district), stations.findById(e.subway), it.t2[e.id]?.map { p -> p.id }) }
+                it.t1.sortBy { e -> e.price }
+                it.t1.map { e -> fromEntity(e, districts.findById(e.district), stations.findById(e.subway), it.t2[e.id]?.map { p -> p.id }, it.t3[e.id]) }
             }
 
     fun find(f: Filter): Flux<LocationDTO> {
@@ -60,7 +65,7 @@ class EquityService(
             equityRepository.findByAddress(type, city, street)
         else
             equityRepository.findByAddress(type, city, street, building)
-        return equities.map { fromEntity(it,  districts.findById(it.district), stations.findById(it.subway), null) }
+        return equities.map { fromEntity(it,  districts.findById(it.district), stations.findById(it.subway), null, null) }
     }
 
     fun delete(id: Long, hide: Boolean?): Mono<Void> = if (hide != null && hide) equityRepository.hide(id) else equityRepository.deleteById(id)

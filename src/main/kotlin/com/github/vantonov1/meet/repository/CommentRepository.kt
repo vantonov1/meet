@@ -6,8 +6,8 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import reactor.core.publisher.Flux
 
 interface CommentRepository : ReactiveCrudRepository<Comment, Int> {
-    @Query("select * from comment where created_by = :customer and about in (:ids)")
-    fun findCustomerCommentsByEquities(customer: Int, ids: List<Long>): Flux<Comment>
+    @Query("select * from comment where about in (:ids) and shared = true")
+    fun findSharedCommentsByEquities(ids: List<Long>): Flux<Comment>
    @Query("select * from comment where created_by = :customer and about = :id")
     fun findCustomerCommentsByEquity(customer: Int, id: Long): Flux<Comment>
 }

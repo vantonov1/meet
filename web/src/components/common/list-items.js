@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React from "react";
 import {ListItem} from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import makeStyles from "@material-ui/core/styles/makeStyles";
@@ -9,38 +9,26 @@ import format from 'date-fns/format'
 import isToday from 'date-fns/isToday'
 import isTomorrow from "date-fns/isTomorrow";
 import {Contacts} from "./contacts";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-import {Rating} from "@material-ui/lab";
-import ShowInfo from "./showInfo";
+import EquityRate from "./equity-rate";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     item: {cursor: "pointer"},
     meetingRoot: {cursor: "pointer", display: 'flex'},
     requestItem: {cursor: "pointer", display: 'flex', flexDirection: 'column'},
-    justify: {display: "flex", justifyContent: "space-between", whiteSpace: 'nowrap'}
+    justify: {display: "flex", justifyContent: "space-between", whiteSpace: 'nowrap'},
 }));
 
 export function RequestListItem(props) {
     const {equity, comments} = props;
-    const [showComments, setShowComments] = useState(false);
 
     if(comments.length > 0)
-        return <>
-            <SimpleRequestListItem {...props}
+        return <SimpleRequestListItem {...props}
                secondary={comments.map(c => c.text).join('↵')}
-               action={<ListItemSecondaryAction onClick={() => setShowComments(true)} style={{cursor: 'pointer'}}>
-                   <Rating readOnly value={avg(comments)} precision={0.5}/>
-               </ListItemSecondaryAction>}
-            />
-            <ShowInfo open={showComments} onOk={() => setShowComments(false)}>
-                {comments.map((c, i) => <p key={i}>{c.text}</p>)}
-            </ShowInfo>
-        </>;
+               action={<EquityRate comments={comments}/>}
+            />;
     else
         return <SimpleRequestListItem secondary={equity && EQUITY_TYPES[equity.type]} {...props}/>;
 }
-
-const avg = comments => comments.map(c => c.rate).reduce((a, b) => a + b, 0) / comments.length;
 
 function SimpleRequestListItem(props) {
     const {equity, person, selected, secondary, action, onClick} = props;

@@ -20,10 +20,6 @@ import reactor.core.publisher.Mono
 class EquityPublicController(private val equities: EquityService,
                              private val photos: PhotoService,
                              private val requests: RequestService) {
-    @GetMapping("/{id}")
-    @Transactional(readOnly = true)
-    fun findById(id: Long): Mono<EquityDTO> = equities.findById(id)
-
     @GetMapping
     @Transactional(readOnly = true)
     fun find(

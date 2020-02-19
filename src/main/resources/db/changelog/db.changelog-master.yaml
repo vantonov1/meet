@@ -283,6 +283,9 @@ databaseChangeLog:
                    type: varchar
                    constraints:
                        nullable: false
+            - column:
+                   name: shared
+                   type: boolean
       - createIndex:
             indexName: find_equities_idx
             tableName: equity
@@ -392,10 +395,16 @@ databaseChangeLog:
             - column:
                     name: for_request
       - createIndex:
-            indexName: comments_idx
+            indexName: comments_created_by_idx
             tableName: comment
             columns:
             - column:
                     name: created_by
+      - createIndex:
+            indexName: comments_shared_idx
+            tableName: comment
+            columns:
             - column:
                     name: about
+            - column:
+                    name: shared

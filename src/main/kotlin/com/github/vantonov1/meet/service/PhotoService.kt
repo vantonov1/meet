@@ -18,7 +18,7 @@ class PhotoService(private val repository: PhotoRepository, private val storage:
 
     fun download(name: String) = storage.get(name)
 
-    fun save(equityId: Long, ids: List<String>?) = if (!ids.isNullOrEmpty()) {
+    fun save(equityId: Long, ids: Collection<String>?) = if (!ids.isNullOrEmpty()) {
         val photos = ids.map { Photo(it, equityId) }
         repository.saveAll(Flux.fromIterable(photos)).then(Mono.just(equityId))
     } else

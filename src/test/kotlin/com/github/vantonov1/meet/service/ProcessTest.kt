@@ -47,7 +47,7 @@ class ProcessTest {
         assert(!agentInbox.isNullOrEmpty() && agentInbox[0].assignedTo?.id == agentId)
 
         val address = AddressDTO(2, null, null, null, null, null, null)
-        val equity = EquityDTO(null, EquityType.SALE_ROOM.name, requestToSale.issuedBy!!.id, address, 100500, 100, 5, "test", agentId, null)
+        val equity = EquityDTO(null, EquityType.SALE_ROOM.name, requestToSale.issuedBy!!.id, address, 100500, 100, 5, "test", agentId, null, null)
         val equityId = equityService.save(equity).block()
 
         val buyer = CustomerDTO(null, "Pinoccio", listOf(telegram), 2)

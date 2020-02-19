@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import Drawer from "@material-ui/core/Drawer";
 import EquitiesList from "../common/equities-list";
@@ -22,12 +22,14 @@ import AddEquity from "../add-equity/view";
 import PhotoAPI from "../../api/PhotoAPI";
 import PhotoGallery from "../common/photo-gallery";
 import CloseIcon from "@material-ui/icons/Close";
+import CheckIcon from "@material-ui/icons/Check";
 import Fab from "@material-ui/core/Fab";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import {EQUITY_TYPES} from "../common/constants";
-import AddIcon from "@material-ui/icons/Add";
-import {showAddEquity} from "../add-equity/slice";
+import {EQUITY_TYPES, isRent, isSale} from "../common/constants";
 import Browse from "../common/abstract-browser";
+import {Tabs} from "@material-ui/core";
+import Tab from "@material-ui/core/Tab";
+import {createRequest, setAbout} from "../create-request/slice";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -47,7 +49,13 @@ const useStyles = makeStyles(theme => ({
         marginBottom: theme.spacing(1),
         textAlign: "left"
     },
-    unselectEquity: {position: "absolute", right: theme.spacing(1), top: theme.spacing(1)}
+    buttons: {
+        position: "absolute",
+        right: theme.spacing(1),
+        top: theme.spacing(1),
+        display: 'flex',
+        justifyItems: 'right'
+    }
 }));
 
 export default function BrowseEquities() {
@@ -82,7 +90,8 @@ function EquitiesDrawer(props) {
     const classes = useStyles();
 
     return <Drawer open={drawerOpen} variant={props.variant} onClose={() => dispatch(toggleDrawer(false))}>
-        <Browse slice="browseEquities" title={EQUITY_TYPES[filter.type]} loader={loadLocations} className={classes.root} topLevel={true}>
+        <Browse slice="browseEquities" title={EQUITY_TYPES[filter.type]} loader={loadLocations} className={classes.root}
+                topLevel={true}>
             <EquitiesList
                 equities={records}
                 hasMore={records.length < locations.length}
@@ -93,9 +102,6 @@ function EquitiesDrawer(props) {
                 }}
             />
         </Browse>
-        <Fab color="primary" className={classes.addEquity}>
-            <AddIcon onClick={() => dispatch(showAddEquity(true))}/>
-        </Fab>
         <AddEquity type={filter.type} city={filter.city}/>
     </Drawer>;
 }
@@ -103,7 +109,6 @@ function EquitiesDrawer(props) {
 function EquityInfoDrawer(props) {
     const {selectedEquity} = useSelector(state => state.browseEquities, shallowEqual);
     const dispatch = useDispatch();
-    const classes = useStyles();
     return <Drawer open={selectedEquity != null}
                    variant={props.variant}
                    anchor="bottom"
@@ -111,18 +116,45 @@ function EquityInfoDrawer(props) {
                    ModalProps={{
                        keepMounted: true, // Better open performance on mobile.
                    }}>
-        {(selectedEquity?.info || selectedEquity?.photos) && <div className={classes.equityInfo}>
-            {selectedEquity.info && <Box className={classes.info}>
-                {selectedEquity.info}
-            </Box>}
-            {selectedEquity.photos && <PhotoGallery images={selectedEquity.photos.map(f => PhotoAPI.url(f))}/>}
-        </div>}
-        <Fab className={classes.unselectEquity} size="small" onClick={() => {
-            dispatch(unselectEquity())
-        }}>
-            <CloseIcon/>
-        </Fab>
+        {selectedEquity && <EquityProperties equity={selectedEquity}/>}
     </Drawer>
+}
+
+function EquityProperties(props) {
+    const {equity} = props;
+    const [tab, setTab] = useState(0);
+    const classes = useStyles();
+    const dispatch = useDispatch();
+
+    return <div style={{minHeight: 200}}>
+        <Tabs value={tab} onChange={(e, v) => setTab(v)}>
+            <Tab key={1} label="Фото" disabled={equity.photos?.length === 0}/>
+            <Tab key={2} label="Описание" disabled={equity.info == null}/>
+            <Tab key={3} label="Комментарии"/>
+        </Tabs>
+        {tab === 0 && equity.photos?.length > 0 && <PhotoGallery images={equity.photos.map(f => PhotoAPI.url(f))}/>}
+        {tab === 1 && equity.info && <Box className={classes.info}>
+            {equity.info}
+        </Box>}
+        {tab === 2 && equity.comments?.length > 0 && <Box className={classes.info}>
+            {equity.comments.map(c => <p>{c.text}</p>)}
+        </Box>}
+        <div className={classes.buttons}>
+            <Fab size="small" variant="extended" color="primary" style={{marginRight: 10}} onClick={() => {
+                dispatch(setAbout(equity));
+                dispatch(createRequest())
+            }}>
+                <CheckIcon/>
+                {isSale(equity) && "Хочу купить"}
+                {isRent(equity) && "Хочу снять"}
+            </Fab>
+            <Fab size="small" variant="extended"  onClick={() => {
+                dispatch(unselectEquity())
+            }}>
+                <CloseIcon/>
+            </Fab>
+        </div>
+    </div>
 }
 
 

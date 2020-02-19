@@ -9,6 +9,10 @@ export default class EquityPublicAPI {
         return fetchJSON(url)
     }
 
+    static findById(id) {
+        return fetchJSON(this.BASE + '/' + id)
+    }
+
     static findLocations(filter) {
         let url = this.createFilterURL('', filter);
         if (filter.minPrice !== null) {

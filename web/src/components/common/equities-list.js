@@ -6,6 +6,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import Box from "@material-ui/core/Box";
 import makeStyles from "@material-ui/core/styles/makeStyles";
+import EquityRate from "./equity-rate";
 
 const useStyles = makeStyles(theme => ({
     squareMeters: { verticalAlign: "super"},
@@ -40,21 +41,23 @@ export default function EquitiesList(props) {
 }
 
 export function Equity(props) {
+    const {address, selected, onClick, price, square, rooms, info, comments} = props;
     const classes = useStyles();
-    const subway = props.address.subway;
-    const district = props.address.district;
-    return <ListItem button divider selected={props.selected} onClick={props.onClick}>
+    const subway = address.subway;
+    const district = address.district;
+    return <ListItem button divider selected={selected} onClick={onClick}>
         <ListItemText>
-            <Box width={1}><b>{props.price}&#8381;</b>&nbsp;{props.address.street}&nbsp;{props.address.building}</Box>
+            <Box width={1}><b>{price}&#8381;</b>&nbsp;{address.street}&nbsp;{address.building}</Box>
             <Box width={1} className="MuiTypography-colorTextSecondary MuiTypography-body2">
                 {subway && <span><span
                     style={{color: '#' + subway.color}}>&#9632;</span><span>&nbsp;{subway.name}&nbsp;</span></span>}
                 {!subway && district && <span>{district.name}&nbsp;р-н</span>}
-                <span>&nbsp;{props.square}м<span className={classes.squareMeters}>2</span>
-                    {props.rooms && <span>&nbsp;{props.rooms}кк</span>}</span>
-                <Box width="100%" className={classes.info}>{props.info}</Box>
+                <span>&nbsp;{square}м<span className={classes.squareMeters}>2</span>
+                    {rooms && <span>&nbsp;{rooms}кк</span>}</span>
+                <Box width="100%" className={classes.info}>{info}</Box>
             </Box>
         </ListItemText>
+        <EquityRate comments={comments}/>
     </ListItem>
 }
 

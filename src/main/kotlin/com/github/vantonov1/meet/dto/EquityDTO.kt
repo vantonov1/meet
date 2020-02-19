@@ -15,7 +15,8 @@ data class EquityDTO(
         val rooms: Byte?,
         val info: String?,
         val responsible: Int?,
-        val photos: List<String>?
+        val photos: Collection<String>?,
+        val comments: Collection<CommentDTO>?
 ) {
     fun toEntity(): Equity {
         return Equity(id, EquityType.valueOf(type).value, ownedBy,
@@ -24,8 +25,8 @@ data class EquityDTO(
     }
 }
 
-fun fromEntity(equity: Equity, district: District?, subway: Subway?, photos: List<String>?) = EquityDTO(
+fun fromEntity(equity: Equity, district: District?, subway: Subway?, photos: Collection<String>?, comments: Collection<CommentDTO>?) = EquityDTO(
         equity.id, EquityType.valueOf(equity.type).name, equity.ownedBy,
         AddressDTO(equity.city, district, subway, equity.street, equity.building, equity.lat, equity.lon),
-        equity.price, equity.square, equity.rooms, equity.info, equity.responsible, photos
+        equity.price, equity.square, equity.rooms, equity.info, equity.responsible, photos, comments
 )

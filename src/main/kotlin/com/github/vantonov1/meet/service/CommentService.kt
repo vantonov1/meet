@@ -13,7 +13,7 @@ class CommentService(val commentRepository: CommentRepository) {
             .map { fromEntity(it) }
             .collectList()
 
-    fun findCustomerCommentsByEquities(customer:Int, ids: List<Long>) = commentRepository.findCustomerCommentsByEquities(customer, ids)
+    fun findSharedCommentsByEquities(ids: List<Long>) = commentRepository.findSharedCommentsByEquities(ids)
             .map { fromEntity(it) }
-            .collectMultimap { CommentDTO::about }
+            .collectMultimap { it.about }
 }

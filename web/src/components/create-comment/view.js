@@ -1,26 +1,28 @@
 import React from "react";
 import EnterValue from "../common/enter-value";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
-import {createComment, setRate, setText, showCreateComment} from "./slice";
-import {TextField} from "@material-ui/core";
+import {createComment, setRate, setShared, setText, showCreateComment} from "./slice";
+import {FormControlLabel, TextField} from "@material-ui/core";
 import {Rating} from "@material-ui/lab";
+import Checkbox from "@material-ui/core/Checkbox";
 
 export default function CreateComment(props) {
     const {request} = props;
-    const {open, rate, text} = useSelector(state => state.createComment, shallowEqual);
+    const {open, rate, text, shared} = useSelector(state => state.createComment, shallowEqual);
     const dispatch = useDispatch();
 
     return <EnterValue open={open}
                        onCancel={() => dispatch(showCreateComment(false))}
                        onOk={() => {
-                           dispatch(createComment(request, rate, text));
+                           dispatch(createComment(request, rate, text, shared));
                            dispatch(showCreateComment(false))
                        }}
     >
         <div>
             <Rating name = 'Дайте оценку' value={rate} onChange={(event, newValue) => dispatch(setRate(newValue))}/>
         </div>
-        <TextField multiline value={text} onChange={e => dispatch(setText(e.target.value))}/>
+        <TextField multiline fullWidth value={text} onChange={e => dispatch(setText(e.target.value))}/>
+        <FormControlLabel control={<Checkbox value={shared} onChange={e => dispatch(setShared(e.target.checked))}/>} label="Поделиться с другими"/>
     </EnterValue>
 
 
