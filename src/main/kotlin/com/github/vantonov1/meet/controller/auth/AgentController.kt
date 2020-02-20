@@ -51,7 +51,7 @@ class AgentController(private val agentService: AgentService, private val adminS
 
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
-    @Secured("ROLE_ADMIN")
+    @Secured("ROLE_AGENT")
     fun findById(@PathVariable id: Int) = agentService.findById(id)
 
     @GetMapping
