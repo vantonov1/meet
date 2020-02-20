@@ -60,7 +60,7 @@ export default function PhotoGallery(props) {
                       disableAutoFocus
                       onEscapeKeyDown={() => setShowPopover(false)}
                       onBackdropClick={() => setShowPopover(false)}>
-            <Box width={1} height={1}>
+            <Box width={1} height={1} style={{display: 'flex', justifyContent: 'center'}}>
                 <img src={props.images[currentImage]}
                      className={classes.popoverImg} alt="Фото"
                      onClick={() => setShowPopover(false)}
