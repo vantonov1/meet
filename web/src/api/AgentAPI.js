@@ -7,6 +7,10 @@ export default class AgentAPI {
         return fetchJSON(BASE)
     }
 
+    static loadAgent(id) {
+        return fetchJSON(BASE + '/' + id)
+    }
+
     static invite(email) {
         let url = new URL(BASE + "/invite");
         url.searchParams.append("email", email);
@@ -19,6 +23,12 @@ export default class AgentAPI {
         return fetchJSON(url, {method: 'PUT', body: JSON.stringify(dto), headers: {
                 'Content-Type': 'application/json'
             }})
+    }
+
+    static setActive(agentId, active) {
+        let url = new URL(BASE + '/active/' + agentId);
+        url.searchParams.append("active", active);
+        return fetchJSON(url, {method: 'PUT'})
     }
 
 }

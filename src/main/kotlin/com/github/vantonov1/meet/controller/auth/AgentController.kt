@@ -47,7 +47,12 @@ class AgentController(private val agentService: AgentService, private val adminS
     @DeleteMapping("/{id}")
     @Transactional
     @Secured("ROLE_ADMIN")
-    fun delete(id: Int) = agentService.delete(id)
+    fun delete(@PathVariable id: Int) = agentService.delete(id)
+
+    @GetMapping("/{id}")
+    @Transactional(readOnly = true)
+    @Secured("ROLE_ADMIN")
+    fun findById(@PathVariable id: Int) = agentService.findById(id)
 
     @GetMapping
     @Transactional(readOnly = true)

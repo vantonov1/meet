@@ -4,13 +4,14 @@ import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import CreateCustomerRequest from "../create-request/view";
 import {createRequest} from "../create-request/slice";
 import {Link as RouterLink} from 'react-router-dom';
 import {getRoles} from "../../api/FirebaseAPI";
+import {loadAgent, setActive} from "./slice";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -28,14 +29,18 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function MainAppBar() {
-    const {title} = useSelector(state => state.appBar, shallowEqual);
-    const {selectedEquity} = useSelector(state => state.browseEquities, shallowEqual);
+    const {title, agent} = useSelector(state => state.appBar, shallowEqual);
     const dispatch = useDispatch();
     const [anchorEl, setAnchorEl] = useState(null);
     const classes = useStyles();
     const roles = getRoles();
     const isAdmin = roles?.includes("ROLE_ADMIN");
     const isAgent = roles?.includes("ROLE_AGENT");
+
+    useEffect(() => {
+        if(isAgent)
+            dispatch(loadAgent());
+    }, [isAgent]);
 
     return <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
@@ -48,6 +53,9 @@ export default function MainAppBar() {
             </Typography>
             {/*!isAdmin && !isAgent &&*/ <Button color={"inherit"} onClick={() => dispatch(createRequest())}>
                 Хочу сдать/продать
+            </Button>}
+            {agent && <Button style={{color: agent.active ? 'lightgreen' :'gray'}} onClick={() => dispatch(setActive(!agent.active))}>
+                {agent.active ? 'Активен' : 'Неактивен'}
             </Button>}
         </Toolbar>
         {Boolean(anchorEl) && <Menu anchorEl={anchorEl} keepMounted open={true} onClose={() => setAnchorEl(null)}>

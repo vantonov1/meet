@@ -34,7 +34,7 @@ class ProcessTest {
 
     @Test
     fun testRequest() {
-        val agentId = agentService.save(AgentDTO(null, "Avicenna", listOf(mail), 2)).block()
+        val agentId = agentService.save(AgentDTO(null, "Avicenna", listOf(mail), 2, true)).block()
         agentService.setActive(agentId!!, true).block()
         val agent = agentService.findById(agentId).block()
         assert(agent!!.id == agentId)

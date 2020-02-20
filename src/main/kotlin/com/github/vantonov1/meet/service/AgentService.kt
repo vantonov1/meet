@@ -50,6 +50,7 @@ class AgentService(val repository: AgentRepository, val contactService: ContactS
             }}
 
     fun findById(id: Int) = Mono.zip(repository.findById(id), contactService.findByPersonId(id))
+            .switchIfEmpty(Mono.error(ServerWebInputException("Агент не найден")))
             .map { fromEntity(it.t1, it.t2.map { c -> fromEntity(c) }) }
 
     fun selectAgent(dto: RequestDTO, customer: CustomerDTO): Mono<Int> {
@@ -60,7 +61,6 @@ class AgentService(val repository: AgentRepository, val contactService: ContactS
                 .map { if (it.isNotEmpty()) it[Random.nextInt(it.size)] else throw IllegalStateException("Нет активных агентов") }
     }
 
-    fun setActive(id: Int, active: Boolean): Mono<Any> {
-        return repository.setActive(id, active).map { if (it) Any() else throw ServerWebInputException("Агент не найден") }
-    }
+    fun setActive(id: Int, active: Boolean) =
+            repository.setActive(id, active).map { if (it) it else throw ServerWebInputException("Агент не найден") }
 }
