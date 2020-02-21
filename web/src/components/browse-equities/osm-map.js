@@ -3,7 +3,6 @@ import {Circle as CircleStyle, Fill, Stroke, Style, Text} from "ol/style";
 import {Cluster, OSM, Vector as VectorSource} from "ol/source";
 import {Tile, Vector} from "ol/layer";
 import View from "ol/View";
-import {fromLonLat} from "ol/proj";
 import Map from "ol/Map"
 import Geolocation from "ol/Geolocation";
 import Feature from "ol/Feature";
@@ -11,6 +10,7 @@ import Point from "ol/geom/Point";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Icon from "ol/style/Icon";
 import Place from "./place-24px.svg"
+import {fromLonLat, toLonLat} from "ol/proj";
 
 const useStyles = {
     root: {
@@ -35,10 +35,16 @@ class OsmMap extends Component {
     componentDidMount() {
         let map = renderMap(this.source, this.markerSource);
         map.on('click', e => {
-            map.forEachFeatureAtPixel(e.pixel, (feature, layer) => {
-                map.getView().setCenter(feature.get("geometry").flatCoordinates);
-                this.props.onLocationsSelect(feature.get('features').map(feature => feature.getId()))
-            });
+            if (this.props.onPick) {
+                map.getView().setCenter(e.coordinate);
+                this.props.onPick(toLonLat(e.coordinate));
+            } else {
+                map.forEachFeatureAtPixel(e.pixel, (feature, layer) => {
+                    map.getView().setCenter(feature.get("geometry").flatCoordinates);
+                    if (this.props.onLocationsSelect)
+                        this.props.onLocationsSelect(feature.get('features').map(feature => feature.getId()))
+                });
+            }
             map.getView().setZoom(map.getView().getZoom() + 2)
         });
         this.mounted = true;
@@ -71,7 +77,7 @@ class OsmMap extends Component {
     }
 }
 
-export default withStyles(useStyles) (OsmMap)
+export default withStyles(useStyles)(OsmMap)
 
 function createMarkerFeature(lon, lat) {
     const iconFeature = new Feature({

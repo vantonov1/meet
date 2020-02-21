@@ -3,10 +3,11 @@ import {showError} from "../show-error/slice"
 import EquityAPI from "../../api/EquityAPI";
 import PhotoAPI from "../../api/PhotoAPI";
 import {clearSelectedFiles, getSelectedFiles} from "../common/photo-upload";
-import {geocode} from "../../api/NominatimAPI";
+import {geocode, reverseGeocode} from "../../api/NominatimAPI";
 import {CITY, LIMITS} from "../common/constants";
 import {showSuccess} from "../show-success/slice";
 import {updateRequests} from "../browse-assigned-requests/slice";
+import {setAddressField} from "../edit-address/slice";
 
 function createInitialState() {
     return {
@@ -89,29 +90,53 @@ const slice = createSlice({
 export default slice.reducer
 export const {showAddEquity, setField, setEquityField, addPhoto} = slice.actions;
 
-export const setLocation = (address) => async (dispatch, getState) => {
-    const {setEquityField} = slice.actions;
+export const reverseLocation = (lon, lat) => async (dispatch, getState) => {
     const {equity, validation} = getState().addEquity;
-    if (address?.street.length > 0 && address.building?.length > 0) {
-        const locations = await geocode(CITY[address.city], address.street, address.building);
-        if (address === equity.address) {
-            if (locations?.filter(l => l.class === 'building').length > 0) {
-                dispatch(setEquityField({
-                    name: "address",
-                    value: {...address, lat: locations[0].lat, lon: locations[0].lon}
-                }));
-                dispatch(setField({
-                    name: "validation",
-                    value: {...validation, building: {error: false, text: '✓ Местоположение определено'}}
-                }))
-            } else {
-                dispatch(setEquityField({name: "address", value: {...address, lat: null, lon: null}}));
-                dispatch(setField({name: "validation", value: {...validation, building: {error: false, text: ''}}}))
-            }
-        }
+    const {districts} = getState().editAddress;
+    dispatchLocation(dispatch, equity.address, lat, lon, validation);
+    const json = await reverseGeocode(lon, lat);
+    let geocoded = {...equity.address, lon: lon, lat: lat};
+    if (json.address?.house_number) {
+        geocoded.building = json.address.house_number;
+    }
+    if (json.address?.road) {
+        geocoded.street = json.address.road;//TODO Порядок слов (Невский проспект - Проспект Невский)
+        dispatch(setAddressField({name: "streetText", value: json.address.road}));
+    }
+    if (json.address?.state_district) {
+        geocoded.district = districts.find(d => json.address.state_district.startsWith(d.name))
+    }
+    dispatch(setEquityField({name: "address", value: geocoded}));
+};
+
+function dispatchLocation(dispatch, address, lat, lon, validation) {
+    const {setEquityField} = slice.actions;
+    if (lat && lon) {
+        dispatch(setEquityField({name: "address", value: {...address, lat: lat, lon: lon}}));
+        dispatch(setField({
+            name: "validation",
+            value: {...validation, building: {error: false, text: '✓ Местоположение определено'}}
+        }))
     } else {
         dispatch(setEquityField({name: "address", value: {...address, lat: null, lon: null}}));
         dispatch(setField({name: "validation", value: {...validation, building: {error: false, text: ''}}}))
+    }
+}
+
+export const setLocation = (address) => async (dispatch, getState) => {
+    const {equity, validation} = getState().addEquity;
+    if (address?.street.length > 0 && address.building?.length > 0) {
+        const locations = await geocode(CITY[address.city], address.street, address.building);
+        const buildings = locations?.filter(l => l.category === 'building');
+        if (address === equity.address) {
+            if (buildings.length > 0) {
+                dispatchLocation(dispatch, address, buildings[0].lat, buildings[0].lon, validation);
+            } else {
+                dispatchLocation(dispatch, address, null, null, validation);
+            }
+        }
+    } else {
+        dispatchLocation(dispatch, address, null, null, validation);
     }
 };
 

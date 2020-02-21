@@ -28,19 +28,19 @@ const slice = createSlice({
         setAddress: (state, {payload}) => {
             state.address = payload
         },
-        setField: (state, {payload}) => {
+        setAddressField: (state, {payload}) => {
             state[payload.name] = payload.value
         },
     }
 });
 
 export default slice.reducer
-export const {setAddress, setField} = slice.actions;
+export const {setAddress, setAddressField} = slice.actions;
 
 export const loadDistricts = (city) => async (dispatch) => {
     try {
         let districts = await DirectoryAPI.fetchDistricts(city);
-        dispatch(setField({name: "districts", value: districts}))
+        dispatch(setAddressField({name: "districts", value: districts}))
     } catch (reason) {
         dispatch(showError(reason.message))
     }
@@ -49,7 +49,7 @@ export const loadDistricts = (city) => async (dispatch) => {
 export const loadSubways = (city) => async (dispatch) => {
     try {
         let subways = await DirectoryAPI.fetchSubways(city);
-        dispatch(setField({name: "subways", value: subways}))
+        dispatch(setAddressField({name: "subways", value: subways}))
     } catch (reason) {
         dispatch(showError(reason.message))
     }
@@ -60,7 +60,7 @@ export const fetchStreets = (city, query) => async (dispatch, getState) => {
         let streets = await AddressAPI.fetchStreets(city, query);
         const {streetText} = getState().editAddress;
         if (query === streetText)
-            dispatch(setField({name: "streets", value: streets}))
+            dispatch(setAddressField({name: "streets", value: streets}))
     } catch (reason) {
         dispatch(showError(reason.message))
     }

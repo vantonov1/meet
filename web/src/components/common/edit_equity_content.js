@@ -7,7 +7,7 @@ import {getSelectedFiles} from "./photo-upload";
 import EditAddress from "../edit-address/view";
 
 export default function EditEquityContent(props) {
-    const {type, equity, validation, onEquityFieldChange} = props;
+    const {type, equity, validation, onEquityFieldChange, onSelectLocation} = props;
     const selectedFiles = getSelectedFiles();
 
     return <>
@@ -18,10 +18,11 @@ export default function EditEquityContent(props) {
                 onChange={e => onEquityFieldChange({name: "type", value: e.target.value})}>
             {Object.entries(EQUITY_TYPES).map(k => <MenuItem key={k[0]} value={k[0]}>{k[1]}</MenuItem>)}
         </Select>
-        <EditAddress city={equity.address.city}
+        <EditAddress initialAddress={equity.address}
                      validation={validation}
                      selectDistrict={true}
                      selectSubway={true}
+                     onSelectLocation={onSelectLocation}
                      onChange={a => onEquityFieldChange({name: "address", value: a})}
         />
         <TextField label="Цена"
@@ -29,6 +30,7 @@ export default function EditEquityContent(props) {
                    required error={validation.price?.error} helperText={validation.price?.text}
                    inputProps={{inputMode: 'decimal', step: 100000}}
                    value={equity.price}
+                   style={{width: '50%'}}
                    onChange={e => onEquityFieldChange({name: "price", value: e.target.value})}
         />
         <TextField label="Площадь"
@@ -36,12 +38,14 @@ export default function EditEquityContent(props) {
                    required error={validation.square?.error} helperText={validation.square?.text}
                    inputProps={{inputMode: 'decimal'}}
                    value={equity.square}
+                   style={{width: '50%'}}
                    onChange={e => onEquityFieldChange({name: "square", value: e.target.value})}
         />
         <TextField label="Количество комнат"
                    type="number"
                    inputProps={{inputMode: 'decimal'}}
                    value={equity.rooms}
+                   style={{width: '50%'}}
                    onChange={e => onEquityFieldChange({name: "rooms", value: e.target.value})}
         />
         <TextField label="Дополнительная информация"

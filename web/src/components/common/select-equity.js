@@ -35,7 +35,7 @@ export default function SelectEquity(props) {
 
     return <Dialog open={open}>
         <DialogContent>
-            <EditAddress city={city}
+            <EditAddress initialAddress={address}
                          selectDistrict={false}
                          selectSubway={false}
                          validation={{}}

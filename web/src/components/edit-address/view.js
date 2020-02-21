@@ -1,32 +1,34 @@
 import React, {useEffect} from "react";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
+import MyLocationIcon from "@material-ui/icons/MyLocation";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
-import {fetchStreets, loadDistricts, loadSubways, setAddress, setField} from "./slice";
+import {fetchStreets, loadDistricts, loadSubways, setAddress, setAddressField} from "./slice";
+import InputAdornment from "@material-ui/core/InputAdornment";
 
 export default function EditAddress(props) {
     const {address, districts, subways, streets, streetText} = useSelector(state => state.editAddress, shallowEqual);
-    const {city, selectDistrict, selectSubway, validation, onChange} = props;
+    const {initialAddress, selectDistrict, selectSubway, validation, onChange, onSelectLocation} = props;
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(setAddress({...address, city: city}));
-    }, [city]);
+        dispatch(setAddress(initialAddress));
+    }, [initialAddress]);
 
     useEffect(() => {
         if (selectDistrict && districts?.length === 0)
-            dispatch(loadDistricts(city));
-    }, [selectDistrict, districts, city]);
+            dispatch(loadDistricts(address.city));
+    }, [selectDistrict, districts, address.city]);
 
     useEffect(() => {
         if (selectSubway && subways?.length === 0)
-            dispatch(loadSubways(city));
-    }, [selectSubway, subways, city]);
+            dispatch(loadSubways(address.city));
+    }, [selectSubway, subways, address.city]);
 
     useEffect(() => {
         if (streetText && streets?.length === 0)
-            dispatch(fetchStreets(city, streetText))
-    }, [streetText, city]);
+            dispatch(fetchStreets(address.city, streetText))
+    }, [streetText, address.city]);
 
     return <>
         {selectDistrict && <SelectDirectory label="Район"
@@ -44,22 +46,22 @@ export default function EditAddress(props) {
                       value={address.street}
                       error={validation.street?.error}
                       helperText={validation.street?.text}
-                      inputValue={streetText ? streetText : ''}
+                      inputValue={streetText ? streetText : address.street ? address.street : ''}
                       onChange={(e, v) => {
                           let a = {...address, street: v ? v : ''};
                           onChange(a);
                           dispatch(setAddress(a));
-                          dispatch(setField({name: "streetText", value: v}));
-                          dispatch(setField({name: "streets", value: []}));
+                          dispatch(setAddressField({name: "streetText", value: v}));
+                          dispatch(setAddressField({name: "streets", value: []}));
                       }}
                       onInputChange={e => {
                           if (e?.type === 'change') {
-                              dispatch(setField({name: "streetText", value: e.target.value}));
-                              dispatch(setField({name: "streets", value: []}))
+                              dispatch(setAddressField({name: "streetText", value: e.target.value}));
+                              dispatch(setAddressField({name: "streets", value: []}))
                           }
                       }}
         />
-        <TextField label="Дом"
+        <TextField label="Дом" style={{width: '50%'}}
                    value={address.building}
                    required error={validation.building?.error}
                    helperText={validation.building?.text}
@@ -68,6 +70,13 @@ export default function EditAddress(props) {
                        onChange(a);
                        dispatch(setAddress(a));
                    }}
+                   InputProps={onSelectLocation ? {
+                       startAdornment: (
+                           <InputAdornment position="start">
+                               <MyLocationIcon onClick={onSelectLocation} style={{cursor: 'pointer', opacity: 0.7}}/>
+                           </InputAdornment>
+                       ),
+                   } : {}}
         />
     </>
 }
@@ -87,6 +96,7 @@ function SelectDirectory(props) {
             filterOptions={(options, state) => options.filter(o => o.name.match(new RegExp("^" + state.inputValue, "i")))}
             onChange={props.onChange}
         />
+
     )
 }
 
