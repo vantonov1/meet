@@ -2,6 +2,7 @@ package com.github.vantonov1.meet.service
 
 import com.github.vantonov1.meet.entities.Admin
 import com.github.vantonov1.meet.repository.AdminRepository
+import com.github.vantonov1.meet.service.impl.InvitationSender
 import com.github.vantonov1.meet.service.impl.invitation
 import com.github.vantonov1.meet.service.impl.saveClaim
 import org.springframework.beans.factory.annotation.Value
@@ -11,14 +12,17 @@ import org.springframework.web.server.ServerWebInputException
 import reactor.core.publisher.Mono
 import javax.annotation.PostConstruct
 
+
 @Service
-class AdminService(val repository: AdminRepository) {
+class AdminService(val repository: AdminRepository, val invitationSender: InvitationSender) {
     @Value("\${admin.email}")
     lateinit var adminEmail: String
 
     fun findAll() = repository.findAll().map { it.email }.collectList()
 
-    fun invite(email: String) = invite(invitation(), email)
+    fun invite(email: String, base: String) = repository.save(Admin(null, invitation(), email)).doOnSuccess {
+        invitationSender.sendInviteByMail(it.email, base, it.invitation)
+    }
 
     fun register(invitation: String, token: Authentication) =
         if (invitation.isEmpty())
@@ -31,16 +35,12 @@ class AdminService(val repository: AdminRepository) {
                 Mono.error(ServerWebInputException("Неизвестное приглашение"))
         }
 
-    private fun invite(invitation: String, email: String) =
-            repository.save(Admin(null, invitation, email))
-
-
     @PostConstruct
     @Suppress("unused")
     private fun init() {
         repository.findByEmail(adminEmail).hasElements().flatMap { found ->
             if (!found)
-                invite(adminEmail, adminEmail)
+                repository.save(Admin(null, adminEmail, adminEmail))
             else
                 Mono.empty()
         }.subscribe()

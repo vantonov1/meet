@@ -7,6 +7,7 @@ import com.github.vantonov1.meet.dto.fromEntity
 import com.github.vantonov1.meet.entities.Agent
 import com.github.vantonov1.meet.entities.Contact
 import com.github.vantonov1.meet.repository.AgentRepository
+import com.github.vantonov1.meet.service.impl.InvitationSender
 import com.github.vantonov1.meet.service.impl.invitation
 import com.github.vantonov1.meet.service.impl.saveClaim
 import org.springframework.context.annotation.DependsOn
@@ -18,9 +19,11 @@ import kotlin.random.Random
 
 @Service
 @DependsOn("liquibase")
-class AgentService(val repository: AgentRepository, val contactService: ContactService) {
+class AgentService(val repository: AgentRepository, val contactService: ContactService, val invitationSender: InvitationSender) {
 
-    fun invite() = repository.save(Agent(null, "", 0, false, invitation()))
+    fun invite(email: String, base: String) = repository.save(Agent(null, "", 0, false, invitation())).doOnSuccess { a ->
+        invitationSender.sendInviteByMail(email, base, a.invitation!!)
+    }
 
     fun register(dto: AgentDTO, invitation: String, token: Authentication) =
             if (invitation.isEmpty())

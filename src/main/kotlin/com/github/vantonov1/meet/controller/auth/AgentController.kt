@@ -19,7 +19,7 @@ class AgentController(private val agentService: AgentService, private val adminS
     @PostMapping("/invite")
     @Transactional
     @Secured("ROLE_ADMIN")
-    fun invite(@RequestParam email: String) = agentService.invite()
+    fun invite(@RequestParam email: String, @RequestParam base: String) = agentService.invite(email, base)
 
     @PutMapping("/register")
     @Transactional

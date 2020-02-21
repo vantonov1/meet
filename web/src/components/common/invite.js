@@ -19,7 +19,10 @@ export function Invite(props) {
                        inputProps={{inputMode: 'email'}}/>
         </EnterValue>
         {invitation && <ShowInfo open={true} onOk={onOk}>
-            <Typography variant="h6">Отправьте ссылку для регистрации:</Typography>
+            <Typography variant="h6">
+                Приглашение отправлено по почте.
+                Если письмо не дошло, отправьте ссылку для регистрации любым способом:
+            </Typography>
             <Input multiline value={window.location.origin + window.location.pathname + '/registration?invitation=' + invitation} fullWidth/>
         </ShowInfo>}
     </>

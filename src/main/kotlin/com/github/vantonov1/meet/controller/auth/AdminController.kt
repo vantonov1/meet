@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*
 class AdminController(val service: AdminService) {
     @PostMapping("/invite")
     @Secured("ROLE_ADMIN")
-    fun invite(@RequestParam email: String, auth: Authentication) = service.invite(email)
+    fun invite(@RequestParam email: String, @RequestParam base: String, auth: Authentication) = service.invite(email, base)
 
     @PutMapping
     fun register(@RequestParam invitation: String, auth: Authentication) = service.register(invitation, auth)
