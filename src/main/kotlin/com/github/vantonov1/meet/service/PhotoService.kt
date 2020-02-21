@@ -16,7 +16,7 @@ class PhotoService(private val repository: PhotoRepository, private val storage:
 
     fun upload(files: Flux<FilePart>) = files.flatMap<String> { storage.save(it) }.collectList()
 
-    fun download(name: String) = storage.get(name)
+    fun download(name: String) = name//storage.get(name)
 
     fun save(equityId: Long, ids: Collection<String>?) = if (!ids.isNullOrEmpty()) {
         val photos = ids.map { Photo(it, equityId) }
