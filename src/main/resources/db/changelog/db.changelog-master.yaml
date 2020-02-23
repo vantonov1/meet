@@ -286,6 +286,28 @@ databaseChangeLog:
             - column:
                    name: shared
                    type: boolean
+      - createTable:
+            tableName: message_token
+            columns:
+            - column:
+                  name: id
+                  type: int
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+            - column:
+                  name: token
+                  type: varchar(256)
+                  constraints:
+                    nullable: false
+      - createIndex:
+            indexName: message_tokens_idx
+            tableName: message_token
+            columns:
+            - column:
+                    name: id
+            - column:
+                    name: token #covered column
       - createIndex:
             indexName: find_equities_idx
             tableName: equity

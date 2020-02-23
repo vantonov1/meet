@@ -19,7 +19,8 @@ class RequestService(private val requestRepository: RequestRepository,
                      private val agentService: AgentService,
                      private val meetingService: MeetingService,
                      private val equityService: EquityService,
-                     private val commentService: CommentService
+                     private val commentService: CommentService,
+                     private val messagingService: MessagingService
 ) {
     fun save(dto: RequestDTO, customerId: Int?): Mono<RequestDTO> {
         assert(dto.assignedTo == null)
@@ -52,6 +53,7 @@ class RequestService(private val requestRepository: RequestRepository,
             (if (dto.about?.responsible != null) Mono.just(dto.about.responsible)
             else agentService.selectAgent(dto, customer))
                     .flatMap { agentId -> requestRepository.save(dto.toEntity(customer.id!!, agentId)) }
+                    .doOnSuccess { messagingService.sendMessage(it.assignedTo, "Новая заявка").subscribe()}
                     .flatMap { collectRequestInfo(it) }
 
     private fun collectRequestInfo(req: Request) =

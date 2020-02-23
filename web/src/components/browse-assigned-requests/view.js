@@ -1,7 +1,14 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import {Divider, MenuItem, TextField} from "@material-ui/core";
-import {changeRequestEquity, completeRequest, deleteRequest, loadRequests, selectRequest} from "./slice";
+import {
+    changeRequestEquity,
+    completeRequest,
+    deleteRequest,
+    loadRequests,
+    selectRequest,
+    updateRequests
+} from "./slice";
 import {MergedRequestListItem} from "../common/list-items";
 import Menu from "@material-ui/core/Menu";
 import ConfirmAction from "../common/confirm-action";
@@ -14,6 +21,8 @@ import parse from 'date-fns/parseISO'
 import SelectEquity from "../common/select-equity";
 import EnterValue from "../common/enter-value";
 import BrowseList from "../common/browse-list";
+import {onMessageReceived} from "../../api/FirebaseAPI";
+import {showSuccess} from "../show-success/slice";
 
 const compareDates = (a, b) => a.meeting ? b.meeting ? isBefore(parse(a.meeting), parse(b.meeting)) ? -1 : 1 : -1 : 1;
 
@@ -26,6 +35,13 @@ export default function BrowseAssignedRequests() {
     const [changeEquity, setChangeEquity] = useState(false);
     const [contractNumber, setContractNumber] = useState('');
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        onMessageReceived(m => {
+            dispatch(showSuccess(m.text))
+            dispatch(updateRequests())
+        })
+    });
 
     return <>
         <BrowseList slice="browseAssignedRequests" title='Заявки в работе' loader={loadRequests} topLevel={true}>

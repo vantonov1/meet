@@ -3,15 +3,18 @@ package com.github.vantonov1.meet.service.impl
 import com.github.vantonov1.meet.filter.FirebaseAuthenticationToken
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseToken
+import com.google.firebase.messaging.*
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.InsufficientAuthenticationException
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.ReactiveSecurityContextHolder
+import org.springframework.web.server.ServerWebInputException
 import reactor.core.publisher.Mono
 import java.net.URLEncoder
 import java.util.*
+
 
 val CLAIMS = listOf("admin", "agent")
 
@@ -52,6 +55,19 @@ fun getAgentId() = ReactiveSecurityContextHolder.getContext().flatMap {
         else Mono.error(InsufficientAuthenticationException("Пользователь не является агентом"))
     } else
         Mono.error(InsufficientAuthenticationException("Пользователь не авторизован"))
+}
 
+fun sendMessage(messagingToken: String?, text: String): String {
+    if(messagingToken != null) {
+        val message: Message = Message.builder()
+                .setNotification(Notification.builder().setTitle(text).setBody(text).build())
+                .setToken(messagingToken)
+                .setFcmOptions(FcmOptions.withAnalyticsLabel("debug"))
+                .setWebpushConfig(WebpushConfig.builder().setFcmOptions(WebpushFcmOptions.withLink("http://localhost:3000")).build())
+                .build()
+        return FirebaseMessaging.getInstance().send(message)
+    } else {
+        throw ServerWebInputException("Агент без message token")
+    }
 }
 
