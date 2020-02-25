@@ -1,6 +1,6 @@
-import {fetchEmpty} from "./fetch";
+import {baseURL, fetchEmpty} from "./fetch";
 
-const BASE = 'http://localhost:8080/api/auth/v1/comment';
+const BASE = baseURL() + '/api/auth/v1/comment';
 
 export default class CommentAPI {
     static createComment(dto) {

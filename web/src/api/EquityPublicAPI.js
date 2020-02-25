@@ -1,7 +1,7 @@
-import {fetchJSON} from "./fetch";
+import {baseURL, fetchJSON} from "./fetch";
 
 export default class EquityPublicAPI {
-    static BASE = 'http://localhost:8080/api/public/v1/equities';
+    static BASE = baseURL() + '/api/public/v1/equities';
 
     static findByIds(ids) {
         let url = new URL(this.BASE + "/ids");

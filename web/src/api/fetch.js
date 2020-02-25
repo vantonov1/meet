@@ -1,5 +1,9 @@
 import {getAuthToken} from "./FirebaseAPI";
 
+export function baseURL() {
+    return 'http://localhost:8080'
+}
+
 export async function fetchJSON(url, options) {
     let optionsWithAuth = await setAuth(options);
     const response = await fetch(url, optionsWithAuth);

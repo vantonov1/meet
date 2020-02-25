@@ -1,7 +1,7 @@
-import {fetchEmpty, fetchJSON} from "./fetch";
+import {baseURL, fetchEmpty, fetchJSON} from "./fetch";
 
 export default class EquityAPI {
-    static BASE = 'http://localhost:8080/api/auth/v1/equities';
+    static BASE = baseURL() + '/api/auth/v1/equities';
 
     static create(dto, fromRequest) {
         let url = new URL(this.BASE);

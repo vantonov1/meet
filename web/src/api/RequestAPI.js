@@ -1,6 +1,6 @@
-import {fetchEmpty, fetchJSON} from "./fetch";
+import {baseURL, fetchEmpty, fetchJSON} from "./fetch";
 
-const BASE = 'http://localhost:8080/api/auth/v1/request';
+const BASE = baseURL() + '/api/auth/v1/request';
 
 export default class RequestAPI {
     static findRequests(customer, agent) {

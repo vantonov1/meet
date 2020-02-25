@@ -1,6 +1,6 @@
 import * as firebase from "firebase";
 
-const BASE = 'http://localhost:8080/api/public/v1/photo';
+//const BASE = baseURL() + '/api/public/v1/photo';
 
 const storage = firebase.storage();
 const storageRef = storage.ref();

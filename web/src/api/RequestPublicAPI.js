@@ -1,6 +1,6 @@
-import {fetchJSON} from "./fetch";
+import {baseURL, fetchJSON} from "./fetch";
 
-const BASE = 'http://localhost:8080/api/public/v1/request';
+const BASE = baseURL() + '/api/public/v1/request';
 
 export default class RequestPublicAPI {
     static createRequest(dto) {
