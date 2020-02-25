@@ -201,7 +201,7 @@ databaseChangeLog:
                        nullable: false
             - column:
                    name: schedule
-                   type: timestamp with time zone
+                   type: timestamp
                    constraints:
                        nullable: false
             - column:
@@ -280,7 +280,7 @@ databaseChangeLog:
                    type: tinyint
             - column:
                    name: text
-                   type: varchar
+                   type: varchar(1024)
                    constraints:
                        nullable: false
             - column:
