@@ -1,17 +1,17 @@
 package com.github.vantonov1.meet.repository
 
 import com.github.vantonov1.meet.entities.TimeSlot
-import org.springframework.data.r2dbc.repository.Query
-import org.springframework.data.repository.reactive.ReactiveCrudRepository
+import org.springframework.data.jdbc.repository.query.Modifying
+import org.springframework.data.jdbc.repository.query.Query
+import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
 
 @Repository
-interface TimeSlotRepository :  ReactiveCrudRepository<TimeSlot, Int> {
+interface TimeSlotRepository : CrudRepository<TimeSlot, Int> {
     @Query("select * from time_slot where for_request=:requestId order by day_of_week, min_time")
-    fun findByRequestId(requestId: Int): Flux<TimeSlot>
+    fun findByRequestId(requestId: Int): List<TimeSlot>
 
+    @Modifying
     @Query("delete from time_slot where for_request=:requestId")
-    fun deleteAllByRequestId(requestId: Int): Mono<Void>
+    fun deleteAllByRequestId(requestId: Int): Int
 }

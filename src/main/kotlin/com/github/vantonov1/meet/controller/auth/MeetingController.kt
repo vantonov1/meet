@@ -34,8 +34,5 @@ class MeetingController(private val meetingService: MeetingService) {
                       @RequestParam(required = false) attends: Int?,
                       @RequestParam dateMin: String,
                       @RequestParam dateMax: String
-    ) = getAgentId().flatMapMany {
-        assert(it == scheduledBy)
-        meetingService.findByPersons(it, attends, ZonedDateTime.parse(dateMin), ZonedDateTime.parse(dateMax))
-    }
+    ) = meetingService.findByPersons(getAgentId(), attends, ZonedDateTime.parse(dateMin), ZonedDateTime.parse(dateMax))
 }

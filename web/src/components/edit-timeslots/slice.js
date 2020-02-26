@@ -1,6 +1,7 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {showError} from "../show-error/slice";
 import TimeSlotAPI from "../../api/TimeslotAPI";
+import {showSuccess} from "../show-success/slice";
 
 
 const slice = createSlice({
@@ -41,7 +42,8 @@ export const loadTimeSlots = request => async dispatch => {
 export const saveTimeSlots = (records, request) => async dispatch => {
     try {
         await TimeSlotAPI.createTimeSlots(records, request.id);
-        dispatch(showEditTimeSlots(false))
+        dispatch(showEditTimeSlots(false));
+        dispatch(showSuccess("Расписание сохранено"))
     } catch (reason) {
         dispatch(showError(reason.message))
     }

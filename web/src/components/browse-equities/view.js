@@ -137,7 +137,7 @@ function EquityProperties(props) {
             {equity.info}
         </Box>}
         {tab === 2 && equity.comments?.length > 0 && <Box className={classes.info}>
-            {equity.comments.map(c => <p>{c.text}</p>)}
+            {equity.comments.map((c,i) => <p key={i}>{c.text}</p>)}
         </Box>}
         <div className={classes.buttons}>
             <Fab size="small" variant="extended" color="primary" style={{marginRight: 10}} onClick={() => {

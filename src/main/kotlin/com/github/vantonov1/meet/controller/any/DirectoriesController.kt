@@ -1,11 +1,8 @@
 package com.github.vantonov1.meet.controller.any
 
-import com.github.vantonov1.meet.entities.District
-import com.github.vantonov1.meet.entities.Subway
 import com.github.vantonov1.meet.service.DistrictService
 import com.github.vantonov1.meet.service.SubwayService
 import org.springframework.web.bind.annotation.*
-import reactor.core.publisher.Mono
 
 @RestController
 @RequestMapping("/api/public/v1/dir")
@@ -16,8 +13,8 @@ class DirectoriesController(
         private val subwayService: SubwayService
 ) {
     @GetMapping("/districts/{city}")
-    fun findDistricts(@PathVariable city: Short): Mono<List<District>> = Mono.just(districtService.findByCity(city))
+    fun findDistricts(@PathVariable city: Short) = districtService.findByCity(city)
 
     @GetMapping("/subways/{city}")
-    fun findSubways(@PathVariable city: Short): Mono<List<Subway>> = Mono.just(subwayService.findByCity(city))
+    fun findSubways(@PathVariable city: Short) = subwayService.findByCity(city)
 }

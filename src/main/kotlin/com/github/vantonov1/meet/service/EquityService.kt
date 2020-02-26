@@ -8,14 +8,12 @@ import com.github.vantonov1.meet.dto.PriceRangeDTO
 import com.github.vantonov1.meet.dto.fromEntity
 import com.github.vantonov1.meet.entities.Equity
 import com.github.vantonov1.meet.entities.Filter
-import com.github.vantonov1.meet.entities.PriceRange
 import com.github.vantonov1.meet.repository.EquityPriceRangeRepository
 import com.github.vantonov1.meet.repository.EquityRepository
 import com.github.vantonov1.meet.repository.LocationRepository
 import org.springframework.context.annotation.DependsOn
 import org.springframework.stereotype.Service
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
+import org.springframework.web.server.ServerWebInputException
 import javax.annotation.PostConstruct
 
 @Service
@@ -30,21 +28,26 @@ class EquityService(
         private val comments: CommentService
 ) {
 
-    fun save(dto: EquityDTO): Mono<Long> = equityRepository.save(dto.toEntity()).map { it.id!! }.flatMap { photos.save(it, dto.photos) }
+    fun save(dto: EquityDTO): Long {
+        val saved = equityRepository.save(dto.toEntity())
+        photos.save(saved.id!!, dto.photos)
+        return saved.id
+    }
 
-    fun findById(id: Long): Mono<EquityDTO> = equityRepository.findById(id)
-            .map { fromEntity(it, districts.findById(it.district), stations.findById(it.subway), null, null) }
+    fun findById(id: Long): EquityDTO {
+        val equity = equityRepository.findById(id)
+        if (equity.isEmpty) throw ServerWebInputException("Объект не найден")
+        return fromEntity(equity.get(), districts.findById(equity.get().district), stations.findById(equity.get().subway), null, null)
+    }
 
-    fun findByIds(ids: List<Long>): Mono<List<EquityDTO>> = Mono.zip(
-            equityRepository.findAllById(ids).collectList(),
-            photos.findAllByEquityId(ids),
-            comments.findSharedCommentsByEquities(ids))
-            .map {
-                it.t1.sortBy { e -> e.price }
-                it.t1.map { e -> fromEntity(e, districts.findById(e.district), stations.findById(e.subway), it.t2[e.id]?.map { p -> p.id }, it.t3[e.id]) }
-            }
+    fun findByIds(ids: List<Long>): List<EquityDTO> {
+        val equities = equityRepository.findAllById(ids)
+        val photos = photos.findAllByEquityId(ids)
+        val comments = comments.findSharedCommentsByEquities(ids)
+        return equities.map { e -> fromEntity(e, districts.findById(e.district), stations.findById(e.subway), photos[e.id]?.map { p -> p.id }, comments[e.id]) }
+    }
 
-    fun find(f: Filter): Flux<LocationDTO> {
+    fun find(f: Filter): List<LocationDTO> {
         val locations = if (f.district == null && f.subway == null) {
             locationRepository.find(f.type, f.city, f.priceMin ?: 0, f.priceMax ?: Int.MAX_VALUE)
         } else if (f.district == null) {
@@ -60,18 +63,20 @@ class EquityService(
         return locations.map { LocationDTO(it.id!!, it.lat, it.lon) }
     }
 
-    fun findByAddress(type: Byte, city: Short, street: String, building: String?): Flux<EquityDTO> {
+    fun findByAddress(type: Byte, city: Short, street: String, building: String?): List<EquityDTO> {
         val equities = if (building.isNullOrEmpty())
             equityRepository.findByAddress(type, city, street)
         else
             equityRepository.findByAddress(type, city, street, building)
-        return equities.map { fromEntity(it,  districts.findById(it.district), stations.findById(it.subway), null, null) }
+        return equities.map { fromEntity(it, districts.findById(it.district), stations.findById(it.subway), null, null) }
     }
 
-    fun delete(id: Long, hide: Boolean?): Mono<Void> = if (hide != null && hide) equityRepository.hide(id) else equityRepository.deleteById(id)
+    fun delete(id: Long, hide: Boolean?) {
+        if (hide != null && hide) equityRepository.hide(id) else equityRepository.deleteById(id)
+    }
 
-    fun getPriceRange(f: Filter): Mono<PriceRangeDTO> {
-        val entity: Mono<PriceRange> = if (f.district == null && f.subway == null) {
+    fun getPriceRange(f: Filter): PriceRangeDTO {
+        val entity = if (f.district == null && f.subway == null) {
             priceRangeRepository.getPriceRange(f.type, f.city)
         } else if (f.district == null) {
             priceRangeRepository.getPriceRangeWithSubway(f.type, f.city, f.subway!!)
@@ -80,13 +85,13 @@ class EquityService(
         } else {
             priceRangeRepository.getPriceRangeWithDistrictAndSubway(f.type, f.city, f.district, f.subway)
         }
-        return entity.map { PriceRangeDTO(it.minPrice, it.maxPrice) }
+        return PriceRangeDTO(entity.minPrice, entity.maxPrice)
     }
 
     @PostConstruct
     @Suppress("unused")
     private fun loadFakeEquities() {
         val equities = jacksonObjectMapper().readValue(javaClass.getResource("/fake_equities.json"), object : TypeReference<List<Equity>>() {})
-        equityRepository.saveAll(equities).subscribe()
+        equityRepository.saveAll(equities)
     }
 }

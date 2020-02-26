@@ -2,7 +2,7 @@ package com.github.vantonov1.meet.entities
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
-import java.time.ZonedDateTime
+import java.time.LocalDateTime
 
 @Table
 data class Meeting(
@@ -12,6 +12,6 @@ data class Meeting(
         val at: Long?,
         val scheduledBy: Int,
         val attends: Int,
-        val schedule: ZonedDateTime,
+        val schedule: LocalDateTime,
         val comment: String?
 )

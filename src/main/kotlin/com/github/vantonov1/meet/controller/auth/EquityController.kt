@@ -9,7 +9,6 @@ import org.springframework.security.access.annotation.Secured
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ServerWebInputException
-import reactor.core.publisher.Mono
 
 @RestController
 @RequestMapping("/api/auth/v1/equities")
@@ -21,27 +20,22 @@ class EquityController(private val equities: EquityService,
     @PostMapping
     @Transactional
     @Secured("ROLE_AGENT")
-    fun create(@RequestBody dto: EquityDTO, @RequestParam fromRequest: Int?): Mono<Long> {
-        val equity = if (fromRequest != null) {
-            Mono.zip(requests.findById(fromRequest), getAgentId())
-                .switchIfEmpty(Mono.error(ServerWebInputException("Запрос не найден")))
-                .flatMap {
-                    val req = it.t1
-                    val agentId = it.t2
-                    assert(agentId == req.assignedTo?.id)
-                    equities.save(dto.copy(ownedBy = req.issuedBy!!.id, responsible = agentId))
-                }
-        } else {
-            equities.save(dto)
-        }
-        return equity.flatMap { requests.attachEquity(it!!, fromRequest) }
+    fun create(@RequestBody dto: EquityDTO, @RequestParam fromRequest: Int?): Long {
+        return if (fromRequest != null) {
+            val request = requests.findById(fromRequest)
+            val agentId = getAgentId()
+            assert(agentId == request.assignedTo?.id)
+            val id = equities.save(dto.copy(ownedBy = request.issuedBy!!.id, responsible = agentId))
+            requests.attachEquity(id, fromRequest)
+            id
+        } else equities.save(dto)
     }
 
     @PutMapping
     @Transactional
     @Secured("ROLE_AGENT")
-    fun update(@RequestBody dto: EquityDTO): Mono<Void> =
-            if (dto.id != null) equities.save(dto).then()
+    fun update(@RequestBody dto: EquityDTO): Long =
+            if (dto.id != null) equities.save(dto)
             else throw ServerWebInputException("no equity id on update")
 
     @DeleteMapping("/{id}")

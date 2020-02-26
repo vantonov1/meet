@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ServerWebInputException
-import reactor.core.publisher.Mono
 import javax.annotation.PostConstruct
 
 
@@ -18,31 +17,31 @@ class AdminService(val repository: AdminRepository, val invitationSender: Invita
     @Value("\${admin.email}")
     lateinit var adminEmail: String
 
-    fun findAll() = repository.findAll().map { it.email }.collectList()
+    fun findAll() = repository.findAll().map { it.email }.toList()
 
-    fun invite(email: String, base: String) = repository.save(Admin(null, invitation(), email)).doOnSuccess {
-        invitationSender.sendInviteByMail(it.email, base, it.invitation)
+    fun invite(email: String, base: String): Admin {
+        val saved = repository.save(Admin(null, invitation(), email))
+        invitationSender.sendInviteByMail(saved.email, base, saved.invitation)
+        return saved
     }
 
     fun register(invitation: String, token: Authentication) =
-        if (invitation.isEmpty())
-             Mono.error(ServerWebInputException("Неизвестное приглашение"))
-        else repository.findByInvitation(invitation).collectList().flatMap { invited ->
-            if (invited.isNotEmpty()) {
-                saveClaim(token, Pair("admin", true))
-                        .then(repository.save(invited[0].copy(invitation = "")))
-            } else
-                Mono.error(ServerWebInputException("Неизвестное приглашение"))
-        }
+            if (invitation.isEmpty())
+                throw ServerWebInputException("Неизвестное приглашение")
+            else {
+                val invited = repository.findByInvitation(invitation)
+                if (invited.isNotEmpty()) {
+                    saveClaim(token, Pair("admin", true))
+                    repository.save(invited[0].copy(invitation = ""))
+                } else
+                    throw ServerWebInputException("Неизвестное приглашение")
+            }
 
     @PostConstruct
     @Suppress("unused")
     private fun init() {
-        repository.findByEmail(adminEmail).hasElements().flatMap { found ->
-            if (!found)
-                repository.save(Admin(null, adminEmail, adminEmail))
-            else
-                Mono.empty()
-        }.subscribe()
+        val admin = repository.findByEmail(adminEmail)
+        if (admin.isEmpty())
+            repository.save(Admin(null, adminEmail, adminEmail))
     }
 }

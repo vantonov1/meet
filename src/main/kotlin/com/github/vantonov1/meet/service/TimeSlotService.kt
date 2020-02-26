@@ -1,17 +1,12 @@
 package com.github.vantonov1.meet.service
 
-import com.github.vantonov1.meet.dto.MeetingTimeTableEntryDTO
-import com.github.vantonov1.meet.dto.TimeSlotDTO
-import com.github.vantonov1.meet.dto.fromEntity
-import com.github.vantonov1.meet.dto.fromMillis
+import com.github.vantonov1.meet.dto.*
 import com.github.vantonov1.meet.entities.Meeting
 import com.github.vantonov1.meet.entities.TimeSlot
 import com.github.vantonov1.meet.repository.MeetingRepository
 import com.github.vantonov1.meet.repository.TimeSlotRepository
 import org.springframework.context.annotation.DependsOn
 import org.springframework.stereotype.Service
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -20,22 +15,22 @@ import java.time.format.DateTimeFormatter
 @DependsOn("liquibase")
 class TimeSlotService(private val repository: TimeSlotRepository, private val meetingRepository: MeetingRepository) {
 
-    fun findTimeSlots(requestId: Int): Flux<TimeSlotDTO> {
+    fun findTimeSlots(requestId: Int): List<TimeSlotDTO> {
         return repository.findByRequestId(requestId).map { fromEntity(it) }
     }
 
-    fun create(requestId: Int, slots: List<TimeSlotDTO>) =
-            repository.deleteAllByRequestId(requestId)
-                    .then(repository.saveAll(slots.map { it.toEntity(requestId) }).collectList())
-                    .then(Mono.empty<Void>())
+    fun create(requestId: Int, slots: List<TimeSlotDTO>) {
+        repository.deleteAllByRequestId(requestId)
+        repository.saveAll(slots.map { it.toEntity(requestId) })
+    }
 
-    fun collectTimeTable(agentId: Int, buyerId: Int, sellerId: Int): Mono<List<MeetingTimeTableEntryDTO>> {
+    fun collectTimeTable(agentId: Int, buyerId: Int, sellerId: Int): List<MeetingTimeTableEntryDTO> {
         val now = ZonedDateTime.now()
-        return Mono.zip(
-                repository.findByRequestId(buyerId).collectList(),
-                repository.findByRequestId(sellerId).collectList(),
-                meetingRepository.findByScheduler(agentId, now, now.plusDays(7)).collectList()
-        ).flatMap { Mono.just(createTimeTable(it.t1, it.t2, it.t3)) }
+        return createTimeTable(
+                repository.findByRequestId(buyerId),
+                repository.findByRequestId(sellerId),
+                meetingRepository.findByScheduler(agentId, toMSK(now), toMSK(now.plusDays(7)))
+        )
     }
 
     private fun createTimeTable(buyerSlots: List<TimeSlot>, sellerSlots: List<TimeSlot>, agentMeetings: List<Meeting>): List<MeetingTimeTableEntryDTO> {

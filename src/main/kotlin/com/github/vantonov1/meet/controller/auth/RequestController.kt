@@ -32,8 +32,6 @@ class RequestController(private val requestService: RequestService) {
     @GetMapping
     @Transactional(readOnly = true)
     fun findByPersons(@RequestParam(required = false) issuedBy: Int?,
-                      @RequestParam(required = false) assignedTo: Int?) = getAgentId().flatMapMany {
-        assert(it == assignedTo)
-        requestService.findByPersons(issuedBy, it)
-    }
+                      @RequestParam(required = false) assignedTo: Int?) =
+        requestService.findByPersons(issuedBy, getAgentId())
 }

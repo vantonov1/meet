@@ -28,8 +28,5 @@ class TimeSlotController (val service: TimeSlotService) {
             @RequestParam agentId: Int,
             @RequestParam buyerId: Int,
             @RequestParam sellerId: Int
-    ) = getAgentId().flatMap {
-        assert(agentId == it)
-        service.collectTimeTable(it, buyerId, sellerId)
-    }
+    ) = service.collectTimeTable(getAgentId(), buyerId, sellerId)
 }

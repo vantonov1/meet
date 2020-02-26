@@ -8,8 +8,6 @@ import com.github.vantonov1.meet.repository.RequestRepository
 import org.springframework.context.annotation.DependsOn
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ServerWebInputException
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
 import java.time.ZonedDateTime
 
 @Service
@@ -22,56 +20,62 @@ class RequestService(private val requestRepository: RequestRepository,
                      private val commentService: CommentService,
                      private val messagingService: MessagingService
 ) {
-    fun save(dto: RequestDTO, customerId: Int?): Mono<RequestDTO> {
+    fun save(dto: RequestDTO, customerId: Int?): RequestDTO {
         assert(dto.assignedTo == null)
         return if (customerId == null) {
-            if(dto.issuedBy == null) throw ServerWebInputException("Не указан пользователь")
-            customerService.save(dto.issuedBy).flatMap { assignFromCustomer(dto, dto.issuedBy.copy(id = it)) }
-        } else
-            customerService.findById(customerId)
-                    .flatMap {assignFromCustomer(dto, it)}
+            if (dto.issuedBy == null) throw ServerWebInputException("Не указан пользователь")
+            val customer = customerService.save(dto.issuedBy)
+            assignFromCustomer(dto, dto.issuedBy.copy(id = customer.id))
+        } else {
+            assignFromCustomer(dto, customerService.findById(customerId))
+        }
     }
 
-    fun attachEquity(equityId: Long, id: Int?): Mono<Long> {
-        return if (id != null)
-            requestRepository.attachEquity(equityId, id).map { if (it) equityId else throw ServerWebInputException("Заявка не найдена") }
-        else
-            Mono.just(equityId)
+    fun attachEquity(equityId: Long, id: Int) {
+        if (!requestRepository.attachEquity(equityId, id))
+            throw ServerWebInputException("Заявка не найдена")
     }
 
     fun delete(id: Int) = requestRepository.deleteById(id)
 
-    fun findById(id: Int) = requestRepository.findById(id).flatMap { collectRequestInfo(it) }
-
-    fun findByPersons(issuedBy: Int?, assignedTo: Int?): Flux<RequestDTO> {
-        return if (issuedBy != null) requestRepository.findByIssuer(issuedBy).flatMap { collectRequestInfo(it) }
-        else if (assignedTo != null) requestRepository.findByAssignee(assignedTo).flatMap { collectRequestInfo(it) }
-        else Flux.empty()
+    fun findById(id: Int): RequestDTO {
+        val request = requestRepository.findById(id)
+        if (request.isEmpty)
+            throw ServerWebInputException("Заявка не найдена")
+        return collectRequestInfo(request.get())
     }
 
-    private fun assignFromCustomer(dto: RequestDTO, customer: CustomerDTO) =
-            (if (dto.about?.responsible != null) Mono.just(dto.about.responsible)
-            else agentService.selectAgent(dto, customer))
-                    .flatMap { agentId -> requestRepository.save(dto.toEntity(customer.id!!, agentId)) }
-                    .doOnSuccess { messagingService.sendMessage(it.assignedTo, "Новая заявка").subscribe()}
-                    .flatMap { collectRequestInfo(it) }
+    fun findByPersons(issuedBy: Int?, assignedTo: Int?): List<RequestDTO> {
+        return if (issuedBy != null) requestRepository.findByIssuer(issuedBy).map { collectRequestInfo(it) }
+        else if (assignedTo != null) requestRepository.findByAssignee(assignedTo).map { collectRequestInfo(it) }
+        else listOf()
+    }
 
-    private fun collectRequestInfo(req: Request) =
-            if (req.about != null) Mono.zip(
-                    equityService.findById(req.about),
-                    customerService.findById(req.issuedBy),
-                    agentService.findById(req.assignedTo),
-                    meetingService.findDateByRequest(req.id!!),
-                    commentService.findCustomerCommentsByEquity(req.issuedBy, req.about)
-            ).map { fromEntity(req, it.t1, it.t2, it.t3, if (it.t4.isBefore(ZonedDateTime.now())) null else it.t4, it.t5) }
-            else Mono.zip(
-                    customerService.findById(req.issuedBy),
-                    agentService.findById(req.assignedTo)
-            ).map { fromEntity(req, null, it.t1, it.t2, null, listOf()) }
+    private fun assignFromCustomer(dto: RequestDTO, customer: CustomerDTO):  RequestDTO {
+        val agentId =
+                if (dto.about?.responsible != null) dto.about.responsible
+                else agentService.selectAgent(dto, customer)
+        val request = requestRepository.save(dto.toEntity(customer.id!!, agentId))
+        messagingService.sendMessage(request.assignedTo, "Новая заявка")
+        return collectRequestInfo(request)
+    }
 
-    fun completeRequest(sellId: Int, buyId: Int, equityId: Long, contractNumber: String?) = Mono.zip(
-            requestRepository.deleteById(sellId),
-            requestRepository.deleteById(buyId),
-            equityService.delete(equityId, false)
-    ).then(Mono.empty<Void>())
+    private fun collectRequestInfo(req: Request): RequestDTO {
+        val issuedBy = customerService.findById(req.issuedBy)
+        val assignedTo = agentService.findById(req.assignedTo)
+        if (req.about != null) {
+            val equity = equityService.findById(req.about)
+            val meeting = meetingService.findDateByRequest(req.id!!)
+            val comments = commentService.findCustomerCommentsByEquity(req.issuedBy, req.about)
+            return fromEntity(req, equity, issuedBy, assignedTo, if (meeting.isBefore(ZonedDateTime.now())) null else meeting, comments)
+        } else {
+            return fromEntity(req, null, issuedBy, assignedTo, null, listOf())
+        }
+    }
+
+    fun completeRequest(sellId: Int, buyId: Int, equityId: Long, contractNumber: String?) {
+        requestRepository.deleteById(sellId)
+        requestRepository.deleteById(buyId)
+        equityService.delete(equityId, false)
+    }
 }

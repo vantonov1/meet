@@ -21,11 +21,11 @@ class AgentServiceTest {
         val phone = ContactDTO(ContactTypes.PHONE.name, "32232322")
         val mail = ContactDTO(ContactTypes.MAIL.name, "aaa@bbb.com")
         val telegram = ContactDTO(ContactTypes.TELEGRAM.name, "32232322")
-        val id = agentService.save(AgentDTO(null, "Bond", listOf(phone), 2, true)).block()
-        val created = agentService.findById(id!!).block()
-        assert(created != null && created.name == "Bond" && created.contacts.size == 1)
-        agentService.save(AgentDTO(id, "James Bond", listOf(mail, telegram), 2, true)).block()
-        val updated = agentService.findById(id).block()
-        assert(updated != null && updated.name == "James Bond" && updated.contacts.size == 2)
+        val id = agentService.save(AgentDTO(null, "Bond", listOf(phone), 2, true))
+        val created = agentService.findById(id!!)
+        assert(created.name == "Bond" && created.contacts.size == 1)
+        agentService.save(AgentDTO(id, "James Bond", listOf(mail, telegram), 2, true))
+        val updated = agentService.findById(id)
+        assert(updated.name == "James Bond" && updated.contacts.size == 2)
     }
 }

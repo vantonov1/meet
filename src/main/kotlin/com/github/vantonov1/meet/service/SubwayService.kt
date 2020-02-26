@@ -3,7 +3,7 @@ package com.github.vantonov1.meet.service
 import com.github.vantonov1.meet.entities.Subway
 import org.springframework.context.annotation.DependsOn
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.client.RestTemplate
 import javax.annotation.PostConstruct
 
 const val MOSCOW: Short = 1
@@ -26,12 +26,11 @@ class SubwayService {
     }
 
     private fun loadCitySubwayFromHH(city: Short) {
-        WebClient.create().get().uri("$API/$city").retrieve().bodyToMono(CitySubway::class.java).subscribe {
-            it?.lines?.forEach { line ->
+        RestTemplate().getForEntity("$API/$city", CitySubway::class.java)
+                .body?.lines?.forEach { line ->
                 subways = subways + line.stations.map { station ->
                     Subway(id = station.id, name = station.name, city = city, color = line.hex_color)
                 }.toList()
-            }
         }
     }
 }

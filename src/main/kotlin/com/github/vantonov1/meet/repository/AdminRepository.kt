@@ -1,14 +1,13 @@
 package com.github.vantonov1.meet.repository
 
 import com.github.vantonov1.meet.entities.Admin
-import org.springframework.data.r2dbc.repository.Query
-import org.springframework.data.repository.reactive.ReactiveCrudRepository
-import reactor.core.publisher.Flux
+import org.springframework.data.jdbc.repository.query.Query
+import org.springframework.data.repository.CrudRepository
 
-interface AdminRepository : ReactiveCrudRepository<Admin, Short> {
+interface AdminRepository : CrudRepository<Admin, Short> {
     @Query("select * from admin where email=:email")
-    fun findByEmail(email: String) : Flux<Admin>
+    fun findByEmail(email: String) : List<Admin>
 
     @Query("select * from admin where invitation=:invitation")
-    fun findByInvitation(invitation: String) : Flux<Admin>
+    fun findByInvitation(invitation: String) : List<Admin>
 }

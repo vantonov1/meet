@@ -9,7 +9,6 @@ import org.springframework.security.access.annotation.Secured
 import org.springframework.security.core.Authentication
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
-import reactor.core.publisher.Mono
 
 @RestController
 @RequestMapping("/api/auth/v1/agent")
@@ -29,19 +28,21 @@ class AgentController(private val agentService: AgentService, private val adminS
     @PutMapping
     @Transactional
     @Secured("ROLE_AGENT")
-    fun update(@RequestBody dto: AgentDTO) = getAgentId().flatMap {
-        if (dto.id == it)
-            agentService.save(dto).then()
+    fun update(@RequestBody dto: AgentDTO): Int? {
+        val agentId = getAgentId()
+        return if (dto.id == agentId)
+            agentService.save(dto)
         else
-            Mono.error(AccessDeniedException("Не является владельцем"))
+            throw AccessDeniedException("Не является владельцем")
     }
 
     @PutMapping("/active/{id}")
     @Transactional
     @Secured("ROLE_AGENT")
-    fun setActive(@PathVariable id: Int, @RequestParam active: Boolean) = getAgentId().flatMap {
-        assert(id == it)
-        agentService.setActive(it, active)
+    fun setActive(@PathVariable id: Int, @RequestParam active: Boolean): Boolean {
+        val agentId = getAgentId()
+        assert(id == agentId)
+        return agentService.setActive(agentId, active)
     }
 
     @DeleteMapping("/{id}")

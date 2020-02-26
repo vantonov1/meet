@@ -1,88 +1,42 @@
 package com.github.vantonov1.meet
 
-import com.github.vantonov1.meet.filter.BearerTokenReactiveAuthenticationManager
-import com.github.vantonov1.meet.filter.FirebaseAuthenticationConverter
+import com.github.vantonov1.meet.filter.FirebaseFilter
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
-import io.r2dbc.pool.ConnectionPool
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.context.annotation.Bean
-import org.springframework.data.r2dbc.connectionfactory.R2dbcTransactionManager
-import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories
+import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories
 import org.springframework.http.HttpMethod
-import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity
-import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
-import org.springframework.security.config.web.server.SecurityWebFiltersOrder
-import org.springframework.security.config.web.server.ServerHttpSecurity
-import org.springframework.security.web.server.SecurityWebFilterChain
-import org.springframework.security.web.server.authentication.AuthenticationWebFilter
-import org.springframework.security.web.server.context.ServerSecurityContextRepository
-import org.springframework.security.web.server.context.WebSessionServerSecurityContextRepository
-import org.springframework.security.web.server.util.matcher.OrServerWebExchangeMatcher
-import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers
-import org.springframework.transaction.TransactionManager
-import org.springframework.transaction.annotation.TransactionManagementConfigurer
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
 import org.springframework.web.cors.CorsConfiguration
-import org.springframework.web.reactive.config.CorsRegistry
-import org.springframework.web.reactive.config.EnableWebFlux
-import org.springframework.web.reactive.config.WebFluxConfigurer
+import org.springframework.web.servlet.config.annotation.EnableWebMvc
 
 
 @SpringBootApplication
-@EnableWebFlux
-@EnableWebFluxSecurity
-@EnableReactiveMethodSecurity(proxyTargetClass = true)
-@EnableR2dbcRepositories
+@EnableGlobalMethodSecurity(securedEnabled = true)
+@EnableWebMvc
+@EnableWebSecurity
+@EnableJdbcRepositories
 @Suppress("unused")
-class MeetApplication(val connectionFactory: ConnectionPool) : TransactionManagementConfigurer, WebFluxConfigurer {
-    override fun annotationDrivenTransactionManager(): TransactionManager {
-        return R2dbcTransactionManager(connectionFactory)
-    }
-
-    override fun addCorsMappings(corsRegistry: CorsRegistry) {
-        corsRegistry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000")
-                .allowedMethods("PUT", "GET", "POST", "DELETE")
-    }
-
-//    @Bean
-    fun firebaseAuthenticationFilter(): AuthenticationWebFilter {
-        val authenticationManager = BearerTokenReactiveAuthenticationManager()
-        val authenticationConverter = FirebaseAuthenticationConverter()
-        val webFilter = AuthenticationWebFilter(authenticationManager)
-        webFilter.setServerAuthenticationConverter(authenticationConverter)
-        webFilter.setRequiresAuthenticationMatcher(
-                OrServerWebExchangeMatcher(
-                        ServerWebExchangeMatchers.pathMatchers(HttpMethod.GET, "/api/auth/**"),
-                        ServerWebExchangeMatchers.pathMatchers(HttpMethod.POST, "/api/auth/**"),
-                        ServerWebExchangeMatchers.pathMatchers(HttpMethod.PUT, "/api/auth/**"),
-                        ServerWebExchangeMatchers.pathMatchers(HttpMethod.DELETE, "/api/auth/**")
-                )
-        )
-        return webFilter
-    }
-
-    @Bean
-    fun springSecurityFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
+class MeetApplication : WebSecurityConfigurerAdapter() {
+    override fun configure(http: HttpSecurity) {
         http
-                .addFilterAt(firebaseAuthenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
-                .cors().configurationSource {
+                .addFilterAt(FirebaseFilter(), BasicAuthenticationFilter::class.java)
+                .authorizeRequests()
+                .antMatchers("/api/public/**").permitAll()
+                .antMatchers("/api/auth/**").authenticated()
+                .and().cors().configurationSource {
                     val c = CorsConfiguration().applyPermitDefaultValues()
                     c.addAllowedMethod(HttpMethod.PUT)
                     c.addAllowedMethod(HttpMethod.DELETE)
                     c
                 }
                 .and().csrf().disable()
-        return http.build()
-    }
-
-    @Bean
-    fun securityContextRepository() : ServerSecurityContextRepository {
-        val securityContextRepository = WebSessionServerSecurityContextRepository();
-        securityContextRepository.setSpringSecurityContextAttrName("securityContext");
-        return securityContextRepository;
     }
 }
 

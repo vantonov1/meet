@@ -38,7 +38,8 @@ export default function BrowseAgents() {
                 </TableHead>
                 <TableBody>
                     {records.map(r =>
-                        <TableRow selected={r === selected}
+                        <TableRow key={r.id}
+                                  selected={r === selected}
                                   style={{cursor: 'pointer'}}
                                   onClick={() => dispatch(selectAgent(r))}>
                             <TableCell>{r.name}</TableCell>

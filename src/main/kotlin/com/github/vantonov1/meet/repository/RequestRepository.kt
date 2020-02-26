@@ -1,21 +1,19 @@
 package com.github.vantonov1.meet.repository
 
 import com.github.vantonov1.meet.entities.Request
-import org.springframework.data.r2dbc.repository.Modifying
-import org.springframework.data.r2dbc.repository.Query
-import org.springframework.data.repository.reactive.ReactiveCrudRepository
+import org.springframework.data.jdbc.repository.query.Modifying
+import org.springframework.data.jdbc.repository.query.Query
+import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
 
 @Repository
-interface RequestRepository : ReactiveCrudRepository<Request, Int> {
+interface RequestRepository : CrudRepository<Request, Int> {
     @Query("select * from request where issued_by=:issuedBy")
-    fun findByIssuer(issuedBy: Int): Flux<Request>
+    fun findByIssuer(issuedBy: Int): List<Request>
     @Query("select * from request where assigned_to=:assignedTo")
-    fun findByAssignee(assignedTo: Int): Flux<Request>
+    fun findByAssignee(assignedTo: Int): List<Request>
 
     @Modifying
     @Query("update request set about=:equityId where id=:id")
-    fun attachEquity(equityId: Long, id: Int): Mono<Boolean>
+    fun attachEquity(equityId: Long, id: Int): Boolean
 }

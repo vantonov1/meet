@@ -6,17 +6,20 @@ import com.github.vantonov1.meet.repository.CustomerRepository
 import org.springframework.context.annotation.DependsOn
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ServerWebInputException
-import reactor.core.publisher.Mono
 
 @Service
 @DependsOn("liquibase")
 class CustomerService(val repository: CustomerRepository, val contactService: ContactService) {
-    fun save(dto: CustomerDTO) = repository.save(dto.toEntity())
-            .map { it.id!! }
-            .flatMap { contactService.save(it, dto.contacts) }
+    fun save(dto: CustomerDTO): CustomerDTO {
+        val saved = repository.save(dto.toEntity())
+        return fromEntity(saved, contactService.save(saved.id!!, dto.contacts))
+    }
 
     fun delete(id: Int) = repository.deleteById(id)
-    fun findById(id: Int) = Mono.zip(repository.findById(id), contactService.findByPersonId(id))
-            .switchIfEmpty(Mono.error(ServerWebInputException("Пользователь не найден")))
-            .map {fromEntity(it.t1, it.t2.map { fromEntity(it) })}
+
+    fun findById(id: Int): CustomerDTO {
+        val c = repository.findById(id)
+        return if (c.isEmpty) throw ServerWebInputException("Пользователь не найден")
+        else fromEntity(c.get(), contactService.findByPersonId(id))
+    }
 }

@@ -7,13 +7,16 @@ import org.springframework.stereotype.Service
 
 @Service
 class CommentService(val commentRepository: CommentRepository) {
-    fun save(comment: CommentDTO) = commentRepository.save(comment.toEntity()).then()
+    fun save(comment: CommentDTO) = fromEntity(commentRepository.save(comment.toEntity()))
 
-    fun findCustomerCommentsByEquity(customer:Int, id: Long) = commentRepository.findCustomerCommentsByEquity(customer, id)
+    fun findCustomerCommentsByEquity(customer: Int, id: Long) = commentRepository.findCustomerCommentsByEquity(customer, id)
             .map { fromEntity(it) }
-            .collectList()
 
-    fun findSharedCommentsByEquities(ids: List<Long>) = commentRepository.findSharedCommentsByEquities(ids)
-            .map { fromEntity(it) }
-            .collectMultimap { it.about }
+    fun findSharedCommentsByEquities(ids: List<Long>): Map<Long, MutableList<CommentDTO>> {
+        val result = mutableMapOf<Long, MutableList<CommentDTO>>()
+        commentRepository.findSharedCommentsByEquities(ids)
+                .map { fromEntity(it) }
+                .forEach { result.getOrPut(it.about, {mutableListOf()}).add(it) }
+        return result
+    }
 }

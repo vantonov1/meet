@@ -1,4 +1,4 @@
-package com.github.vantonov1.meet.controller
+package com.github.vantonov1.meet.controller.auth
 
 import com.github.vantonov1.meet.service.MessagingService
 import org.springframework.transaction.annotation.Transactional
