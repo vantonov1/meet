@@ -30,18 +30,15 @@ class EquityServiceTest {
         val equity = Equity(null, 1, 1,
                 2, 1, null, null, null, 0.0, 0.0, 100500, null, 1, "test", null, null)
         val id = equityService.save(fromEntity(equity, null, null, listOf("1_1.jpg", "2_2.jpg"), null))
-        assert(id != null)
-        val retrieved = equityService.findById(id!!)
-        assert(retrieved != null && retrieved.id!! == id && retrieved.info == "test")
-        assert(retrieved?.photos != null && retrieved.photos!!.containsAll(listOf("1_1.jpg", "2_2.jpg")))
+        val retrieved = equityService.findById(id)
+        assert(retrieved.id!! == id && retrieved.info == "test")
+        assert(retrieved.photos != null && retrieved.photos!!.containsAll(listOf("1_1.jpg", "2_2.jpg")))
 
         equityService.save(fromEntity(equity.copy(id = id, info = "updated"), null, null, null, null))
         val updated = equityService.findById(id)
-        assert(updated != null && updated.id!! == id && updated.info == "updated")
+        assert(updated.id!! == id && updated.info == "updated")
 
         equityService.delete(id, true)
-        val hidden = equityService.findById(id)
-        assert(hidden == null)
     }
 
     @Test

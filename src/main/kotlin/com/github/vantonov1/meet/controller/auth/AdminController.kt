@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/auth/v1/admin")
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("*")
 @Suppress("unused")
 class AdminController(val service: AdminService) {
     @PostMapping("/invite")

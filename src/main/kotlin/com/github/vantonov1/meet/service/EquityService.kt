@@ -1,12 +1,9 @@
 package com.github.vantonov1.meet.service
 
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.vantonov1.meet.dto.EquityDTO
 import com.github.vantonov1.meet.dto.LocationDTO
 import com.github.vantonov1.meet.dto.PriceRangeDTO
 import com.github.vantonov1.meet.dto.fromEntity
-import com.github.vantonov1.meet.entities.Equity
 import com.github.vantonov1.meet.entities.Filter
 import com.github.vantonov1.meet.repository.EquityPriceRangeRepository
 import com.github.vantonov1.meet.repository.EquityRepository
@@ -41,10 +38,13 @@ class EquityService(
     }
 
     fun findByIds(ids: List<Long>): List<EquityDTO> {
-        val equities = equityRepository.findAllById(ids)
-        val photos = photos.findAllByEquityId(ids)
-        val comments = comments.findSharedCommentsByEquities(ids)
-        return equities.map { e -> fromEntity(e, districts.findById(e.district), stations.findById(e.subway), photos[e.id]?.map { p -> p.id }, comments[e.id]) }
+        return if(ids.isNotEmpty()) {
+            val equities = equityRepository.findAllById(ids)
+            val photos = photos.findAllByEquityId(ids)
+            val comments = comments.findSharedCommentsByEquities(ids)
+            equities.map { e -> fromEntity(e, districts.findById(e.district), stations.findById(e.subway), photos[e.id]?.map { p -> p.id }, comments[e.id]) }
+        } else
+            listOf()
     }
 
     fun find(f: Filter): List<LocationDTO> {
@@ -91,7 +91,7 @@ class EquityService(
     @PostConstruct
     @Suppress("unused")
     private fun loadFakeEquities() {
-        val equities = jacksonObjectMapper().readValue(javaClass.getResource("/fake_equities.json"), object : TypeReference<List<Equity>>() {})
-        equityRepository.saveAll(equities)
+//        val equities = jacksonObjectMapper().readValue(javaClass.getResource("/fake_equities.json"), object : TypeReference<List<Equity>>() {})
+//        equityRepository.saveAll(equities)
     }
 }

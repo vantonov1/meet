@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/public/v1/dir")
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("*")
 @Suppress("unused")
 class DirectoriesController(
         private val districtService: DistrictService,

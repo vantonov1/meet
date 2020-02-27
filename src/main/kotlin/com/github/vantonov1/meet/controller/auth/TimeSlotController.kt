@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/auth/v1/timeslots")
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("*")
 @Suppress("unused")
 class TimeSlotController (val service: TimeSlotService) {
     @PostMapping

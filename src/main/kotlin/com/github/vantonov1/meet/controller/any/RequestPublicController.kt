@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/public/v1/request")
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("*")
 @Suppress("unused")
 class RequestPublicController(private val requestService: RequestService) {
     @PostMapping

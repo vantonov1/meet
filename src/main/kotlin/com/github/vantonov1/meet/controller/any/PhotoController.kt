@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 
 @RestController
 @RequestMapping("/api/public/v1/photo")
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("*")
 @Suppress("unused")
 class PhotoController(val service: PhotoService) {
 //    @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])

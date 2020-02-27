@@ -40,8 +40,8 @@ class AdminService(val repository: AdminRepository, val invitationSender: Invita
     @PostConstruct
     @Suppress("unused")
     private fun init() {
-        val admin = repository.findByEmail(adminEmail)
-        if (admin.isEmpty())
-            repository.save(Admin(null, adminEmail, adminEmail))
+//        val admin = repository.findByEmail(adminEmail)
+//        if (admin.isEmpty())
+//            repository.save(Admin(null, adminEmail, adminEmail))
     }
 }

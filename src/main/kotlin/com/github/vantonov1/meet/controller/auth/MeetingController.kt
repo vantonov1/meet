@@ -10,7 +10,7 @@ import java.time.ZonedDateTime
 
 @RestController
 @RequestMapping("/api/auth/v1/meeting")
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("*")
 @Suppress("unused")
 class MeetingController(private val meetingService: MeetingService) {
     @PostMapping

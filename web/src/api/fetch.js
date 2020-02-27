@@ -1,7 +1,8 @@
 import {getAuthToken} from "./FirebaseAPI";
 
 export function baseURL() {
-    return 'http://localhost:8080'
+    // return 'http://localhost:8080'
+    return window.location.origin
 }
 
 export async function fetchJSON(url, options) {

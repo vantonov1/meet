@@ -63,7 +63,7 @@ fun sendMessage(messagingToken: String?, text: String): String {
                 .setNotification(Notification.builder().setTitle(text).setBody(text).build())
                 .setToken(messagingToken)
                 .setFcmOptions(FcmOptions.withAnalyticsLabel("debug"))
-                .setWebpushConfig(WebpushConfig.builder().setFcmOptions(WebpushFcmOptions.withLink("http://localhost:3000")).build())
+                .setWebpushConfig(WebpushConfig.builder().setFcmOptions(WebpushFcmOptions.withLink("https://meetilka.appspot.com")).build())
                 .build()
         return FirebaseMessaging.getInstance().send(message)
     } else {

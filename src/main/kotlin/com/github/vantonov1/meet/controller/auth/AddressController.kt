@@ -10,7 +10,7 @@ val FIAS = mapOf(Pair(2, "7800000000000"))
 
 @RestController
 @RequestMapping("/api/auth/v1/address")
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("*")
 @Suppress("unused")
 class AddressController {
 

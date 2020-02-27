@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/auth/v1/agent")
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("*")
 @Suppress("unused")
 class AgentController(private val agentService: AgentService, private val adminService: AdminService) {
     @PostMapping("/invite")

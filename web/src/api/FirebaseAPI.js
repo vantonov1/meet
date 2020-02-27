@@ -18,9 +18,9 @@ const firebaseApp = firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 messaging.usePublicVapidKey("BHPJqTIEee5wJejOzxUjjyBHcPgCfjl0jg1fNVDnFHqA6N-iqJDX9lx9SyTJM7LW1kfmtdk-duFDQ7X3eNEClEE");
 
-function registerToken() {
+function registerMessagingToken() {
     messaging.getToken().then((refreshedToken) => {
-       if (agentId) {
+        if (agentId) {
             MessagingAPI.registerToken(agentId, refreshedToken)
                 .catch(e => console.log("Unable to send token to server", e));
         }
@@ -37,32 +37,29 @@ export function onMessageReceived(callback) {
 }
 
 export function initFirebase() {
-    if (localStorage.getItem("signedToFirebase")) {
-        return new Promise(function (resolve, reject) {
-            const unsubscribe = firebaseApp.auth().onAuthStateChanged(function (user) {
-                unsubscribe();
-                user.getIdTokenResult().then((result) => {
-                    let admin = result.claims["admin"];
-                    let agent = result.claims["agent"];
-                    roles = [];
-                    if (admin) roles.push('ROLE_ADMIN');
-                    if (agent) roles.push('ROLE_AGENT');
-                    agentId = agent;
+    return new Promise(function (resolve, reject) {
+        firebaseApp.auth().onAuthStateChanged(function (user) {
+            if (user) user.getIdTokenResult().then(result => {
+                let admin = result.claims["admin"];
+                let agent = result.claims["agent"];
+                roles = [];
+                if (admin) roles.push('ROLE_ADMIN');
+                if (agent) roles.push('ROLE_AGENT');
+                agentId = agent;
 
-                    registerToken();
-                    messaging.onTokenRefresh(() => {
-                        registerToken();
-                    });
+                registerMessagingToken();
+                messaging.onTokenRefresh(() => {
+                    registerMessagingToken();
+                });
 
-                    resolve(user.uid)
-                })
-            });
+                if (localStorage.getItem("signedToFirebase"))
+                    resolve(user.uid);
+                else
+                    localStorage.setItem("signedToFirebase", "true")
+            })
         });
-    } else {
-        firebase.auth().onAuthStateChanged(() => {
-            localStorage.setItem("signedToFirebase", "true");
-        });
-    }
+        if (!localStorage.getItem("signedToFirebase")) resolve(null)
+    });
 }
 
 let roles = null;

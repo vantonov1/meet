@@ -14,12 +14,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
 import org.springframework.web.cors.CorsConfiguration
-import org.springframework.web.servlet.config.annotation.EnableWebMvc
 
 
 @SpringBootApplication
 @EnableGlobalMethodSecurity(securedEnabled = true)
-@EnableWebMvc
 @EnableWebSecurity
 @EnableJdbcRepositories
 @Suppress("unused")
