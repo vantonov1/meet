@@ -1,5 +1,5 @@
 import React from 'react';
-import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom';
+import {HashRouter as Router, Redirect, Route, Switch} from 'react-router-dom';
 import Error from "../show-error/view";
 import Success from "../show-success/view";
 import MainAppBar from "../app-bar/view";

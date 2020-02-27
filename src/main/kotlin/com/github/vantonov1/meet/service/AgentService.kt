@@ -50,8 +50,11 @@ class AgentService(val repository: AgentRepository, val contactService: ContactS
 
     fun findAll(): List<AgentDTO> {
         val agents = repository.findAll()
-        val contacts = contactService.findAllByPersonId(agents.map { it.id!! })
-        return agents.map { agent -> fromEntity(agent, contacts[agent.id] ?: listOf()) }
+        return if(agents.toList().isNotEmpty()) {
+            val contacts = contactService.findAllByPersonId(agents.map { it.id!! })
+            agents.map { agent -> fromEntity(agent, contacts[agent.id] ?: listOf()) }
+        } else
+            listOf()
     }
 
     fun findById(id: Int): AgentDTO {
