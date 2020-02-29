@@ -1,10 +1,10 @@
-import {fetchEmpty, fetchJSON} from "./fetch";
+import {createURL, fetchEmpty, fetchJSON} from "./fetch";
 
 const BASE = '/api/auth/v1/request';
 
 export default class RequestAPI {
     static findRequests(customer, agent) {
-        let url = new URL(BASE);
+        let url = createURL(BASE);
         if (customer)
             url.searchParams.append("issuedBy", customer);
         if (agent)
@@ -17,13 +17,13 @@ export default class RequestAPI {
     }
 
     static changeRequestEquity(id, equityId) {
-        let url = new URL(BASE + '/' + id);
+        let url = createURL(BASE + '/' + id);
         url.searchParams.append("equityId", equityId);
         return fetchEmpty(url, {method: 'PUT'})
     }
 
     static completeRequest(sellId, buyId, equityId, contractNumber) {
-        let url = new URL(BASE + '/complete');
+        let url = createURL(BASE + '/complete');
         url.searchParams.append("sellId", sellId);
         url.searchParams.append("buyId", buyId);
         url.searchParams.append("equityId", equityId);

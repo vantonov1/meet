@@ -1,4 +1,4 @@
-import {fetchEmpty, fetchJSON} from "./fetch";
+import {createURL, fetchEmpty, fetchJSON} from "./fetch";
 
 const BASE = '/api/auth/v1/meeting';
 
@@ -12,7 +12,7 @@ export default class RequestAPI {
     }
 
     static findMeetings(customer, agent, dateMin, dateMax) {
-        let url = new URL(BASE);
+        let url = createURL(BASE);
         if (customer)
             url.searchParams.append("attends", customer);
         if (agent)
@@ -23,7 +23,7 @@ export default class RequestAPI {
     }
 
     static rescheduleMeeting(id, time) {
-        let url = new URL(BASE + '/' + id);
+        let url = createURL(BASE + '/' + id);
         url.searchParams.append("schedule", time);
         return fetchEmpty(url, {
             method: 'PUT'

@@ -1,5 +1,9 @@
 import {getAuthToken} from "./FirebaseAPI";
 
+export function createURL(url) {
+    return new URL(url, window.location.origin)
+}
+
 export async function fetchJSON(url, options) {
     let optionsWithAuth = await setOptions(options);
     const response = await fetch(url, optionsWithAuth);
@@ -22,7 +26,8 @@ async function setOptions(options) {
     let authToken = await getAuthToken();
     if (authToken !== null) {
         if (options)
-            options.headers = {...options.headers,
+            options.headers = {
+                ...options.headers,
                 Authorization: 'Bearer ' + authToken,
                 Accept: 'application/json'
             };
@@ -34,7 +39,8 @@ async function setOptions(options) {
         };
     } else {
         if (options)
-            options.headers = {...options.headers,
+            options.headers = {
+                ...options.headers,
                 Accept: 'application/json'
             };
         else options = {

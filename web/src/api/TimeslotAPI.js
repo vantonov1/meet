@@ -1,10 +1,10 @@
-import {fetchEmpty, fetchJSON} from "./fetch";
+import {createURL, fetchEmpty, fetchJSON} from "./fetch";
 
 const BASE = '/api/auth/v1/timeslots';
 
 export default class TimeSlotAPI {
     static createTimeSlots(slots, requestId) {
-        let url = new URL(BASE);
+        let url = createURL(BASE);
         url.searchParams.append("requestId", requestId);
         return fetchEmpty(url, {
             method: 'POST', body: JSON.stringify(slots), headers: {
@@ -14,13 +14,13 @@ export default class TimeSlotAPI {
     }
 
     static async loadTimeSlots(requestId) {
-        let url = new URL(BASE);
+        let url = createURL(BASE);
         url.searchParams.append("requestId", requestId);
         return fetchJSON(url);
     }
 
     static async collectTimeTable(agentId, buyerId, sellerId) {
-        let url = new URL(BASE + '/table');
+        let url = createURL(BASE + '/table');
         url.searchParams.append("agentId", agentId);
         url.searchParams.append("buyerId", buyerId);
         url.searchParams.append("sellerId", sellerId);

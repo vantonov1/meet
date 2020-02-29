@@ -1,9 +1,9 @@
-import {fetchJSON} from "./fetch";
+import {createURL, fetchJSON} from "./fetch";
 
 const BASE = 'https://nominatim.openstreetmap.org';
 
 export function geocode(city, street, building) {
-    let url = new URL(BASE + '/search');
+    let url = createURL(BASE + '/search');
     url.searchParams.append("format", "jsonv2");
     url.searchParams.append("countrycodes", "ru");
     url.searchParams.append("city", city);
@@ -12,7 +12,7 @@ export function geocode(city, street, building) {
 }
 
 export function reverseGeocode(lon, lat) {
-    let url = new URL(BASE + '/reverse');
+    let url = createURL(BASE + '/reverse');
     url.searchParams.append("format", "jsonv2");
     url.searchParams.append("lat", lat);
     url.searchParams.append("lon", lon);

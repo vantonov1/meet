@@ -1,11 +1,11 @@
-import {fetchJSON} from "./fetch";
+import {createURL, fetchJSON} from "./fetch";
 
 export default class AddressAPI {
     static BASE = '/api/auth/v1/address';
 
     static fetchStreets(city, query) {
         if (city && city !== 0 && query && query !== '') {
-            let url = new URL(this.BASE);
+            let url = createURL(this.BASE);
             url.searchParams.append("query", query);
             url.searchParams.append("city", city);
             return fetchJSON(url)

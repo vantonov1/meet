@@ -1,10 +1,10 @@
-import {fetchEmpty, fetchJSON} from "./fetch";
+import {createURL, fetchEmpty, fetchJSON} from "./fetch";
 
 export default class EquityAPI {
     static BASE = '/api/auth/v1/equities';
 
     static create(dto, fromRequest) {
-        let url = new URL(this.BASE);
+        let url = createURL(this.BASE);
         if (fromRequest)
             url.searchParams.append("fromRequest", fromRequest);
         return fetchJSON(url, {

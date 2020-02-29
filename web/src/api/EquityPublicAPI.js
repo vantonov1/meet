@@ -1,10 +1,10 @@
-import {fetchJSON} from "./fetch";
+import {createURL, fetchJSON} from "./fetch";
 
 export default class EquityPublicAPI {
     static BASE = '/api/public/v1/equities';
 
     static findByIds(ids) {
-        let url = new URL(this.BASE + "/ids");
+        let url = createURL(this.BASE + "/ids");
         url.searchParams.append("ids", ids);
         return fetchJSON(url)
     }
@@ -30,7 +30,7 @@ export default class EquityPublicAPI {
     }
 
     static createFilterURL(path, filter) {
-        let url = new URL(this.BASE + path);
+        let url = createURL(this.BASE + path);
         url.searchParams.append("type", filter.type);
         url.searchParams.append("city", filter.city);
         if (filter.district.length !== 0) {
@@ -43,7 +43,7 @@ export default class EquityPublicAPI {
     }
 
     static async findEquitiesByAddress(type, city, street, building) {
-        let url = new URL(this.BASE + "/address");
+        let url = createURL(this.BASE + "/address");
         url.searchParams.append("type", type);
         url.searchParams.append("city", city);
         url.searchParams.append("street", street);
