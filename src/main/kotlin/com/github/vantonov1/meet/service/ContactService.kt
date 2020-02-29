@@ -10,9 +10,9 @@ class ContactService(private val repository: ContactRepository) {
     fun findByPersonId(of: Int) = repository.findByOf(of).map { fromEntity(it) }
 
     fun findAllByPersonId(ids: List<Int>): Map<Int, MutableList<ContactDTO>> {
-        val result = mapOf<Int, MutableList<ContactDTO>>()
+        val result = mutableMapOf<Int, MutableList<ContactDTO>>()
         repository.findAllByOf(ids)
-                .forEach { result.getOrDefault(it.of, mutableListOf()).add(fromEntity(it)) }
+                .forEach { result.getOrPut(it.of, {mutableListOf()}).add(fromEntity(it)) }
         return result
     }
 
