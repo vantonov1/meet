@@ -8,7 +8,7 @@ import React, {useEffect, useState} from "react";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import CreateCustomerRequest from "../create-request/view";
-import {createRequest} from "../create-request/slice";
+import {createRequest, setAbout} from "../create-request/slice";
 import {Link as RouterLink} from 'react-router-dom';
 import {getRoles} from "../../api/FirebaseAPI";
 import {loadAgent, setActive} from "./slice";
@@ -51,7 +51,10 @@ export default function MainAppBar() {
             <Typography variant="h6" className={classes.title}>
                 {title}
             </Typography>
-            {/*!isAdmin && !isAgent &&*/ <Button color={"inherit"} onClick={() => dispatch(createRequest())}>
+            {/*!isAdmin && !isAgent &&*/ <Button color={"inherit"} onClick={() => {
+                dispatch(setAbout(null));
+                dispatch(createRequest())
+            }}>
                 Хочу сдать/продать
             </Button>}
             {agent && <Button style={{color: agent.active ? 'lightgreen' :'gray'}} onClick={() => dispatch(setActive(!agent.active))}>

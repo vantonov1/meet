@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
-import {Divider, MenuItem, TextField} from "@material-ui/core";
+import {Dialog, DialogActions, DialogContent, Divider, List, MenuItem, TextField} from "@material-ui/core";
 import {
     changeRequestEquity,
     completeRequest,
@@ -18,11 +18,13 @@ import {showCreateMeeting} from "../create-meeting/slice";
 import CreateMeeting from "../create-meeting/view";
 import {isBefore} from "date-fns";
 import parse from 'date-fns/parseISO'
-import SelectEquity from "../common/select-equity";
 import EnterValue from "../common/enter-value";
 import BrowseList from "../common/browse-list";
 import {onMessageReceived} from "../../api/FirebaseAPI";
 import {showSuccess} from "../show-success/slice";
+import {Equity} from "../common/equities-list";
+import Button from "@material-ui/core/Button";
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
 const compareDates = (a, b) => a.meeting ? b.meeting ? isBefore(parse(a.meeting), parse(b.meeting)) ? -1 : 1 : -1 : 1;
 
@@ -38,7 +40,7 @@ export default function BrowseAssignedRequests() {
 
     useEffect(() => {
         onMessageReceived(m => {
-            dispatch(showSuccess(m.text))
+            dispatch(showSuccess(m.text));
             dispatch(updateRequests())
         })
     });
@@ -105,6 +107,40 @@ export default function BrowseAssignedRequests() {
         </EnterValue>}
     </>
 
+}
+
+function SelectEquity(props) {
+    const {records} = useSelector(state => state.browseAssignedRequests, shallowEqual);
+    const {open, city, type, onSelect, onCancel} = props;
+    const suitable = mergeRequests(records).filter(r => r.about?.type === type && r.about?.address.city === city && r.buyer === undefined);
+    const classes = makeStyles(theme => ({
+        root: {
+            display: 'flex',
+            width: 400,
+            height: "100%",
+            marginTop: theme.spacing(1),
+            marginBottom: theme.spacing(1)
+        },
+    }))();
+
+
+    return <Dialog open={open}>
+        <DialogContent>
+            <List className={classes.root}>
+                {suitable.map(r =>
+                    <Equity key={r.about.id} selected={false}
+                            {...r.about}
+                            onClick={() => onSelect(r.about)}
+                    />
+                )}
+            </List>
+            <DialogActions>
+                <Button onClick={() => onCancel()}>
+                    Отменить
+                </Button>
+            </DialogActions>
+        </DialogContent>
+    </Dialog>
 }
 
 function mergeRequests(requests) {
