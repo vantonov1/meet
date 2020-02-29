@@ -1,6 +1,6 @@
 import {fetchJSON} from "./fetch";
 
-const BASE='https://nominatim.openstreetmap.org';
+const BASE = 'https://nominatim.openstreetmap.org';
 
 export function geocode(city, street, building) {
     let url = new URL(BASE + '/search');

@@ -1,6 +1,6 @@
-import {baseURL, fetchEmpty} from "./fetch";
+import {fetchEmpty} from "./fetch";
 
-const BASE = baseURL() + '/api/auth/v1/messaging';
+const BASE = '/api/auth/v1/messaging';
 
 export class MessagingAPI {
     static registerToken(personId, token) {

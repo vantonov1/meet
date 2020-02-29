@@ -1,6 +1,6 @@
-import {baseURL, fetchEmpty, fetchJSON} from "./fetch";
+import {fetchEmpty, fetchJSON} from "./fetch";
 
-const BASE = baseURL() + '/api/auth/v1/timeslots';
+const BASE = '/api/auth/v1/timeslots';
 
 export default class TimeSlotAPI {
     static createTimeSlots(slots, requestId) {

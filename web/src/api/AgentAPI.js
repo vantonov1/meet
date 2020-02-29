@@ -1,6 +1,6 @@
-import {baseURL, fetchJSON} from "./fetch";
+import {fetchJSON} from "./fetch";
 
-const BASE = baseURL() + '/api/auth/v1/agent';
+const BASE = '/api/auth/v1/agent';
 
 export default class AgentAPI {
     static loadAgents() {
@@ -21,9 +21,11 @@ export default class AgentAPI {
     static register(invitation, dto) {
         let url = new URL(BASE + '/register');
         url.searchParams.append("invitation", invitation);
-        return fetchJSON(url, {method: 'PUT', body: JSON.stringify(dto), headers: {
+        return fetchJSON(url, {
+            method: 'PUT', body: JSON.stringify(dto), headers: {
                 'Content-Type': 'application/json'
-            }})
+            }
+        })
     }
 
     static setActive(agentId, active) {

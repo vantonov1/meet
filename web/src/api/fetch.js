@@ -1,12 +1,7 @@
 import {getAuthToken} from "./FirebaseAPI";
 
-export function baseURL() {
-    // return 'http://localhost:8080'
-    return window.location.origin
-}
-
 export async function fetchJSON(url, options) {
-    let optionsWithAuth = await setAuth(options);
+    let optionsWithAuth = await setOptions(options);
     const response = await fetch(url, optionsWithAuth);
     if (response.ok) {
         return await response.json()
@@ -16,23 +11,38 @@ export async function fetchJSON(url, options) {
 }
 
 export async function fetchEmpty(url, options) {
-    let optionsWithAuth = await setAuth(options);
+    let optionsWithAuth = await setOptions(options);
     const response = await fetch(url, optionsWithAuth);
     if (!response.ok) {
         await handleError(response);
     }
 }
 
-async function setAuth(options) {
+async function setOptions(options) {
     let authToken = await getAuthToken();
-    if (authToken !== null)
+    if (authToken !== null) {
         if (options)
-            options.headers = {...options.headers, Authorization: 'Bearer ' + authToken};
+            options.headers = {...options.headers,
+                Authorization: 'Bearer ' + authToken,
+                Accept: 'application/json'
+            };
         else options = {
             headers: {
-                Authorization: 'Bearer ' + authToken
+                Authorization: 'Bearer ' + authToken,
+                Accept: 'application/json'
             }
         };
+    } else {
+        if (options)
+            options.headers = {...options.headers,
+                Accept: 'application/json'
+            };
+        else options = {
+            headers: {
+                Accept: 'application/json'
+            }
+        };
+    }
     return options;
 }
 

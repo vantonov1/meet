@@ -1,6 +1,6 @@
-import {baseURL, fetchJSON} from "./fetch";
+import {fetchJSON} from "./fetch";
 
-const BASE = baseURL() + '/api/auth/v1/admin';
+const BASE = '/api/auth/v1/admin';
 
 export default class AdminAPI {
     static loadAdmin() {

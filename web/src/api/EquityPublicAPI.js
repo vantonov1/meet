@@ -1,7 +1,7 @@
-import {baseURL, fetchJSON} from "./fetch";
+import {fetchJSON} from "./fetch";
 
 export default class EquityPublicAPI {
-    static BASE = baseURL() + '/api/public/v1/equities';
+    static BASE = '/api/public/v1/equities';
 
     static findByIds(ids) {
         let url = new URL(this.BASE + "/ids");
@@ -23,6 +23,7 @@ export default class EquityPublicAPI {
         }
         return fetchJSON(url)
     }
+
     static getPriceRange(filter) {
         let url = this.createFilterURL('/prices', filter);
         return fetchJSON(url)

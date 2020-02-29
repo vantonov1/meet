@@ -1,6 +1,6 @@
-import {baseURL, fetchEmpty, fetchJSON} from "./fetch";
+import {fetchEmpty, fetchJSON} from "./fetch";
 
-const BASE = baseURL() + '/api/auth/v1/meeting';
+const BASE = '/api/auth/v1/meeting';
 
 export default class RequestAPI {
     static createMeeting(dto) {
