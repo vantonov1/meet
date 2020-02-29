@@ -42,39 +42,36 @@ class TimeSlotService(private val repository: TimeSlotRepository, private val me
                 .flatten()
                 .sortedWith(Comparator { a, b -> if (a.date == b.date) a.timeMin.compareTo(b.timeMin) else a.date.compareTo(b.date) })
                 .forEach {
-                    if (joined.isEmpty() || joined.last().date != it.date || joined.last().timeMax < it.timeMin)
-                        joined.add(it)
+                    if (joined.isEmpty() || joined.last().date != it.date || joined.last().timeMax <= it.timeMin)
+                        joined.add(it)//no intersection
                     else {
                         val last = joined.last()
                         joined.removeAt(joined.size - 1)
-                        if (last.date == it.date && last.timeMin == it.timeMin && last.timeMax == it.timeMin) {
-                            joined.add(MeetingTimeTableEntryDTO(it.date, last.timeMax, it.timeMax,
-                                    last.agent ?: false || it.agent ?: false,
-                                    last.seller ?: false || it.seller ?: false,
-                                    last.buyer ?: false || it.buyer ?: false
-                            ))
-                        } else {
+                        if (last.timeMin == it.timeMin && last.timeMax == it.timeMax)
+                            joined.add(joinEntries(it, last, it.timeMax))// same time, just merge
+                        else {
                             if (last.timeMin != it.timeMin)
-                                joined.add(last.copy(timeMax = it.timeMin))
-                            if (it.timeMax > last.timeMax) {
-                                joined.add(MeetingTimeTableEntryDTO(last.date, it.timeMin, last.timeMax,
-                                        last.agent ?: false || it.agent ?: false,
-                                        last.seller ?: false || it.seller ?: false,
-                                        last.buyer ?: false || it.buyer ?: false
-                                ))
-                                joined.add(it.copy(timeMin = last.timeMax))
+                                joined.add(last.copy(timeMax = it.timeMin))//last part before
+                            if (last.timeMax < it.timeMax) {
+                                joined.add(joinEntries(it, last, last.timeMax))//intersection part
+                                joined.add(it.copy(timeMin = last.timeMax))//new part after
                             } else {
-                                joined.add(MeetingTimeTableEntryDTO(last.date, it.timeMin, it.timeMax,
-                                        last.agent ?: false || it.agent ?: false,
-                                        last.seller ?: false || it.seller ?: false,
-                                        last.buyer ?: false || it.buyer ?: false
-                                ))
-                                joined.add(last.copy(timeMin = it.timeMax))
+                                joined.add(joinEntries(it, last, it.timeMax))//intersection part
+                                if (last.timeMax != it.timeMax)
+                                    joined.add(last.copy(timeMin = it.timeMax))//last part after
                             }
                         }
                     }
                 }
         return joined
+    }
+
+    private fun joinEntries(it: MeetingTimeTableEntryDTO, last: MeetingTimeTableEntryDTO, timeMax: String): MeetingTimeTableEntryDTO {
+        return MeetingTimeTableEntryDTO(it.date, it.timeMin, timeMax,
+                if (last.agent != null || it.agent != null) false else null,
+                last.seller ?: false || it.seller ?: false,
+                last.buyer ?: false || it.buyer ?: false
+        )
     }
 
     private fun createAgentTable(agentMeetings: List<Meeting>): List<MeetingTimeTableEntryDTO> {
