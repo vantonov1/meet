@@ -54,7 +54,8 @@ export default function BrowseAgents() {
             <AddIcon/>
             Добавить агента
         </Fab>
-        <Invite open={showInvite}
+        <Invite page="agent"
+                open={showInvite}
                 invitation={invitation}
                 onEmail={(email) => dispatch(inviteAdmin(email))}
                 onCancel={() => setShowInvite(false)}

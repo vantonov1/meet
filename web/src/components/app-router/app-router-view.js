@@ -46,10 +46,10 @@ export default function AppRouter(props) {
                 <Route path="/admin/administrators" exact>
                     <BrowseAdmin tab="1"/>
                 </Route>
-                <Route path="/admin/administrators/registration">
+                <Route path="/registration/administrator">
                     <RegisterAdmin/>
                 </Route>
-                <Route path="/admin/agents/registration">
+                <Route path="/registration/agent">
                     <RegisterAgent/>
                 </Route>
             </Switch>

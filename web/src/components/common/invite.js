@@ -5,7 +5,7 @@ import ShowInfo from "./showInfo";
 import Typography from "@material-ui/core/Typography";
 
 export function Invite(props) {
-    const {open, onEmail, onOk, onCancel, invitation} = props;
+    const {open, page, onEmail, onOk, onCancel, invitation} = props;
     const [email, setEmail] = useState('');
     return <>
         <EnterValue open={open} onCancel={onCancel} onOk={() => {
@@ -23,7 +23,7 @@ export function Invite(props) {
                 Приглашение отправлено по почте.
                 Если письмо не дошло, отправьте ссылку для регистрации любым способом:
             </Typography>
-            <Input multiline value={window.location.origin + window.location.pathname + '/registration?invitation=' + invitation} fullWidth/>
+            <Input multiline value={window.location.origin + '/#/registration/' + page + '?invitation=' + invitation} fullWidth/>
         </ShowInfo>}
     </>
 }

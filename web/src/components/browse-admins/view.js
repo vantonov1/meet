@@ -34,7 +34,8 @@ export default function BrowseAdministrators() {
                 Добавить администратора
             </Fab>
         </BrowseList>
-        <Invite open={showInvite}
+        <Invite page="admin"
+                open={showInvite}
                 invitation={invitation}
                 onEmail={(email) => dispatch(inviteAdmin(email))}
                 onCancel={() => setShowInvite(false)}

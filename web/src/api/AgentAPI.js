@@ -14,7 +14,7 @@ export default class AgentAPI {
     static invite(email) {
         let url = createURL(BASE + "/invite");
         url.searchParams.append("email", email);
-        url.searchParams.append("base", window.location.origin + window.location.hash + '/registration?invitation=');
+        url.searchParams.append("base", window.location.origin + '/#/registration/agent?invitation=');
         return fetchJSON(url, {method: 'POST'})
     }
 
