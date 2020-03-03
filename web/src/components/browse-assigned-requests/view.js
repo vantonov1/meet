@@ -21,7 +21,6 @@ import parse from 'date-fns/parseISO'
 import EnterValue from "../common/enter-value";
 import BrowseList from "../common/browse-list";
 import {onMessageReceived} from "../../api/FirebaseAPI";
-import {showSuccess} from "../show-success/slice";
 import {Equity} from "../common/equities-list";
 import Button from "@material-ui/core/Button";
 import makeStyles from "@material-ui/core/styles/makeStyles";
@@ -40,7 +39,6 @@ export default function BrowseAssignedRequests() {
 
     useEffect(() => {
         onMessageReceived(m => {
-            dispatch(showSuccess(m.text));
             dispatch(updateRequests())
         })
     });
@@ -128,7 +126,7 @@ function SelectEquity(props) {
         <DialogContent>
             <List className={classes.root}>
                 {suitable.map(r =>
-                    <Equity key={r.about.id} selected={false}
+                    <Equity key={r.id} selected={false}
                             {...r.about}
                             onClick={() => onSelect(r.about)}
                     />

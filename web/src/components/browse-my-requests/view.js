@@ -1,7 +1,7 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import {MenuItem} from "@material-ui/core";
-import {deleteRequest, loadRequests, selectRequest} from "./slice";
+import {deleteRequest, loadRequests, selectRequest, updateRequests} from "./slice";
 import {RequestListItem} from "../common/list-items";
 import ConfirmAction from "../common/confirm-action";
 import Menu from "@material-ui/core/Menu";
@@ -10,6 +10,7 @@ import {showEditTimeSlots} from "../edit-timeslots/slice";
 import EditTimeSlots from "../edit-timeslots/view";
 import CreateComment from "../create-comment/view";
 import {showCreateComment} from "../create-comment/slice";
+import {onMessageReceived} from "../../api/FirebaseAPI";
 
 
 export default function BrowseMyRequests() {
@@ -17,6 +18,12 @@ export default function BrowseMyRequests() {
     const [menuAnchor, setMenuAnchor] = useState(null);
     const [confirmDelete, setConfirmDelete] = useState(false);
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        onMessageReceived(m => {
+            dispatch(updateRequests())
+        })
+    });
 
     return <>
         <BrowseList slice="browseRequests" title='Мои заявки' loader={loadRequests} topLevel={true}>

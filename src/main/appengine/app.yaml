@@ -4,4 +4,4 @@ manual_scaling:
     instances: 1
 env_variables:
   SPRING_PROFILES_ACTIVE: "gcp,mysql"
-  JAVA_TOOL_OPTIONS: "-XX:MaxRAM=256m -XX:ActiveProcessorCount=2 -Xmx32m"
+  JAVA_TOOL_OPTIONS: "-XX:MaxRAM=400m -XX:ActiveProcessorCount=2 -Xmx64m"

@@ -10,7 +10,6 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.web.server.ServerWebInputException
 import java.net.URLEncoder
 import java.util.*
 
@@ -57,17 +56,14 @@ fun getAgentId(): Int {
         throw InsufficientAuthenticationException("Пользователь не авторизован")
 }
 
-fun sendMessage(messagingToken: String?, text: String): String {
+fun sendMessage(messagingToken: String?, text: String, body: String, path: String = "") {
     if (messagingToken != null) {
         val message: Message = Message.builder()
-                .setNotification(Notification.builder().setTitle(text).setBody(text).build())
-                .setToken(messagingToken)
-                .setFcmOptions(FcmOptions.withAnalyticsLabel("debug"))
-                .setWebpushConfig(WebpushConfig.builder().setFcmOptions(WebpushFcmOptions.withLink("https://meetilka.appspot.com")).build())
-                .build()
-        return FirebaseMessaging.getInstance().send(message)
-    } else {
-        throw ServerWebInputException("Агент без message token")
+            .setNotification(Notification.builder().setTitle(text).setBody(body).build())
+            .setToken(messagingToken)
+            .setWebpushConfig(WebpushConfig.builder().setFcmOptions(WebpushFcmOptions.withLink("https://meetilka.appspot.com/$path")).build())
+            .build()
+        FirebaseMessaging.getInstance().send(message)
     }
 }
 

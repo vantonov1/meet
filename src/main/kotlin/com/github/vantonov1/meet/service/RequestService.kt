@@ -56,7 +56,7 @@ class RequestService(private val requestRepository: RequestRepository,
                 if (dto.about?.responsible != null) dto.about.responsible
                 else agentService.selectAgent(dto, customer)
         val request = requestRepository.save(dto.toEntity(customer.id!!, agentId))
-        messagingService.sendMessage(request.assignedTo, "Новая заявка")
+        messagingService.sendMessage(request.assignedTo, "Новая заявка", customer.name, "assigned-requests")
         return collectRequestInfo(request)
     }
 

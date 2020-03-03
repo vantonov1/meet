@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles';
 import {ruRU} from '@material-ui/core/locale';
-import {Provider} from "react-redux";
+import {Provider, useDispatch} from "react-redux";
 import {configureStore} from "@reduxjs/toolkit";
 import AppRouter from "./components/app-router/app-router-view";
 import error from "./components/show-error/slice";
-import success from "./components/show-success/slice";
+import success, {showSuccess} from "./components/show-success/slice";
 import filter from "./components/set-filter/slice";
 import selectDistricts from "./components/select-districts/slice";
 import selectSubways from "./components/select-subways/slice";
@@ -27,7 +27,7 @@ import browseAgents from "./components/browse-agents/slice";
 import createComment from "./components/create-comment/slice";
 import Auth from "./components/show-error/auth";
 import {CircularProgress, makeStyles} from "@material-ui/core";
-import {initFirebase} from "./api/FirebaseAPI";
+import {initFirebase, onMessageReceived} from "./api/FirebaseAPI";
 
 const store = configureStore({
     reducer: {
@@ -80,9 +80,21 @@ export default function App() {
                 <Provider store={store}>
                     <Auth/>
                     <AppRouter/>
+                    <ShowMessageInfo/>
                 </Provider>
             </ThemeProvider>
         );
     else
         return <div className={classes.waitAuth}><CircularProgress/></div>
+}
+
+function ShowMessageInfo() {
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        onMessageReceived(m => {
+            dispatch(showSuccess(m.notification.title));
+        })
+    });
+    return <></>
 }

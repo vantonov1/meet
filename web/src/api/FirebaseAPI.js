@@ -11,7 +11,7 @@ const firebaseConfig = {
     projectId: "meetilka",
     storageBucket: "meetilka.appspot.com",
     messagingSenderId: "534129874386",
-    appId: "1:534129874386:web:61ff135fda1f14199ea40b"
+    appId: "1:534129874386:web:09b5a763921aa39d9ea40b"
 };
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 
@@ -32,9 +32,10 @@ function registerMessagingToken() {
     }).catch(e => console.log('Unable to retrieve refreshed token ', e));
 }
 
-export function onMessageReceived(callback) {
-    messaging.onMessage((message => callback(message)))
-}
+let messageListeners = [];
+export function onMessageReceived(callback) {messageListeners.push(callback)}
+messaging.onMessage((message => messageListeners.forEach(c => c(message))));
+
 
 export function initFirebase() {
     return new Promise(function (resolve, reject) {
