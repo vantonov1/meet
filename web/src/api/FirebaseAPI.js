@@ -33,7 +33,11 @@ function registerMessagingToken() {
 }
 
 let messageListeners = [];
-export function onMessageReceived(callback) {messageListeners.push(callback)}
+
+export function onMessageReceived(callback) {
+    messageListeners.push(callback)
+}
+
 messaging.onMessage((message => messageListeners.forEach(c => c(message))));
 
 
@@ -83,17 +87,24 @@ export async function getAuthToken() {
 }
 
 export function showAuth() {
+    let url = window.location.href.replace('\?mode=select', '');
     let ui = new firebaseui.auth.AuthUI(firebase.auth());
     firebase.auth().languageCode = 'ru';
     setTimeout(() => {
         ui.start('#firebaseui-auth-container', {
-            signInSuccessUrl: window.location.href,
+            signInSuccessUrl: url,
             signInFlow: 'redirect',
             signInOptions: [
                 firebase.auth.GoogleAuthProvider.PROVIDER_ID,
                 firebase.auth.PhoneAuthProvider.PROVIDER_ID,
                 firebase.auth.EmailAuthProvider.PROVIDER_ID
             ],
+            callbacks: {
+                signInSuccessWithAuthResult: function (authResult, redirectUrl) {
+                    window.location.href = url;
+                    return false;
+                }
+            }
         })
     }, 100);
-};
+}
