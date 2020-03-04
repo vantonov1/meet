@@ -36,6 +36,7 @@ export default function MainAppBar() {
     const roles = getRoles();
     const isAdmin = roles?.includes("ROLE_ADMIN");
     const isAgent = roles?.includes("ROLE_AGENT");
+    const isCustomer = localStorage.getItem("customerId");
 
     useEffect(() => {
         if(isAgent)
@@ -66,8 +67,8 @@ export default function MainAppBar() {
             {isAdmin && <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/admin'>Консоль администратора</MenuItem>}
             {isAgent && <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/assigned-requests'>Заявки в работе</MenuItem>}
             {isAgent && <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/assigned-meetings'>Запланированные встречи</MenuItem>}
-            {!isAdmin && !isAgent && <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/my-requests'>Мои заявки</MenuItem>}
-            {!isAdmin && !isAgent && <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/my-meetings'>Мои запланированные встречи</MenuItem>}
+            {isCustomer && <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/my-requests'>Мои заявки</MenuItem>}
+            {isCustomer && <MenuItem onClick={() =>{setAnchorEl(null)}} component={RouterLink} to='/my-meetings'>Мои запланированные встречи</MenuItem>}
         </Menu>}
         <CreateCustomerRequest/>
     </AppBar>

@@ -2,6 +2,7 @@ import {createSlice} from "@reduxjs/toolkit";
 import {showError} from "../show-error/slice"
 import {updateRequests} from "../browse-my-requests/slice";
 import RequestPublicAPI from "../../api/RequestPublicAPI";
+import {registerMessagingToken} from "../../api/FirebaseAPI";
 
 const slice = createSlice({
     name: 'create-request',
@@ -52,7 +53,8 @@ export const saveRequest = (name, contacts) => async (dispatch, getState) => {
         let saved = await RequestPublicAPI.createRequest(request);
         localStorage.setItem("customerId", saved.issuedBy?.id);
         dispatch(showAgent(saved.assignedTo));
-        dispatch(updateRequests())
+        dispatch(updateRequests());
+        registerMessagingToken()
     } catch (reason) {
         dispatch(showError(reason.message))
     }
@@ -64,7 +66,7 @@ export const saveRequestFromKnownCustomer = (customerId) => async (dispatch, get
     const {about} = getState().createRequest;
     try {
         const request = {type: about ? 'BUY' : 'SELL', about: about};
-        let saved = await RequestPublicAPI.saveRequestFromKnownCustomer(request, customerId);
+        let saved = await RequestPublicAPI.createRequest(request, customerId);
         dispatch(showAgent(saved.assignedTo));
         dispatch(updateRequests())
     } catch (reason) {

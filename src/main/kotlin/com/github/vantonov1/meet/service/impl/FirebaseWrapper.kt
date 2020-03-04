@@ -61,7 +61,7 @@ fun sendMessage(messagingToken: String?, text: String, body: String, path: Strin
         val message: Message = Message.builder()
             .setNotification(Notification.builder().setTitle(text).setBody(body).build())
             .setToken(messagingToken)
-            .setWebpushConfig(WebpushConfig.builder().setFcmOptions(WebpushFcmOptions.withLink("https://meetilka.appspot.com/$path")).build())
+            .setWebpushConfig(WebpushConfig.builder().setFcmOptions(WebpushFcmOptions.withLink("https://meetilka.appspot.com/#/$path")).build())
             .build()
         FirebaseMessaging.getInstance().send(message)
     }

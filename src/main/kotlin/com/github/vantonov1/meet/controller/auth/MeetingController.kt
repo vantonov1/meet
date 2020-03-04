@@ -23,6 +23,10 @@ class MeetingController(private val meetingService: MeetingService) {
     @Secured("ROLE_AGENT")
     fun reschedule(@PathVariable id: Int, @RequestParam schedule: String) = meetingService.reschedule(id, ZonedDateTime.parse(schedule))
 
+    @PutMapping("/ack/{id}")
+    @Transactional
+    fun acknowledge(@PathVariable id: Int, @RequestParam customer: Int) = meetingService.acknowledge(id, customer)
+
     @DeleteMapping("/{id}")
     @Transactional
     @Secured("ROLE_AGENT")

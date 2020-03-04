@@ -13,15 +13,16 @@ data class MeetingDTO(
         val scheduledBy: AgentDTO,
         val attends: CustomerDTO,
         val schedule: String,
-        val comment: String?
+        val comment: String?,
+        val acknowledgedBySeller: Boolean?,
+        val acknowledgedByBuyer: Boolean?
 ) {
-    fun toEntity() = Meeting(id, fromRequest, at?.id, scheduledBy.id!!, attends.id!!, toMSK(schedule), comment)
-
+    fun toEntity() = Meeting(id, fromRequest, at?.id, scheduledBy.id!!, attends.id!!, toMSK(schedule), comment, acknowledgedBySeller, acknowledgedByBuyer)
 }
 
-
 fun fromEntity(meeting: Meeting, at: EquityDTO?, attends: CustomerDTO, scheduledBy: AgentDTO) =
-        MeetingDTO(meeting.id, meeting.fromRequest, at, scheduledBy, attends, fromMSK(meeting.schedule), meeting.comment)
+        MeetingDTO(meeting.id, meeting.fromRequest, at, scheduledBy, attends, fromMSK(meeting.schedule), meeting.comment,
+                meeting.acknowledgedBySeller, meeting.acknowledgedByBuyer)
 
 val msk: ZoneId = ZoneId.of("UTC+03:00")
 fun toMSK(schedule: String): LocalDateTime = toMSK(ZonedDateTime.parse(schedule))

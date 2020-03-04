@@ -15,7 +15,7 @@ class MessagingService(val repository: MessageTokenRepository) {
 
     fun sendMessage(personId: Int, text: String, body: String, path: String) {
         val person = repository.findById(personId)
-        if (person.isEmpty) throw ServerWebInputException("Агент без message token")
+        if (person.isEmpty) throw ServerWebInputException("Пользователь без message token")
         else sendMessage(person.get().token, text, body, path)
     }
 }

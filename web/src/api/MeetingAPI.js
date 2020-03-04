@@ -30,6 +30,14 @@ export default class RequestAPI {
         })
     }
 
+    static acknowledgedByAttendee(id, customerId) {
+        let url = createURL(BASE + '/ack/' + id);
+        url.searchParams.append("customer", customerId);
+        return fetchEmpty(url, {
+            method: 'PUT'
+        })
+    }
+
     static deleteMeeting(id) {
         return fetchEmpty(BASE + '/' + id, {
             method: 'DELETE'

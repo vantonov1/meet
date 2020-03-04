@@ -3,6 +3,7 @@ import {showError} from "../show-error/slice"
 import MeetingAPI from "../../api/MeetingAPI";
 import formatISO from 'date-fns/formatISO'
 import addDays from 'date-fns/addDays'
+import {showSuccess} from "../show-success/slice";
 
 const slice = createSlice({
     name: 'browse-my-meetings',
@@ -39,11 +40,12 @@ const slice = createSlice({
 export default slice.reducer
 export const {selectMeeting, unselectMeeting, updateMeetings} = slice.actions;
 
-export const deleteMeeting = (request) => async dispatch => {
+export const acknowledgedByAttendee = (meeting) => async dispatch => {
     try {
-        await MeetingAPI.deleteMeeting(request.id);
-        dispatch(unselectMeeting());
-        dispatch(updateMeetings())
+        const customerId = localStorage.getItem("customerId");
+        await MeetingAPI.acknowledgedByAttendee(meeting.id, customerId);
+        dispatch(updateMeetings());
+        dispatch(showSuccess("Встреча подтверждена"))
     } catch (reason) {
         dispatch(showError(reason.message))
     }

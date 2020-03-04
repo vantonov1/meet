@@ -27,12 +27,10 @@ export default function BrowseAssignedMeetings() {
         <BrowseList slice="browseAssignedMeetings" title='Запланированные встречи' loader={loadMeetings}
                     topLevel={true}>
             {records.map(r =>
-                <MeetingListItem key={r.id} equity={r.at} person={r.attends} selected={selected?.id === r.id}
-                                 schedule={r.schedule}
-                                 onClick={(e) => {
-                                     setMenuAnchor(e.target);
-                                     dispatch(selectMeeting(r));
-                                 }}/>)}
+                <MeetingListItem key={r.id} meeting={r} person={r.attends} selected={selected?.id === r.id} onClick={e => {
+                    setMenuAnchor(e.target);
+                    dispatch(selectMeeting(r));
+                }}/>)}
         </BrowseList>
         {<Menu open={menuAnchor != null} anchorEl={menuAnchor} onClose={() => setMenuAnchor(null)}>
             <MenuItem onClick={() => {

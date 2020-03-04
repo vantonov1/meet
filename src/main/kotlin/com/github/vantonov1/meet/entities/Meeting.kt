@@ -13,5 +13,7 @@ data class Meeting(
         val scheduledBy: Int,
         val attends: Int,
         val schedule: LocalDateTime,
-        val comment: String?
+        val comment: String?,
+        val acknowledgedBySeller: Boolean?,
+        val acknowledgedByBuyer: Boolean?
 )

@@ -18,7 +18,7 @@ const firebaseApp = firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 messaging.usePublicVapidKey("BHPJqTIEee5wJejOzxUjjyBHcPgCfjl0jg1fNVDnFHqA6N-iqJDX9lx9SyTJM7LW1kfmtdk-duFDQ7X3eNEClEE");
 
-function registerMessagingToken() {
+export function registerMessagingToken() {
     messaging.getToken().then((refreshedToken) => {
         if (agentId) {
             MessagingAPI.registerToken(agentId, refreshedToken)
@@ -44,7 +44,7 @@ messaging.onMessage((message => messageListeners.forEach(c => c(message))));
 export function initFirebase() {
     return new Promise(function (resolve, reject) {
         firebaseApp.auth().onAuthStateChanged(function (user) {
-            if (user) user.getIdTokenResult().then(result => {
+            if (user) user.getIdTokenResult(true).then(result => {
                 let admin = result.claims["admin"];
                 let agent = result.claims["agent"];
                 roles = [];

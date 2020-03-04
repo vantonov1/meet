@@ -16,16 +16,17 @@ const useStyles = makeStyles((theme) => ({
     meetingRoot: {cursor: "pointer", display: 'flex'},
     requestItem: {cursor: "pointer", display: 'flex', flexDirection: 'column'},
     justify: {display: "flex", justifyContent: "space-between", whiteSpace: 'nowrap'},
+    ack: {color: "lightgreen"}
 }));
 
 export function RequestListItem(props) {
     const {equity, comments} = props;
 
-    if(comments.length > 0)
+    if (comments.length > 0)
         return <SimpleRequestListItem {...props}
-               secondary={comments.map(c => c.text).join('↵')}
-               action={<EquityRate comments={comments}/>}
-            />;
+                                      secondary={comments.map(c => c.text).join('↵')}
+                                      action={<EquityRate comments={comments}/>}
+        />;
     else
         return <SimpleRequestListItem secondary={equity && EQUITY_TYPES[equity.type]} {...props}/>;
 }
@@ -43,6 +44,9 @@ function SimpleRequestListItem(props) {
     </ListItem>;
 }
 
+const buyerName = equity => isSale(equity) ? 'Покупатель' : 'Арендатор';
+const sellerName = equity => isSale(equity) ? 'Продавец' : 'Арендодатель';
+
 export function MergedRequestListItem(props) {
     const {equity, buyer, seller, meeting, selected, onClick} = props;
     const classes = useStyles();
@@ -50,9 +54,9 @@ export function MergedRequestListItem(props) {
         {equity && <Box width={1} className={classes.justify}><Equity equity={equity}/>{meeting ?
             <span>Встреча: {parseMeeting(meeting)}</span> : ''}</Box>}
         {buyer &&
-        <Box width={1}>{isSale(equity) ? 'Покупатель' : 'Арендатор'}: {buyer.name} <Contacts person={buyer}/></Box>}
+        <Box width={1}>{buyerName(equity)}: {buyer.name} <Contacts person={buyer}/></Box>}
         {seller &&
-        <Box width={1}>{isSale(equity) ? 'Продавец' : 'Арендодатель'}: {seller.name} <Contacts person={seller}/></Box>}
+        <Box width={1}>{sellerName(equity)}: {seller.name} <Contacts person={seller}/></Box>}
         {equity && <Box width={1} className="MuiTypography-colorTextSecondary MuiTypography-body2">
             {EQUITY_TYPES[equity.type]}
         </Box>}
@@ -60,18 +64,27 @@ export function MergedRequestListItem(props) {
 }
 
 export function MeetingListItem(props) {
-    const {equity, person, selected, schedule, onClick} = props;
+    const {meeting, person, selected, onClick} = props;
+    const {at, schedule, comment, acknowledgedBySeller, acknowledgedByBuyer} = meeting;
     const classes = useStyles();
 
     return <ListItem className={classes.meetingRoot}
                      divider
                      selected={selected}
                      onClick={onClick}>
-        <ListItemText secondary={equity && EQUITY_TYPES[equity.type]}>
-            {equity && <Box width={1} className={classes.justify}><Equity
-                equity={equity}/><span>Встреча: {parseMeeting(schedule)}</span></Box>}
-            {person && <span>{person.name}</span>}
-            {person && <Contacts person={person}/>}
+        <ListItemText secondary={comment}>
+            <Box width={1} className={classes.justify}>
+                <Box>
+                    {at && <Equity equity={at}/>}
+                    {person && <span>{person.name}</span>}
+                    {person && <Contacts person={person}/>}
+                </Box>
+                <Box>
+                    <div>{parseMeeting(schedule)}</div>
+                    {acknowledgedByBuyer  && <div><span className={classes.ack}>✓</span>&nbsp;{buyerName(at)}</div>}
+                    {acknowledgedBySeller && <div><span className={classes.ack}>✓</span>&nbsp;{sellerName(at)}</div>}
+                </Box>
+            </Box>
         </ListItemText>
     </ListItem>;
 }
