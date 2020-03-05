@@ -62,6 +62,8 @@ export default function BrowseEquities() {
     const {locations, filter, selectedEquity} = useSelector(state => state.browseEquities, shallowEqual);
     const dispatch = useDispatch();
 
+    useEffect(() => {document.title = 'Митилка - объекты на карте'});
+
     useEffect(() => {
         OsmMap.setupClusters(locations);
         OsmMap.placeMarker(selectedEquity?.address.lon, selectedEquity?.address.lat)

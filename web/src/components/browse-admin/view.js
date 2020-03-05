@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
 import BrowseAdministrators from "../browse-admins/view";
@@ -18,6 +18,8 @@ const useStyles = makeStyles(theme => ({
 export default function BrowseAdmin(props) {
     const {tab} = props;
     const classes = useStyles();
+
+    useEffect(() => {document.title = 'Митилка - консоль администратора'});
 
     return <>
         <Tabs value={parseInt(tab)} className={classes.root}>

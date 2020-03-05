@@ -37,6 +37,8 @@ export default function BrowseAssignedRequests() {
     const [contractNumber, setContractNumber] = useState('');
     const dispatch = useDispatch();
 
+    useEffect(() => {document.title = 'Митилка - заявки в работе'});
+
     useEffect(() => {
         onMessageReceived(m => {
             dispatch(updateRequests())

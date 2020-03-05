@@ -17,6 +17,8 @@ export default function BrowseAssignedMeetings() {
     const [menuAnchor, setMenuAnchor] = useState(null);
     const dispatch = useDispatch();
 
+    useEffect(() => {document.title = 'Митилка - запланированные встречи'});
+
     useEffect(() => {
         onMessageReceived(m => {
             dispatch(updateMeetings())

@@ -19,6 +19,8 @@ export default function BrowseMyRequests() {
     const [confirmDelete, setConfirmDelete] = useState(false);
     const dispatch = useDispatch();
 
+    useEffect(() => {document.title = 'Митилка - мои заявки'});
+
     useEffect(() => {
         onMessageReceived(m => {
             dispatch(updateRequests())
