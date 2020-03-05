@@ -9,7 +9,7 @@ const slice = createSlice({
         locations: [],
         loading: false,
         loadFinished: false,
-        filter: {city: 2, type: "RENT_ROOM", district: [], subway: [], minPrice:null, maxPrice: null},
+        filter: {city: 2, type: "SELL_FLAT", district: [], subway: [], minPrice:null, maxPrice: null},
         drawerOpen: true,
         selectedEquity: null
     },
