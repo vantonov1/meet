@@ -190,7 +190,7 @@ function EquitiesViewSmall() {
         <Box className={selectedEquity ? classes.infoOpen : classes.infoClosed}>
             {selectedEquity && <EquityProperties equity={selectedEquity}/>}
         </Box>
-        </>;
+    </>;
 }
 
 function EquitiesBrowser(props) {
@@ -198,9 +198,11 @@ function EquitiesBrowser(props) {
     const dispatch = useDispatch();
     const classes = useStyles();
 
-    return <Browse id={"equities"} slice="browseEquities" title={EQUITY_TYPES[filter.type]} loader={loadLocations}
+    return <Browse slice="browseEquities"
+                   title={EQUITY_TYPES[filter.type]}
+                   loader={loadLocations}
                    className={classes.equitiesDrawer}
-                   topLevel={true}>
+    >
         <EquitiesList
             equities={records}
             hasMore={records.length < locations.length}

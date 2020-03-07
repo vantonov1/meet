@@ -43,7 +43,7 @@ export default function MainAppBar() {
             dispatch(loadAgent());
     }, [isAgent]);
 
-    return <AppBar position="fixed" className={classes.appBar}>
+    return <AppBar position="sticky" className={classes.appBar}>
         <Toolbar>
             <IconButton edge="start" className={classes.menuButton} color="inherit"
                         onClick={e => setAnchorEl(e.currentTarget)}>

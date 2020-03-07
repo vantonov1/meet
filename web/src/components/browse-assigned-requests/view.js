@@ -46,7 +46,7 @@ export default function BrowseAssignedRequests() {
     });
 
     return <>
-        <BrowseList slice="browseAssignedRequests" title='Заявки в работе' loader={loadRequests} topLevel={true}>
+        <BrowseList slice="browseAssignedRequests" title='Заявки в работе' loader={loadRequests} >
             {mergeRequests(records).sort(compareDates).map(r =>
                 <MergedRequestListItem key={r.id} equity={r.about} buyer={r.buyer} seller={r.seller} meeting={r.meeting}
                                        selected={selectedRequest?.id === r.id}

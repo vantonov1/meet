@@ -28,7 +28,7 @@ export default function BrowseMyRequests() {
     });
 
     return <>
-        <BrowseList slice="browseRequests" title='Мои заявки' loader={loadRequests} topLevel={true}>
+        <BrowseList slice="browseRequests" title='Мои заявки' loader={loadRequests} >
             {records.map(r =>
                 <RequestListItem key={r.id} equity={r.about} person={r.assignedTo} comments={r.comments}
                                  selected={selectedRequest?.id === r.id}

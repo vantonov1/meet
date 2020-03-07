@@ -22,7 +22,7 @@ export default function BrowseMyMeetings() {
     });
 
     return <>
-        <BrowseList slice="browseMeetings" title='Мои запланированные встречи' loader={loadMeetings} topLevel={true}>
+        <BrowseList slice="browseMeetings" title='Мои запланированные встречи' loader={loadMeetings} >
             {records.map(r => <MeetingListItem key={r.id} meeting={r} person={r.scheduledBy} selected={selected?.id === r.id} onClick={e => {
                 setMenuAnchor(e.target);
                 dispatch(selectMeeting(r));

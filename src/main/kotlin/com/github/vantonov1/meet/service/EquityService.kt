@@ -1,9 +1,12 @@
 package com.github.vantonov1.meet.service
 
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.vantonov1.meet.dto.EquityDTO
 import com.github.vantonov1.meet.dto.LocationDTO
 import com.github.vantonov1.meet.dto.PriceRangeDTO
 import com.github.vantonov1.meet.dto.fromEntity
+import com.github.vantonov1.meet.entities.Equity
 import com.github.vantonov1.meet.entities.Filter
 import com.github.vantonov1.meet.repository.EquityPriceRangeRepository
 import com.github.vantonov1.meet.repository.EquityRepository
@@ -91,7 +94,7 @@ class EquityService(
     @PostConstruct
     @Suppress("unused")
     private fun loadFakeEquities() {
-//        val equities = jacksonObjectMapper().readValue(javaClass.getResource("/fake_equities.json"), object : TypeReference<List<Equity>>() {})
-//        equityRepository.saveAll(equities)
+        val equities = jacksonObjectMapper().readValue(javaClass.getResource("/fake_equities.json"), object : TypeReference<List<Equity>>() {})
+        equityRepository.saveAll(equities)
     }
 }
