@@ -9,8 +9,8 @@ const slice = createSlice({
         locations: [],
         loading: false,
         loadFinished: false,
-        filter: {city: 2, type: "SELL_FLAT", district: [], subway: [], minPrice:null, maxPrice: null},
-        drawerOpen: true,
+        filter: {city: 2, type: "SALE_FLAT", district: [], subway: [], minPrice:null, maxPrice: null},
+        drawerOpen: false,
         selectedEquity: null
     },
     reducers: {
@@ -33,7 +33,7 @@ const slice = createSlice({
             state.loadFinished = false;
         },
         toggleDrawer: (state, {payload}) => {
-            state.drawerOpened = payload
+            state.drawerOpen = payload
         },
         setType: (state, {payload}) => {
             state.filter.type = payload;

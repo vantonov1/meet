@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import Drawer from "@material-ui/core/Drawer";
 import EquitiesList from "../common/equities-list";
@@ -27,15 +27,44 @@ import Fab from "@material-ui/core/Fab";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {EQUITY_TYPES, isRent, isSale} from "../common/constants";
 import Browse from "../common/abstract-browser";
-import {Tabs} from "@material-ui/core";
+import {Tabs, useMediaQuery} from "@material-ui/core";
 import Tab from "@material-ui/core/Tab";
 import {createRequest, setAbout} from "../create-request/slice";
 
 const useStyles = makeStyles(theme => ({
-    root: {
+    equitiesDrawer: {
         display: 'flex',
-        width: 400,
+        [theme.breakpoints.down('xs')]: {
+            width: '100%'
+        },
+        [theme.breakpoints.up('sm')]: {
+            width: 400,
+        },
         height: "100%",
+    },
+    infoDrawer: {
+        [theme.breakpoints.down('xs')]: {
+            height: '100%'
+        },
+        [theme.breakpoints.up('sm')]: {
+            minHeight: 200,
+        },
+        height: "100%",
+    },
+    closeDrawer: {
+        position: 'fixed',
+        right: theme.spacing(2),
+        top: theme.spacing(2) + theme.mixins.toolbar.minHeight
+    },
+    filter: {
+        position: 'fixed',
+        right: theme.spacing(1),
+        top: theme.spacing(2) + theme.mixins.toolbar.minHeight
+    },
+    filterAtBottom: {
+        position: 'fixed',
+        right: theme.spacing(2),
+        bottom: theme.spacing(1)
     },
     addEquity: {
         left: theme.spacing(1),
@@ -55,71 +84,136 @@ const useStyles = makeStyles(theme => ({
         top: theme.spacing(1),
         display: 'flex',
         justifyItems: 'right'
-    }
+    },
+    drawerOpen: {
+        width: '100%',
+        height: '100%',
+        position: 'fixed'
+    },
+    drawerClosed: {display: 'none'},
+    mapOpen: {
+        width: '100%',
+        height: '100%',
+        position: 'fixed'
+    },
+    mapClosed: {display: 'none'},
+    infoOpen: {
+        width: '100%',
+        height: '100%',
+        position: 'fixed',
+        marginTop: theme.spacing(1) + theme.mixins.toolbar.minHeight
+    },
+    infoClosed: {display: 'none'}
 }));
 
 export default function BrowseEquities() {
-    const {locations, filter, selectedEquity} = useSelector(state => state.browseEquities, shallowEqual);
+    const {locations, filter, selectedEquity, drawerOpen} = useSelector(state => state.browseEquities, shallowEqual);
     const dispatch = useDispatch();
+    const largeScreen = useMediaQuery(theme => theme.breakpoints.up('sm'));
 
-    useEffect(() => {document.title = 'Митилка - объекты на карте'});
+    useLayoutEffect(() => {
+        dispatch(toggleDrawer(largeScreen))
+    }, [largeScreen]);
+
+    useEffect(() => {
+        document.title = 'Митилка - объекты на карте'
+    });
 
     useEffect(() => {
         OsmMap.setupClusters(locations);
         OsmMap.placeMarker(selectedEquity?.address.lon, selectedEquity?.address.lat)
     }, [locations, selectedEquity]);
 
-    return (
-        <>
-            <EquitiesDrawer variant="permanent"/>
-            <EquityInfoDrawer variant="permanent"/>
-            <OsmMap ref={OsmMap.ref} onLocationsSelect={(locations) => dispatch(loadEquities(locations))}/>
-            <FilterMenu
-                filter={filter}
-                onTypeSelected={(type) => dispatch(setType(type))}
-                onDistrictsSelected={(districts) => dispatch(districtsSelected(districts))}
-                onSubwaysSelected={(subways) => dispatch(subwaysSelected(subways))}
-                onPriceRangeSelected={value => dispatch(priceRangeSelected(value))}
-                onPriceRangeCommitted={() => dispatch(priceRangeCommitted())}
-            />
-        </>
-    );
+    return largeScreen ? EquitiesViewNormal() : EquitiesViewSmall()
 }
 
-function EquitiesDrawer(props) {
-    const {locations, records, selectedEquity, filter, drawerOpen} = useSelector(state => state.browseEquities, shallowEqual);
+function EquitiesViewNormal() {
+    const {filter, drawerOpen, selectedEquity} = useSelector(state => state.browseEquities, shallowEqual);
+    const classes = useStyles();
+    const dispatch = useDispatch();
+    return <>
+        <Drawer open={drawerOpen} variant="permanent" onClose={() => dispatch(toggleDrawer(false))}>
+            <EquitiesBrowser/>
+            <AddEquity type={filter.type} city={filter.city}/>
+        </Drawer>
+        <OsmMap ref={OsmMap.ref} onLocationsSelect={locations => {
+            dispatch(loadEquities(locations));
+        }}/>
+        <FilterMenu
+            filter={filter}
+            className={classes.filter}
+            onTypeSelected={(type) => dispatch(setType(type))}
+            onDistrictsSelected={(districts) => dispatch(districtsSelected(districts))}
+            onSubwaysSelected={(subways) => dispatch(subwaysSelected(subways))}
+            onPriceRangeSelected={value => dispatch(priceRangeSelected(value))}
+            onPriceRangeCommitted={() => dispatch(priceRangeCommitted())}
+        />
+        <Drawer open={selectedEquity != null}
+                variant="permanent"
+                anchor="bottom"
+                onClose={() => dispatch(unselectEquity())}
+                ModalProps={{
+                    keepMounted: true, // Better open performance on mobile.
+                }}>
+            {selectedEquity && <EquityProperties equity={selectedEquity}/>}
+        </Drawer>
+    </>;
+}
+
+function EquitiesViewSmall() {
+    const {filter, drawerOpen, selectedEquity} = useSelector(state => state.browseEquities, shallowEqual);
+    const classes = useStyles();
+    const dispatch = useDispatch();
+    return <>
+        <Box className={drawerOpen && !selectedEquity ? classes.drawerOpen : classes.drawerClosed}>
+            <EquitiesBrowser/>
+            <AddEquity type={filter.type} city={filter.city}/>
+        </Box>
+        {drawerOpen && !selectedEquity && <Fab className={classes.closeDrawer}>
+            <CloseIcon onClick={() => dispatch(toggleDrawer(false))}/>
+        </Fab>}
+        <OsmMap ref={OsmMap.ref}
+                className={drawerOpen ? classes.mapClosed : classes.mapOpen}
+                onLocationsSelect={locations => {
+                    dispatch(loadEquities(locations));
+                    dispatch(toggleDrawer(true))
+                }}/>
+        {!selectedEquity && <FilterMenu
+            filter={filter}
+            className={classes.filterAtBottom}
+            onTypeSelected={(type) => dispatch(setType(type))}
+            onDistrictsSelected={(districts) => dispatch(districtsSelected(districts))}
+            onSubwaysSelected={(subways) => dispatch(subwaysSelected(subways))}
+            onPriceRangeSelected={value => dispatch(priceRangeSelected(value))}
+            onPriceRangeCommitted={() => dispatch(priceRangeCommitted())}
+        />}
+        <Box className={selectedEquity ? classes.infoOpen : classes.infoClosed}>
+            {selectedEquity && <EquityProperties equity={selectedEquity}/>}
+        </Box>
+        </>;
+}
+
+function EquitiesBrowser(props) {
+    const {locations, records, selectedEquity, filter} = useSelector(state => state.browseEquities, shallowEqual);
     const dispatch = useDispatch();
     const classes = useStyles();
 
-    return <Drawer open={drawerOpen} variant={props.variant} onClose={() => dispatch(toggleDrawer(false))}>
-        <Browse slice="browseEquities" title={EQUITY_TYPES[filter.type]} loader={loadLocations} className={classes.root}
-                topLevel={true}>
-            <EquitiesList
-                equities={records}
-                hasMore={records.length < locations.length}
-                onFetch={() => dispatch(loadMoreEquities())}
-                selectedEquity={selectedEquity}
-                onClick={(equity) => {
-                    dispatch(selectEquity(equity));
-                }}
-            />
-        </Browse>
-        <AddEquity type={filter.type} city={filter.city}/>
-    </Drawer>;
-}
-
-function EquityInfoDrawer(props) {
-    const {selectedEquity} = useSelector(state => state.browseEquities, shallowEqual);
-    const dispatch = useDispatch();
-    return <Drawer open={selectedEquity != null}
-                   variant={props.variant}
-                   anchor="bottom"
-                   onClose={() => dispatch(unselectEquity())}
-                   ModalProps={{
-                       keepMounted: true, // Better open performance on mobile.
-                   }}>
-        {selectedEquity && <EquityProperties equity={selectedEquity}/>}
-    </Drawer>
+    return <Browse id={"equities"} slice="browseEquities" title={EQUITY_TYPES[filter.type]} loader={loadLocations}
+                   className={classes.equitiesDrawer}
+                   topLevel={true}>
+        <EquitiesList
+            equities={records}
+            hasMore={records.length < locations.length}
+            onFetch={() => dispatch(loadMoreEquities())}
+            selectedEquity={selectedEquity}
+            onClick={(equity) => {
+                dispatch(selectEquity(equity));
+            }}
+            ModalProps={{
+                keepMounted: true, // Better open performance on mobile.
+            }}
+        />
+    </Browse>
 }
 
 function EquityProperties(props) {
@@ -128,7 +222,7 @@ function EquityProperties(props) {
     const classes = useStyles();
     const dispatch = useDispatch();
 
-    return <div style={{minHeight: 200}}>
+    return <div className={classes.infoDrawer}>
         <Tabs value={tab} onChange={(e, v) => setTab(v)}>
             <Tab key={1} label="Фото" disabled={equity.photos?.length === 0}/>
             <Tab key={2} label="Описание" disabled={equity.info == null}/>
@@ -139,7 +233,7 @@ function EquityProperties(props) {
             {equity.info}
         </Box>}
         {tab === 2 && equity.comments?.length > 0 && <Box className={classes.info}>
-            {equity.comments.map((c,i) => <p key={i}>{c.text}</p>)}
+            {equity.comments.map((c, i) => <p key={i}>{c.text}</p>)}
         </Box>}
         <div className={classes.buttons}>
             <Fab size="small" variant="extended" color="primary" style={{marginRight: 10}} onClick={() => {
@@ -150,7 +244,7 @@ function EquityProperties(props) {
                 {isSale(equity) && "Хочу купить"}
                 {isRent(equity) && "Хочу снять"}
             </Fab>
-            <Fab size="small" variant="extended"  onClick={() => {
+            <Fab size="small" variant="extended" onClick={() => {
                 dispatch(unselectEquity())
             }}>
                 <CloseIcon/>

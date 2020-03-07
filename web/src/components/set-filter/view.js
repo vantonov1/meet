@@ -19,11 +19,6 @@ import {EQUITY_TYPES} from "../common/constants";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
 const useStyles = makeStyles(theme => ({
-    root: {
-        position: 'fixed',
-        right: theme.spacing(1),
-        top: theme.spacing(2) + theme.mixins.toolbar.minHeight
-    },
     priceRange: {
         marginTop: theme.spacing(5),
         marginRight: theme.spacing(4),
@@ -32,17 +27,18 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function FilterMenu(props) {
+    const {filter, className, onTypeSelected, onSubwaysSelected, onDistrictsSelected, onPriceRangeSelected, onPriceRangeCommitted} = props;
     const [anchorEl, setAnchorEl] = React.useState(null);
     const {selectDistricts, selectSubways, minPrice, maxPrice} = useSelector(state => state.filter, shallowEqual);
     const dispatch = useDispatch();
     const classes = useStyles();
 
-    const minPriceValue = props.filter.minPrice < minPrice ? minPrice : props.filter.minPrice > maxPrice ? maxPrice : props.filter.minPrice;
-    const maxPriceValue = props.filter.maxPrice < minPrice ? maxPrice : props.filter.maxPrice > maxPrice ? maxPrice : props.filter.maxPrice;
+    const minPriceValue = filter.minPrice < minPrice ? minPrice : filter.minPrice > maxPrice ? maxPrice : filter.minPrice;
+    const maxPriceValue = filter.maxPrice < minPrice ? maxPrice : filter.maxPrice > maxPrice ? maxPrice : filter.maxPrice;
 
     const handleClick = event => {
         setAnchorEl(event.currentTarget);
-        dispatch(getPriceRange(props.filter))
+        dispatch(getPriceRange(filter))
     };
 
     const handleClose = () => {
@@ -51,7 +47,7 @@ export default function FilterMenu(props) {
 
     const handleSelectType = type => {
         handleClose();
-        props.onTypeSelected(type)
+        onTypeSelected(type)
     };
 
     const handleSelectDistricts = () => {
@@ -65,13 +61,13 @@ export default function FilterMenu(props) {
     };
 
     return (
-        <div className={classes.root}>
+        <div className={className}>
             <Fab color="primary">
                 <SearchIcon onClick={handleClick}/>
             </Fab>
             {Boolean(anchorEl) &&
             <Menu anchorEl={anchorEl} keepMounted open={true} onClose={handleClose} transitionDuration={0}>
-                {Object.entries(EQUITY_TYPES).map(k => entityType(k[0], k[1], props.filter.type))}
+                {Object.entries(EQUITY_TYPES).map(k => entityType(k[0], k[1], filter.type))}
                 <Divider/>
                 <MenuItem key="filter-regions" onClick={() => handleSelectDistricts()}>Выбрать районы</MenuItem>
                 <MenuItem key="filter-subways" onClick={() => handleSelectSubway()}>Выбрать станции метро</MenuItem>
@@ -86,21 +82,21 @@ export default function FilterMenu(props) {
                         valueLabelDisplay="on"
                         ValueLabelComponent={ValueLabelComponent}
                         className={classes.priceRange}
-                        onChange={(event, value) => dispatch(props.onPriceRangeSelected(value))}
-                        onChangeCommitted={(event) => dispatch(props.onPriceRangeCommitted())}
+                        onChange={(event, value) => dispatch(onPriceRangeSelected(value))}
+                        onChangeCommitted={(event) => dispatch(onPriceRangeCommitted())}
                     />
                 </ListItem>}
             </Menu>}
-            {selectDistricts && <SelectDistricts city={props.filter.city}
+            {selectDistricts && <SelectDistricts city={filter.city}
                                                  onOk={(s) => {
                                                      dispatch(hideDistrictsSelector());
-                                                     props.onDistrictsSelected(s)
+                                                     onDistrictsSelected(s)
                                                  }}
                                                  onCancel={() => dispatch(hideDistrictsSelector())}/>}
-            {selectSubways && <SelectSubways city={props.filter.city}
+            {selectSubways && <SelectSubways city={filter.city}
                                              onOk={(s) => {
                                                  dispatch(hideSubwaysSelector());
-                                                 props.onSubwaysSelected(s)
+                                                 onSubwaysSelected(s)
                                              }}
                                              onCancel={() => dispatch(hideSubwaysSelector())}/>}
         </div>

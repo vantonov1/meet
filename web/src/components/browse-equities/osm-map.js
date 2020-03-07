@@ -7,16 +7,9 @@ import Map from "ol/Map"
 import Geolocation from "ol/Geolocation";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
-import withStyles from "@material-ui/core/styles/withStyles";
 import Icon from "ol/style/Icon";
 import Place from "./place-24px.svg"
 import {fromLonLat, toLonLat} from "ol/proj";
-
-const useStyles = {
-    root: {
-        height: '100vh'
-    },
-};
 
 class OsmMap extends Component {
     static ref = React.createRef();
@@ -38,14 +31,15 @@ class OsmMap extends Component {
             if (this.props.onPick) {
                 map.getView().setCenter(e.coordinate);
                 this.props.onPick(toLonLat(e.coordinate));
+                map.getView().setZoom(map.getView().getZoom() + 2)
             } else {
                 map.forEachFeatureAtPixel(e.pixel, (feature, layer) => {
                     map.getView().setCenter(feature.get("geometry").flatCoordinates);
-                    if (this.props.onLocationsSelect)
+                    if (this.props.onLocationsSelect !== undefined) {
                         this.props.onLocationsSelect(feature.get('features').map(feature => feature.getId()))
+                    }
                 });
             }
-            map.getView().setZoom(map.getView().getZoom() + 2)
         });
         this.mounted = true;
     }
@@ -55,7 +49,7 @@ class OsmMap extends Component {
     }
 
     render() {
-        return (<div id="map" className={this.props.classes.root}/>)
+        return (<div id="map" className={this.props.className}/>)
     }
 
     static setupClusters(locations) {
@@ -77,7 +71,7 @@ class OsmMap extends Component {
     }
 }
 
-export default withStyles(useStyles)(OsmMap)
+export default OsmMap
 
 function createMarkerFeature(lon, lat) {
     const iconFeature = new Feature({
