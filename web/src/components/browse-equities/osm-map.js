@@ -10,6 +10,7 @@ import Point from "ol/geom/Point";
 import Icon from "ol/style/Icon";
 import Place from "./place-24px.svg"
 import {fromLonLat, toLonLat} from "ol/proj";
+import "./osm-map.css"
 
 class OsmMap extends Component {
     static ref = React.createRef();
