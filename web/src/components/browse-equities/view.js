@@ -103,7 +103,17 @@ const useStyles = makeStyles(theme => ({
         position: 'fixed',
         marginTop: theme.spacing(1)
     },
-    infoClosed: {display: 'none'}
+    infoClosed: {display: 'none'},
+    gallery: {
+        bottom: 0,
+        position: 'fixed',
+        width: '100%'
+    },
+    buy: {
+        position: 'fixed',
+        right: theme.spacing(1),
+        bottom: 150 + theme.spacing(1)
+    }
 }));
 
 export default function BrowseEquities() {
@@ -169,7 +179,7 @@ function EquitiesViewSmall() {
             <EquitiesBrowser/>
             <AddEquity type={filter.type} city={filter.city}/>
         </Box>
-        {drawerOpen && !selectedEquity && <Fab className={classes.closeDrawer}>
+        {drawerOpen && !selectedEquity && <Fab size="small" className={classes.closeDrawer}>
             <CloseIcon onClick={() => dispatch(toggleDrawer(false))}/>
         </Fab>}
         <OsmMap ref={OsmMap.ref}
@@ -226,32 +236,31 @@ function EquityProperties(props) {
 
     return <div className={classes.infoDrawer}>
         <Tabs value={tab} onChange={(e, v) => setTab(v)}>
-            <Tab key={1} label="Фото" disabled={equity.photos?.length === 0}/>
             <Tab key={2} label="Описание" disabled={equity.info == null}/>
             <Tab key={3} label="Комментарии"/>
         </Tabs>
-        {tab === 0 && equity.photos?.length > 0 && <PhotoGallery images={equity.photos.map(f => PhotoAPI.url(f))}/>}
-        {tab === 1 && equity.info && <Box className={classes.info}>
+        {tab === 0 && equity.info && <Box className={classes.info}>
             {equity.info}
         </Box>}
-        {tab === 2 && equity.comments?.length > 0 && <Box className={classes.info}>
+        {tab === 1 && equity.comments?.length > 0 && <Box className={classes.info}>
             {equity.comments.map((c, i) => <p key={i}>{c.text}</p>)}
         </Box>}
-        <div className={classes.buttons}>
-            <Fab size="small" variant="extended" color="primary" style={{marginRight: 10}} onClick={() => {
-                dispatch(setAbout(equity));
-                dispatch(createRequest())
-            }}>
-                <CheckIcon/>
-                {isSale(equity) && "Хочу купить"}
-                {isRent(equity) && "Хочу снять"}
-            </Fab>
-            <Fab size="small" variant="extended" onClick={() => {
-                dispatch(unselectEquity())
-            }}>
-                <CloseIcon/>
-            </Fab>
-        </div>
+        {equity.photos?.length > 0 && <div className={classes.gallery}>
+            <PhotoGallery images={equity.photos.map(f => PhotoAPI.url(f))}/>
+        </div>}
+        <Fab size="small" className={classes.closeDrawer} onClick={() => {
+            dispatch(unselectEquity())
+        }}>
+            <CloseIcon/>
+        </Fab>
+        <Fab size="small" variant="extended" color="primary" className={classes.buy} onClick={() => {
+            dispatch(setAbout(equity));
+            dispatch(createRequest())
+        }}>
+            <CheckIcon/>
+            {isSale(equity) && "Хочу купить"}
+            {isRent(equity) && "Хочу снять"}
+        </Fab>
     </div>
 }
 
