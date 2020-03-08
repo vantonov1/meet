@@ -12,7 +12,7 @@ import ruLocale from "date-fns/locale/ru";
 import parse from 'date-fns/parse'
 import format from 'date-fns/format'
 import TableHead from "@material-ui/core/TableHead";
-import EnterValue from "../common/enter-value";
+import OkCancelDialog from "../common/ok-cancel-dialog";
 import {DAYS_OF_WEEK} from "../common/constants";
 
 function parseTime(t) {
@@ -29,7 +29,7 @@ export default function EditTimeSlots(props) {
             dispatch(loadTimeSlots(request))
     }, [open, request]);
 
-    return <EnterValue open={open} onCancel={() => showEditTimeSlots(false)} onOk={() => {
+    return <OkCancelDialog open={open} onCancel={() => showEditTimeSlots(false)} onOk={() => {
         dispatch(saveTimeSlots(records, request))
     }}>
         <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ruLocale}>
@@ -83,5 +83,5 @@ export default function EditTimeSlots(props) {
                 </div>
             </div>
         </MuiPickersUtilsProvider>
-    </EnterValue>
+    </OkCancelDialog>
 }

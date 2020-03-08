@@ -2,7 +2,7 @@ import React from "react";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import {saveRequest, setContacts, setName, showAgent, showCreateRequest} from "./slice";
 import EditPersonContacts from "../common/edit-person-contacts";
-import EnterValue from "../common/enter-value";
+import OkCancelDialog from "../common/ok-cancel-dialog";
 import ShowInfo from "../common/showInfo";
 import {Contacts} from "../common/contacts";
 
@@ -11,7 +11,7 @@ export default function CreateCustomerRequest() {
     const dispatch = useDispatch();
 
     return <>
-        <EnterValue open={open && customerId == null}
+        <OkCancelDialog open={open && customerId == null}
                     okDisabled={() => {
                         return name === '' || contacts.length === 0 || contacts[0].contact === ''
                     }}
@@ -25,7 +25,7 @@ export default function CreateCustomerRequest() {
                                 onNameChanged={n => dispatch(setName(n))}
                                 onContactsChanged={c => dispatch(setContacts(c))}
             />
-        </EnterValue>
+        </OkCancelDialog>
         <ShowInfo open={agent != null} onOk={() => {
             dispatch(showAgent(null));
             dispatch(showCreateRequest(false))

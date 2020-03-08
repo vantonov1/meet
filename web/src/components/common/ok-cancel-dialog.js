@@ -4,15 +4,18 @@ import Button from "@material-ui/core/Button";
 import React from "react";
 import ResponsiveXsDialog from "./responsive-xs-dialog";
 
-export default function ShowInfo(props) {
-    const {open, onOk} = props;
+export default function OkCancelDialog(props) {
+    const {open, okDisabled, onCancel, onOk} = props;
     return <ResponsiveXsDialog open={open}>
         <DialogContent>
             {props.children}
         </DialogContent>
         <DialogActions>
-            <Button onClick={() => onOk()} color="primary">
-                OK
+            <Button onClick={() => onCancel()}>
+                Отменить
+            </Button>
+            <Button onClick={() => onOk()} color="primary"  disabled={okDisabled ? okDisabled() : false}>
+                Сохранить
             </Button>
         </DialogActions>
     </ResponsiveXsDialog>

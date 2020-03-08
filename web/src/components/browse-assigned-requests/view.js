@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
-import {Dialog, DialogActions, DialogContent, Divider, List, MenuItem, TextField} from "@material-ui/core";
+import {DialogActions, DialogContent, Divider, List, MenuItem, TextField} from "@material-ui/core";
 import {
     changeRequestEquity,
     completeRequest,
@@ -24,6 +24,7 @@ import {onMessageReceived} from "../../api/FirebaseAPI";
 import {Equity} from "../common/equities-list";
 import Button from "@material-ui/core/Button";
 import makeStyles from "@material-ui/core/styles/makeStyles";
+import ResponsiveXsDialog from "../common/responsive-xs-dialog";
 
 const compareDates = (a, b) => a.meeting ? b.meeting ? isBefore(parse(a.meeting), parse(b.meeting)) ? -1 : 1 : -1 : 1;
 
@@ -124,7 +125,7 @@ function SelectEquity(props) {
     }))();
 
 
-    return <Dialog open={open}>
+    return <ResponsiveXsDialog open={open}>
         <DialogContent>
             <List className={classes.root}>
                 {suitable.map(r =>
@@ -140,7 +141,7 @@ function SelectEquity(props) {
                 </Button>
             </DialogActions>
         </DialogContent>
-    </Dialog>
+    </ResponsiveXsDialog>
 }
 
 function mergeRequests(requests) {

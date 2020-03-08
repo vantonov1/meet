@@ -4,10 +4,11 @@ import React, {useEffect, useState} from "react";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import EditAddress from "../edit-address/view";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import {Dialog, DialogActions, DialogContent, List} from "@material-ui/core";
+import {DialogActions, DialogContent, List} from "@material-ui/core";
 import {findEquitiesByAddress, updateEquities} from "../browse-equities/slice";
 import {Equity} from "./equities-list";
 import Button from "@material-ui/core/Button";
+import ResponsiveXsDialog from "./responsive-xs-dialog";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -33,7 +34,7 @@ export default function SelectEquity(props) {
         dispatch(updateEquities())
     }, [open]);
 
-    return <Dialog open={open}>
+    return <ResponsiveXsDialog open={open}>
         <DialogContent>
             <EditAddress initialAddress={address}
                          selectDistrict={false}
@@ -62,5 +63,5 @@ export default function SelectEquity(props) {
                 </Button>
             </DialogActions>
         </DialogContent>
-    </Dialog>
+    </ResponsiveXsDialog>
 }

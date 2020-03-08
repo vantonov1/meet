@@ -3,7 +3,7 @@ import {Table, TextField} from "@material-ui/core";
 import {shallowEqual, useDispatch, useSelector} from "react-redux";
 import {collectTimeTable, saveMeeting, setComment, setDate, showCreateMeeting} from "./slice";
 import EditDateTime from "../common/edit-datetime";
-import EnterValue from "../common/enter-value";
+import OkCancelDialog from "../common/ok-cancel-dialog";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
@@ -21,7 +21,7 @@ export default function CreateMeeting(props) {
             dispatch(collectTimeTable(fromRequest))
     }, [open, fromRequest]);
 
-    return <EnterValue open={open}
+    return <OkCancelDialog open={open}
                        onCancel={() => dispatch(showCreateMeeting(false))}
                        onOk={() => dispatch(saveMeeting(fromRequest, date, comment))}>
         <TextField autoFocus multiline fullWidth label="Комментарий" value={comment}
@@ -49,7 +49,7 @@ export default function CreateMeeting(props) {
                 )}
             </TableBody>
         </Table>
-    </EnterValue>;
+    </OkCancelDialog>;
 
     function setDateFromTimeTable(d) {
         let hhmm = d.timeMin.split(':');

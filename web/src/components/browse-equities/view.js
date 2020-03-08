@@ -101,7 +101,7 @@ const useStyles = makeStyles(theme => ({
         width: '100%',
         height: '100%',
         position: 'fixed',
-        marginTop: theme.spacing(1) + theme.mixins.toolbar.minHeight
+        marginTop: theme.spacing(1)
     },
     infoClosed: {display: 'none'}
 }));

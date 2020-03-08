@@ -15,6 +15,7 @@ import IconButton from "@material-ui/core/IconButton";
 import OsmMap from "../browse-equities/osm-map";
 import Typography from "@material-ui/core/Typography";
 import LinearProgress from "@material-ui/core/LinearProgress";
+import ResponsiveXsDialog from "../common/responsive-xs-dialog";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -42,7 +43,7 @@ export default function AddEquity(props) {
     return (
         <div className={classes.root}>
             <SaveProgress save={save}/>
-            <Dialog open={showDialog} maxWidth="xs">
+            <ResponsiveXsDialog open={showDialog}>
                 <DialogContent>
                     <EditEquityContent equity={equity} type={type} validation={validation}
                                        onSelectLocation={() => setSelectLocation(true)}
@@ -64,7 +65,7 @@ export default function AddEquity(props) {
                         Сохранить
                     </Button>
                 </DialogActions>
-            </Dialog>
+            </ResponsiveXsDialog>
             {selectLocation && <SelectLocation onClose={() => setSelectLocation(false)} onOk={(marker) => {
                 setSelectLocation(false);
                 dispatch(reverseLocation(marker[0], marker[1]))
