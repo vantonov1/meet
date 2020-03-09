@@ -7,6 +7,7 @@ import com.google.firebase.FirebaseOptions
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories
+import org.springframework.http.CacheControl
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -14,6 +15,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
 import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
+import java.util.concurrent.TimeUnit
 
 
 @SpringBootApplication
@@ -21,7 +25,7 @@ import org.springframework.web.cors.CorsConfiguration
 @EnableWebSecurity
 @EnableJdbcRepositories
 @Suppress("unused")
-class MeetApplication : WebSecurityConfigurerAdapter() {
+class MeetApplication : WebSecurityConfigurerAdapter(), WebMvcConfigurer {
     override fun configure(http: HttpSecurity) {
         http
                 .addFilterAt(FirebaseFilter(), BasicAuthenticationFilter::class.java)
@@ -35,6 +39,12 @@ class MeetApplication : WebSecurityConfigurerAdapter() {
                     c
                 }
                 .and().csrf().disable()
+    }
+
+    override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
+        registry.addResourceHandler("/static/**")
+                .addResourceLocations("/static/static/")
+                .setCacheControl(CacheControl.maxAge(365, TimeUnit.DAYS))
     }
 }
 
