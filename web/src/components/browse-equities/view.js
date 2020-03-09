@@ -113,6 +113,9 @@ const useStyles = makeStyles(theme => ({
         position: 'fixed',
         right: theme.spacing(1),
         bottom: 150 + theme.spacing(1)
+    },
+    underAppBar: {
+        marginTop:theme.mixins.toolbar.minHeight
     }
 }));
 
@@ -143,8 +146,10 @@ function EquitiesViewNormal() {
     const dispatch = useDispatch();
     return <>
         <Drawer open={drawerOpen} variant="permanent" onClose={() => dispatch(toggleDrawer(false))}>
-            <EquitiesBrowser/>
-            <AddEquity type={filter.type} city={filter.city}/>
+            <div className={classes.underAppBar}>
+                <EquitiesBrowser/>
+                <AddEquity type={filter.type} city={filter.city}/>
+            </div>
         </Drawer>
         <OsmMap ref={OsmMap.ref} onLocationsSelect={locations => {
             dispatch(loadEquities(locations));
