@@ -43,7 +43,7 @@ class MeetApplication : WebSecurityConfigurerAdapter(), WebMvcConfigurer {
 
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
         registry.addResourceHandler("/static/**")
-                .addResourceLocations("/static/static/")
+                .addResourceLocations("classpath:/static/static/")
                 .setCacheControl(CacheControl.maxAge(365, TimeUnit.DAYS))
     }
 }
