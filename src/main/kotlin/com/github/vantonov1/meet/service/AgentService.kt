@@ -9,6 +9,7 @@ import com.github.vantonov1.meet.repository.AgentRepository
 import com.github.vantonov1.meet.service.impl.InvitationSender
 import com.github.vantonov1.meet.service.impl.invitation
 import com.github.vantonov1.meet.service.impl.saveClaim
+import com.github.vantonov1.meet.service.impl.tryGetAgentId
 import org.springframework.context.annotation.DependsOn
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
@@ -65,6 +66,9 @@ class AgentService(val repository: AgentRepository, val contactService: ContactS
     }
 
     fun selectAgent(dto: RequestDTO, customer: CustomerDTO): Int {
+        val agentId = tryGetAgentId()
+        if(agentId != null)
+            return agentId //for debugging mainly
         val agents = repository
                 .findActive(if (dto.about != null) dto.about.address.city else customer.city)
                 .map { it.id!! }

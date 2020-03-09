@@ -47,13 +47,16 @@ fun getAuthorities(user: FirebaseToken): Collection<GrantedAuthority> {
 }
 
 fun getAgentId(): Int {
+    return tryGetAgentId() ?: throw InsufficientAuthenticationException("Пользователь не является агентом")
+}
+
+fun tryGetAgentId(): Int? {
     val context = SecurityContextHolder.getContext()
-    if (context.authentication is FirebaseAuthenticationToken) {
+    return if (context.authentication is FirebaseAuthenticationToken) {
         val id: Any? = (context.authentication as FirebaseAuthenticationToken).user.claims["agent"]
-        return if (id is Number) id.toInt()
-        else throw InsufficientAuthenticationException("Пользователь не является агентом")
-    } else
-        throw InsufficientAuthenticationException("Пользователь не авторизован")
+        if (id is Number) id.toInt()
+        else null
+    } else null
 }
 
 fun sendMessage(messagingToken: String?, text: String, body: String, path: String = "") {
