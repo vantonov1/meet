@@ -43,7 +43,7 @@ class ProcessTest {
         val requestToSale = requestService.save(RequestDTO(null, RequestType.SELL.name, null, seller, null, null, listOf()), null)
         assert(requestToSale.assignedTo?.id == agentId)
 
-        val agentInbox = requestService.findByPersons(null, agentId)
+        val agentInbox = requestService.findByAssignee(agentId)
         assert(!agentInbox.isNullOrEmpty() && agentInbox[0].assignedTo?.id == agentId)
 
         val address = AddressDTO(2, null, null, null, null, null, null)

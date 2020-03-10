@@ -6,6 +6,7 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.cache.annotation.EnableCaching
 import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories
 import org.springframework.http.CacheControl
 import org.springframework.http.HttpMethod
@@ -24,6 +25,7 @@ import java.util.concurrent.TimeUnit
 @EnableGlobalMethodSecurity(securedEnabled = true)
 @EnableWebSecurity
 @EnableJdbcRepositories
+@EnableCaching
 @Suppress("unused")
 class MeetApplication : WebSecurityConfigurerAdapter(), WebMvcConfigurer {
     override fun configure(http: HttpSecurity) {

@@ -5,6 +5,9 @@ import com.github.vantonov1.meet.dto.RequestDTO
 import com.github.vantonov1.meet.dto.fromEntity
 import com.github.vantonov1.meet.entities.Request
 import com.github.vantonov1.meet.repository.RequestRepository
+import org.springframework.cache.CacheManager
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.context.annotation.DependsOn
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ServerWebInputException
@@ -18,7 +21,8 @@ class RequestService(private val requestRepository: RequestRepository,
                      private val meetingService: MeetingService,
                      private val equityService: EquityService,
                      private val commentService: CommentService,
-                     private val messagingService: MessagingService
+                     private val messagingService: MessagingService,
+                     private val cacheManager: CacheManager
 ) {
     fun save(dto: RequestDTO, customerId: Int?): RequestDTO {
         assert(dto.assignedTo == null)
@@ -31,13 +35,16 @@ class RequestService(private val requestRepository: RequestRepository,
         }
     }
 
+    @CacheEvict(key = "#id", cacheNames = ["requestsById"])
     fun attachEquity(equityId: Long, id: Int) {
         if (!requestRepository.attachEquity(equityId, id))
             throw ServerWebInputException("Заявка не найдена")
     }
 
+    @CacheEvict(key = "#id", cacheNames = ["requestsById"])
     fun delete(id: Int) = requestRepository.deleteById(id)
 
+    @Cacheable(key = "#id", cacheNames = ["requestsById"])
     fun findById(id: Int): RequestDTO {
         val request = requestRepository.findById(id)
         if (request.isEmpty)
@@ -45,17 +52,24 @@ class RequestService(private val requestRepository: RequestRepository,
         return collectRequestInfo(request.get())
     }
 
-    fun findByPersons(issuedBy: Int?, assignedTo: Int?): List<RequestDTO> {
-        return if (issuedBy != null) requestRepository.findByIssuer(issuedBy).map { collectRequestInfo(it) }
-        else if (assignedTo != null) requestRepository.findByAssignee(assignedTo).map { collectRequestInfo(it) }
-        else listOf()
+
+    @Cacheable(key = "#id", cacheNames = ["requestsByPerson"])
+    fun findByIssuer(id: Int) = requestRepository.findByIssuer(id).map { collectRequestInfo(it) }
+
+    @Cacheable(key = "#id", cacheNames = ["requestsByPerson"])
+    fun findByAssignee(id: Int) = requestRepository.findByAssignee(id).map { collectRequestInfo(it) }
+
+    fun completeRequest(sellId: Int, buyId: Int, equityId: Long, contractNumber: String?) {
+        deleteRequest(findById(sellId))
+        deleteRequest(findById(buyId))
+        equityService.delete(equityId, false)
     }
 
-    private fun assignFromCustomer(dto: RequestDTO, customer: CustomerDTO):  RequestDTO {
+    private fun assignFromCustomer(dto: RequestDTO, customer: CustomerDTO): RequestDTO {
         val agentId =
                 if (dto.about?.responsible != null) dto.about.responsible
                 else agentService.selectAgent(dto, customer)
-        val request = requestRepository.save(dto.toEntity(customer.id!!, agentId))
+        val request = saveRequest(dto, customer, agentId)
         messagingService.sendMessage(request.assignedTo, "Новая заявка", customer.name, "assigned-requests")
         return collectRequestInfo(request)
     }
@@ -63,19 +77,26 @@ class RequestService(private val requestRepository: RequestRepository,
     private fun collectRequestInfo(req: Request): RequestDTO {
         val issuedBy = customerService.findById(req.issuedBy)
         val assignedTo = agentService.findById(req.assignedTo)
-        if (req.about != null) {
+        return if (req.about != null) {
             val equity = equityService.findById(req.about)
             val meeting = meetingService.findDateByRequest(req.id!!)
             val comments = commentService.findCustomerCommentsByEquity(req.issuedBy, req.about)
-            return fromEntity(req, equity, issuedBy, assignedTo, if (meeting.isBefore(ZonedDateTime.now())) null else meeting, comments)
-        } else {
-            return fromEntity(req, null, issuedBy, assignedTo, null, listOf())
-        }
+            fromEntity(req, equity, issuedBy, assignedTo, if (meeting.isBefore(ZonedDateTime.now())) null else meeting, comments)
+        } else
+            fromEntity(req, null, issuedBy, assignedTo, null, listOf())
     }
 
-    fun completeRequest(sellId: Int, buyId: Int, equityId: Long, contractNumber: String?) {
-        requestRepository.deleteById(sellId)
-        requestRepository.deleteById(buyId)
-        equityService.delete(equityId, false)
+    private fun saveRequest(dto: RequestDTO, customer: CustomerDTO, agentId: Int): Request {
+        val cache = cacheManager.getCache("requestsByPerson")
+        cache?.evict(agentId)
+        cache?.evict(customer.id!!)
+        return requestRepository.save(dto.toEntity(customer.id!!, agentId))
+    }
+
+    private fun deleteRequest(request: RequestDTO) {
+        val cache = cacheManager.getCache("requestsByPerson")
+        cache?.evict(request.issuedBy ?: -1)
+        cache?.evict(request.assignedTo ?: -1)
+        delete(request.id!!)
     }
 }

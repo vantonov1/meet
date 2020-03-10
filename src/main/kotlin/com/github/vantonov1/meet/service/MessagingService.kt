@@ -4,7 +4,6 @@ import com.github.vantonov1.meet.entities.MessageToken
 import com.github.vantonov1.meet.repository.MessageTokenRepository
 import com.github.vantonov1.meet.service.impl.sendMessage
 import org.springframework.stereotype.Service
-import org.springframework.web.server.ServerWebInputException
 
 @Service
 class MessagingService(val repository: MessageTokenRepository) {
@@ -15,7 +14,6 @@ class MessagingService(val repository: MessageTokenRepository) {
 
     fun sendMessage(personId: Int, text: String, body: String, path: String) {
         val person = repository.findById(personId)
-        if (person.isEmpty) throw ServerWebInputException("Пользователь без message token")
-        else sendMessage(person.get().token, text, body, path)
+        if (!person.isEmpty) sendMessage(person.get().token, text, body, path)
     }
 }

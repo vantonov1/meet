@@ -10,6 +10,9 @@ import com.github.vantonov1.meet.service.impl.InvitationSender
 import com.github.vantonov1.meet.service.impl.invitation
 import com.github.vantonov1.meet.service.impl.saveClaim
 import com.github.vantonov1.meet.service.impl.tryGetAgentId
+import org.springframework.cache.annotation.CacheConfig
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.context.annotation.DependsOn
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
@@ -18,6 +21,7 @@ import kotlin.random.Random
 
 @Service
 @DependsOn("liquibase")
+@CacheConfig(cacheNames = ["agents"])
 class AgentService(val repository: AgentRepository, val contactService: ContactService, val invitationSender: InvitationSender) {
 
     fun invite(email: String, base: String): Agent {
@@ -38,12 +42,14 @@ class AgentService(val repository: AgentRepository, val contactService: ContactS
         return fromEntity(saved, contactService.save(id, dto.contacts))
     }
 
+    @CacheEvict(key="#dto.id", condition = "#dto.id != null")
     fun save(dto: AgentDTO): Int? {
         val agent = repository.save(dto.toEntity().copy(active = true))
         contactService.save(agent.id!!, dto.contacts)
         return agent.id
     }
 
+    @CacheEvict(key="#id")
     fun delete(id: Int) {
         repository.deleteById(id)
         contactService.deleteAll(id)
@@ -58,6 +64,7 @@ class AgentService(val repository: AgentRepository, val contactService: ContactS
             listOf()
     }
 
+    @Cacheable(key="#id")
     fun findById(id: Int): AgentDTO {
         val agent = repository.findById(id)
         val contacts = contactService.findByPersonId(id)
@@ -75,6 +82,7 @@ class AgentService(val repository: AgentRepository, val contactService: ContactS
         return if (agents.isNotEmpty()) agents[Random.nextInt(agents.size)] else throw IllegalStateException("Нет активных агентов")
     }
 
+    @CacheEvict(key="#id")
     fun setActive(id: Int, active: Boolean): Boolean {
         val it = repository.setActive(id, active)
         return if (it) it else throw ServerWebInputException("Агент не найден")

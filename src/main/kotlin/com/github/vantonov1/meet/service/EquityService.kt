@@ -8,6 +8,8 @@ import com.github.vantonov1.meet.entities.Filter
 import com.github.vantonov1.meet.repository.EquityPriceRangeRepository
 import com.github.vantonov1.meet.repository.EquityRepository
 import com.github.vantonov1.meet.repository.LocationRepository
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.context.annotation.DependsOn
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ServerWebInputException
@@ -25,6 +27,7 @@ class EquityService(
         private val comments: CommentService
 ) {
 
+    @CacheEvict(allEntries = true, cacheNames = ["equitiesByFilter"])
     fun save(dto: EquityDTO): Long {
         val saved = equityRepository.save(dto.toEntity())
         photos.save(saved.id!!, dto.photos)
@@ -47,6 +50,7 @@ class EquityService(
             listOf()
     }
 
+    @Cacheable(cacheNames = ["equitiesByFilter"])
     fun find(f: Filter): List<LocationDTO> {
         val locations = if (f.district == null && f.subway == null) {
             locationRepository.find(f.type, f.city, f.priceMin ?: 0, f.priceMax ?: Int.MAX_VALUE)
@@ -71,6 +75,7 @@ class EquityService(
         return equities.map { fromEntity(it, districts.findById(it.district), stations.findById(it.subway), null, null) }
     }
 
+    @CacheEvict(allEntries = true, cacheNames = ["equitiesByFilter"])
     fun delete(id: Long, hide: Boolean?) {
         if (hide != null && hide) equityRepository.hide(id) else equityRepository.deleteById(id)
     }

@@ -1,7 +1,6 @@
 package com.github.vantonov1.meet.controller.auth
 
 import com.github.vantonov1.meet.service.RequestService
-import com.github.vantonov1.meet.service.impl.getAgentId
 import org.springframework.security.access.annotation.Secured
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
@@ -33,5 +32,9 @@ class RequestController(private val requestService: RequestService) {
     @Transactional(readOnly = true)
     fun findByPersons(@RequestParam(required = false) issuedBy: Int?,
                       @RequestParam(required = false) assignedTo: Int?) =
-        requestService.findByPersons(issuedBy, getAgentId())
+            when {
+                issuedBy != null -> requestService.findByIssuer(issuedBy)
+                assignedTo != null -> requestService.findByAssignee(assignedTo)
+                else -> listOf()
+            }
 }

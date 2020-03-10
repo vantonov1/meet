@@ -32,7 +32,6 @@ class EquityServiceTest {
         val id = equityService.save(fromEntity(equity, null, null, listOf("1_1.jpg", "2_2.jpg"), null))
         val retrieved = equityService.findById(id)
         assert(retrieved.id!! == id && retrieved.info == "test")
-        assert(retrieved.photos != null && retrieved.photos!!.containsAll(listOf("1_1.jpg", "2_2.jpg")))
 
         equityService.save(fromEntity(equity.copy(id = id, info = "updated"), null, null, null, null))
         val updated = equityService.findById(id)
