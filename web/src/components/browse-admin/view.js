@@ -10,7 +10,7 @@ const TABS = [{url: 'agents', label: 'Агенты'}, {url: 'administrators', la
 
 const useStyles = makeStyles(theme => ({
     root: {
-        marginTop: theme.spacing(1) + theme.mixins.toolbar.minHeight
+        marginTop: theme.spacing(1)
     },
 }));
 

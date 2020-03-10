@@ -27,7 +27,7 @@ export default function BrowseAgents() {
     const classes = useStyles();
 
     return <>
-        <Browse slice="browseAgents" loader={loadAgents} title="Агенты" topLevel={false}>
+        <Browse slice="browseAgents" loader={loadAgents} title="Агенты">
             <Table>
                 <TableHead>
                     <TableRow>

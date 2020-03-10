@@ -115,7 +115,8 @@ const useStyles = makeStyles(theme => ({
         bottom: 150 + theme.spacing(1)
     },
     underAppBar: {
-        marginTop:theme.mixins.toolbar.minHeight
+        marginTop:theme.mixins.toolbar.minHeight,
+        height: '100%'
     }
 }));
 

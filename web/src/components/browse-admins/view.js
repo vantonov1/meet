@@ -23,7 +23,7 @@ export default function BrowseAdministrators() {
     const classes = useStyles();
 
     return <>
-        <BrowseList slice="browseAdmin" loader={loadAdmins} title="Администраторы" topLevel={false}>
+        <BrowseList slice="browseAdmin" loader={loadAdmins} title="Администраторы">
             {records.map(r => <ListItem key={r}
                                         selected={r === selected}
                                         style={{cursor: 'pointer'}}
