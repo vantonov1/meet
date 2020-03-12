@@ -12,6 +12,7 @@ import org.springframework.context.annotation.DependsOn
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ServerWebInputException
 import java.time.ZonedDateTime
+import java.util.*
 
 @Service
 @DependsOn("liquibase")
@@ -37,12 +38,16 @@ class RequestService(private val requestRepository: RequestRepository,
 
     @CacheEvict(key = "#id", cacheNames = ["requestsById"])
     fun attachEquity(equityId: Long, id: Int) {
+        evictPersons(id)
         if (!requestRepository.attachEquity(equityId, id))
             throw ServerWebInputException("Заявка не найдена")
     }
 
     @CacheEvict(key = "#id", cacheNames = ["requestsById"])
-    fun delete(id: Int) = requestRepository.deleteById(id)
+    fun delete(id: Int) {
+        evictPersons(id)
+        requestRepository.deleteById(id)
+    }
 
     @Cacheable(key = "#id", cacheNames = ["requestsById"])
     fun findById(id: Int): RequestDTO {
@@ -60,8 +65,10 @@ class RequestService(private val requestRepository: RequestRepository,
     fun findByAssignee(id: Int) = requestRepository.findByAssignee(id).map { collectRequestInfo(it) }
 
     fun completeRequest(sellId: Int, buyId: Int, equityId: Long, contractNumber: String?) {
-        deleteRequest(findById(sellId))
-        deleteRequest(findById(buyId))
+        evictPersons((sellId))
+        delete((sellId))
+        evictPersons((buyId))
+        delete((buyId))
         equityService.delete(equityId, false)
     }
 
@@ -93,10 +100,12 @@ class RequestService(private val requestRepository: RequestRepository,
         return requestRepository.save(dto.toEntity(customer.id!!, agentId))
     }
 
-    private fun deleteRequest(request: RequestDTO) {
-        val cache = cacheManager.getCache("requestsByPerson")
-        cache?.evict(request.issuedBy ?: -1)
-        cache?.evict(request.assignedTo ?: -1)
-        delete(request.id!!)
+    private fun evictPersons(id: Int?) {
+        val request = if (id != null) requestRepository.findById(id) else Optional.empty()
+        if (request.isPresent) {
+            val cache = cacheManager.getCache("requestsByPerson")
+            cache?.evict(request.get().issuedBy)
+            cache?.evict(request.get().assignedTo)
+        }
     }
 }
