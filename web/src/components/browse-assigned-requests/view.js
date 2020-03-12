@@ -145,17 +145,24 @@ function SelectEquity(props) {
 }
 
 function mergeRequests(requests) {
-    const counterReq = requests.filter(r => r.type === 'BUY');
-    return requests.filter(r => r.type === 'SELL').map((r) => {
-        const buy = counterReq.find(c => c.about?.id === r.about?.id);
-        return {
-            id: r.id,
-            buyId: buy?.id,
-            about: r.about,
-            assignedTo: r.assignedTo,
-            seller: r.issuedBy,
-            buyer: buy?.issuedBy,
-            meeting: buy?.meetingScheduled
-        }
-    })
+    const buyReqs = requests.filter(r => r.type === 'BUY');
+    const sellReqs = requests.filter(r => r.type === 'SELL');
+    let merged = sellReqs.flatMap(sell => {
+        const buys = buyReqs.filter(c => c.about?.id === sell.about?.id);
+        return buys.length > 0 ? buys.map(buy => mergeRequest(sell, buy)) : mergeRequest(sell, null)
+    });
+    return merged
 }
+
+function mergeRequest(sell, buy) {
+    return {
+        id: sell.id,
+        buyId: buy?.id,
+        about: sell.about,
+        assignedTo: sell.assignedTo,
+        seller: sell.issuedBy,
+        buyer: buy?.issuedBy,
+        meeting: buy?.meetingScheduled
+    }
+}
+
