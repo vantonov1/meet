@@ -254,19 +254,21 @@ function EquityProperties(props) {
         {equity.photos?.length > 0 && <div className={classes.gallery}>
             <PhotoGallery images={equity.photos.map(f => PhotoAPI.url(f))}/>
         </div>}
-        <Fab size="small" className={classes.closeDrawer} onClick={() => {
-            dispatch(unselectEquity())
-        }}>
-            <CloseIcon/>
-        </Fab>
-        <Fab size="small" variant="extended" color="primary" className={classes.buy} onClick={() => {
-            dispatch(setAbout(equity));
-            dispatch(createRequest())
-        }}>
-            <CheckIcon/>
-            {isSale(equity) && "Хочу купить"}
-            {isRent(equity) && "Хочу снять"}
-        </Fab>
+        <div className={classes.buttons}>
+            <Fab size="small" variant="extended" color="primary" style={{marginRight: 10}} onClick={() => {
+                dispatch(setAbout(equity));
+                dispatch(createRequest())
+            }}>
+                <CheckIcon/>
+                {isSale(equity) && "Хочу купить"}
+                {isRent(equity) && "Хочу снять"}
+            </Fab>
+            <Fab size="small" variant="extended" onClick={() => {
+                dispatch(unselectEquity())
+            }}>
+                <CloseIcon/>
+            </Fab>
+        </div>
     </div>
 }
 
