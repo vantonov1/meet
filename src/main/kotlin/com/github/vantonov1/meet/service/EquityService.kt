@@ -80,18 +80,16 @@ class EquityService(
         if (hide != null && hide) equityRepository.hide(id) else equityRepository.deleteById(id)
     }
 
-    fun getPriceRange(f: Filter): PriceRangeDTO {
-        return try {
-            val entity = when {
-                f.district == null && f.subway == null -> priceRangeRepository.getPriceRange(f.type, f.city)
-                f.district == null -> priceRangeRepository.getPriceRangeWithSubway(f.type, f.city, f.subway!!)
-                f.subway == null -> priceRangeRepository.getPriceRangeWithDistrict(f.type, f.city, f.district)
-                else -> priceRangeRepository.getPriceRangeWithDistrictAndSubway(f.type, f.city, f.district, f.subway)
-            }
-            PriceRangeDTO(entity.minPrice, entity.maxPrice)
-        } catch (ignored: Exception) {
-            PriceRangeDTO(null, null)
+    fun getPriceRange(f: Filter) = try {
+        val entity = when {
+            f.district == null && f.subway == null -> priceRangeRepository.getPriceRange(f.type, f.city)
+            f.district == null -> priceRangeRepository.getPriceRangeWithSubway(f.type, f.city, f.subway!!)
+            f.subway == null -> priceRangeRepository.getPriceRangeWithDistrict(f.type, f.city, f.district)
+            else -> priceRangeRepository.getPriceRangeWithDistrictAndSubway(f.type, f.city, f.district, f.subway)
         }
+        PriceRangeDTO(entity.minPrice, entity.maxPrice)
+    } catch (ignored: Exception) {
+        PriceRangeDTO(null, null)
     }
 
     @PostConstruct
