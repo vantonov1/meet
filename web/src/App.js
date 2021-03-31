@@ -26,7 +26,7 @@ import browseAdmin from "./components/browse-admins/slice";
 import browseAgents from "./components/browse-agents/slice";
 import createComment from "./components/create-comment/slice";
 import Auth from "./components/show-error/auth";
-import {CircularProgress, makeStyles} from "@material-ui/core";
+import {makeStyles} from "@material-ui/core";
 import {initFirebase, onMessageReceived} from "./api/FirebaseAPI";
 
 const store = configureStore({
@@ -85,7 +85,10 @@ export default function App() {
             </ThemeProvider>
         );
     else
-        return <div className={classes.waitAuth}><CircularProgress/></div>
+        return <div className={classes.waitAuth}>
+            <div id="firebaseui-auth-container"/>
+            {/*<CircularProgress/>*/}
+    </div>
 }
 
 function ShowMessageInfo() {

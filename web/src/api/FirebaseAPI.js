@@ -40,6 +40,19 @@ export function onMessageReceived(callback) {
 
 messaging.onMessage((message => messageListeners.forEach(c => c(message))));
 
+let roles = null;
+let agentId = null;
+
+export function getRoles() {
+    return roles;
+}
+
+export function getAgentId() {
+    return agentId;
+}
+
+firebase.auth().languageCode = 'ru';
+let ui = new firebaseui.auth.AuthUI(firebase.auth());
 
 export function initFirebase() {
     return new Promise(function (resolve, reject) {
@@ -63,19 +76,12 @@ export function initFirebase() {
                     localStorage.setItem("signedToFirebase", "true")
             })
         });
-        if (!localStorage.getItem("signedToFirebase")) resolve(null)
+        if (ui.isPendingRedirect()) {
+            localStorage.setItem("signedToFirebase", "true");
+            showAuth();
+        } else if (!localStorage.getItem("signedToFirebase"))
+            resolve(null)
     });
-}
-
-let roles = null;
-let agentId = null;
-
-export function getRoles() {
-    return roles;
-}
-
-export function getAgentId() {
-    return agentId;
 }
 
 export async function getAuthToken() {
@@ -88,8 +94,6 @@ export async function getAuthToken() {
 
 export function showAuth() {
     let url = window.location.href.replace('\?mode=select', '');
-    let ui = new firebaseui.auth.AuthUI(firebase.auth());
-    firebase.auth().languageCode = 'ru';
     setTimeout(() => {
         ui.start('#firebaseui-auth-container', {
             signInSuccessUrl: url,
@@ -99,12 +103,6 @@ export function showAuth() {
                 firebase.auth.PhoneAuthProvider.PROVIDER_ID,
                 firebase.auth.EmailAuthProvider.PROVIDER_ID
             ],
-            callbacks: {
-                signInSuccessWithAuthResult: function (authResult, redirectUrl) {
-                    window.location.href = url;
-                    return false;
-                }
-            }
         })
     }, 100);
 }
