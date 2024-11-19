@@ -22,7 +22,7 @@
     "react-virtualized-auto-sizer": "^1.0.2",
     "redux": "latest",
     "firebaseui": "^4.4.0",
-    "firebase": "^7.8.1"
+    "firebase": "^10.9.0"
   },
   "scripts": {
     "start": "react-scripts start",
